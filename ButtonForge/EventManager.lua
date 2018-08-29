@@ -137,7 +137,8 @@ Usable:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 Usable:RegisterEvent("ACTIONBAR_UPDATE_USABLE");	--Use this as a backup...
 Usable:RegisterEvent("VEHICLE_UPDATE");
 Usable:RegisterEvent("ACTIONBAR_PAGE_CHANGED");	
-Usable:RegisterEvent("UPDATE_WORLD_STATES");	
+--BFA fix: UPDATE_WORLD_STATES is deprecated
+-- Usable:RegisterEvent("UPDATE_WORLD_STATES");	
 
 
 --[[------------------------------------------------------------------------

@@ -1284,8 +1284,26 @@ end
 function Button:UpdateTexture()
 
 end
+
+--BFA fix: BFA removed the use of UnitBuff with the spell name as a parameter.
+--BFA fix: Added this function to compensate
+function Button:UnitBuffBySpell(unit, spell)
+	for i=1,40 do
+	  local name, icon, _, _, _, etime = UnitBuff(unit,i)
+	  if name then
+		if name == spell then
+			return UnitBuff(unit,i);
+		end    
+	  else 
+		break;
+	  end;
+	end;
+	return nil;
+end;
+
 function Button:UpdateTextureWispSpell()
-	if (UnitBuff("player", self.SpellName)) then			--NOTE: This works in en-US, hopefully it will be fine for other locales as well??
+--BFA fix: UnitBuff can no longer be called with the spell name as a param
+	if (self.UnitBuffBySpell("player", self.SpellName)) then			--NOTE: This en-US, hopefully it will be fine for other locales as well??
 		self.WIcon:SetTexture("Interface/Icons/Spell_Nature_WispSplode");
 	else
 		self.WIcon:SetTexture(self.Texture);

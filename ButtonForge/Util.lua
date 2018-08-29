@@ -1661,8 +1661,15 @@ end
 	Spell Functions
 -------------------------------------------]]
 function Util.GetFullSpellName(Name, Rank)
+--BFA fix: GetSpellInfo now returns a nil for the rank.  That's passed in here
+--So we check to make sure ranx exists or only pass back the name itself.
+	if (Rank) then
+		Rank = "("..Rank..")";
+	else
+		Rank = "";
+	end
 	if (Name) then
-		return Name.."("..Rank..")";
+		return Name..Rank;
 	end
 end
 

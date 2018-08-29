@@ -2,7 +2,7 @@
 Mod for World of Warcraft
 
 Author: Massiner of Nathrezim
-Version: 0.9.47
+Version: 0.9.50
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -20,6 +20,12 @@ Restrictions:
 
 
 History:
+26-July-2018		v0.9.50 - Updated for Wow v8.0 - this update is provided by DT85 (Zaranias - Aman'thul) & DandierSphinx... A big thanks for this!!!
+							- The below issues all prevented Button Forge functioning correctly or in some cases at all
+								- Corrected issue with removed UPDATE_WORLD_STATES event
+								- Corrected audio from Button Forge specific actions (e.g. opening/closing BF BUI)
+								- Corrected handling of Spells
+								- Corrected detection of when the Wisp Spell Icon should display
 28-November-2016	v0.9.47	- Updated for WoW v7.1
 04-October-2016		v0.9.46 - Fixed Icon display for Equipment Sets... Again! (also some corrections for talents etc which were actually added in .45 I believe?!, my book keeping on this one has been a bit iffy :S)
 09-August-2016		v0.9.45 - Fixed Icon display for Equipment Sets on Button Forge
