@@ -1536,8 +1536,12 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 	UILib.StopDraggingIcon();
 	SpellFlyout:Hide();
 	if (Command == "spell") then
-		--PickupSpellBookItem(Data, Subvalue);
-		PickupSpell(Subsubvalue);
+		local SpellName = GetSpellInfo(Subsubvalue);
+		if ( SpellName ) then
+			PickupSpellBookItem(SpellName)
+		else
+			PickupSpell(Subsubvalue);
+		end
 	elseif (Command == "item") then
 		PickupItem(Data);
 	elseif (Command == "macro") then
@@ -1548,7 +1552,14 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 		--end
 		C_MountJournal.Pickup(Util.GetMountIndexFromMountID(Data));
 	elseif (Command == "equipmentset") then
-		PickupEquipmentSetByName(Data);
+		local SetCount = C_EquipmentSet.GetNumEquipmentSets();
+		for i=0,SetCount-1 do
+			name, _, setIndex = C_EquipmentSet.GetEquipmentSetInfo(i);
+			if (name == Data) then
+				C_EquipmentSet.PickupEquipmentSet(setIndex);
+				break;
+			end
+		end;
 	elseif (Command == "bonusaction") then
 		local page = 12; --The page for vehicleactionbar
 		if (HasOverrideActionBar()) then
@@ -2534,9 +2545,9 @@ end
 
 function Util.LookupEquipmentSetIndex(EquipmentSetID)
 
-	local Total = GetNumEquipmentSets();
-	for i = 1, Total do
-		if (select(3, GetEquipmentSetInfo(i)) == EquipmentSetID) then
+	local Total = C_EquipmentSet.GetNumEquipmentSets();
+	for i = 0, Total-1 do
+		if (select(3, C_EquipmentSet.GetEquipmentSetInfo(i)) == EquipmentSetID) then
 			return i;
 		end
 	end

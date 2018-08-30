@@ -588,9 +588,15 @@ function Button:SetCommandCompanion(MountID)
 	--local SpellName = GetSpellInfo(SpellId);
 	self:SetCommandExplicitCompanion(MountID);
 end
-function Button:SetCommandEquipmentSet(Name)
-	local Id = select(2, GetEquipmentSetInfoByName(Name));	--Id isn't really used, but since it is available and appears reliable (i.e. doesn't change??) I will store it away just in case
-	self:SetCommandExplicitEquipmentSet(Id, Name);
+function Button:SetCommandEquipmentSet(SetName)
+	local SetCount = C_EquipmentSet.GetNumEquipmentSets();
+	for i=0,SetCount-1 do
+		name, texture, setIndex, isEquipped, totalItems, equippedItems, inventoryItems, missingItems, ignoredSlots = C_EquipmentSet.GetEquipmentSetInfo(i);
+		if (name == SetName ) then
+			self:SetCommandExplicitEquipmentSet(setIndex, name);
+			break;
+		end
+	end;
 end
 function Button:SetCommandBonusAction(Id)
 	self:SetCommandExplicitBonusAction(Id);
@@ -886,7 +892,7 @@ function Button:SetEnvEquipmentSet(Id, Name)
 	self.Mode 			= "equipmentset";
 	self.EquipmentSetId	= Id;
 	self.EquipmentSetName 	= Name;
-	self.Texture 		= select(2, GetEquipmentSetInfo(Index)) or ""; --"Interface/Icons/"..(GetEquipmentSetInfoByName(Name) or "");	--safe provided Name ~= nil
+	self.Texture 		= select(2, C_EquipmentSet.GetEquipmentSetInfo(Index)) or ""; --"Interface/Icons/"..(GetEquipmentSetInfoByName(Name) or "");	--safe provided Name ~= nil
 	self.Target			= "target";
 	
 	self:ResetAppearance();
@@ -1001,7 +1007,11 @@ function Button:SetEnvBattlePet(Id)
 	
 	self.Mode 				= "battlepet";
 	self.BattlePetId 			= Id;
-	self.Texture 			= select(9, C_PetJournal.GetPetInfoByPetID(Id));
+	if (Id == Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_ID) then
+		self.Texture = Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_TEXTURE;
+	else
+		self.Texture = select(9, C_PetJournal.GetPetInfoByPetID(Id));
+	end
 	self.Target			= "target";
 	
 	self:ResetAppearance();
@@ -1131,7 +1141,19 @@ function Button:SetAttributes(Type, Value)
 	self.Widget:SetAttribute("id", nil);
 	
 	--Now if a valid type is passed in set it
-	if (Type == "spell" or Type == "item" or Type == "macro") then
+	if (Type == "spell") then
+		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
+		local SpellName = GetSpellInfo(Value);
+		if ( SpellName ) then
+			self.Widget:SetAttribute("type", Type);
+			self.Widget:SetAttribute(Type, SpellName);
+		else
+			-- fallback to the old method if the name cannot be resolved
+			self.Widget:SetAttribute("type", Type);
+			self.Widget:SetAttribute(Type, Value);
+		end
+		
+	elseif (Type == "item" or Type == "macro") then
 		self.Widget:SetAttribute("type", Type);
 		self.Widget:SetAttribute(Type, Value);
 		
@@ -1770,6 +1792,10 @@ function Button:UpdateTooltipBattlePet()
 		GameTooltip:AddLine(SPELL_CAST_TIME_INSTANT, 1, 1, 1, true);
 		GameTooltip:AddLine(string.format(BATTLE_PET_TOOLTIP_SUMMON, name), nil, nil, nil, true);
 		GameTooltip:Show();
+	elseif (self.BattlePetId == Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_ID) then
+		GameTooltip:SetText(PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET, 1, 1, 1);
+		GameTooltip:AddLine(SPELL_CAST_TIME_INSTANT, 1, 1, 1, true);
+		GameTooltip:Show();
 	end
 end
 
@@ -2091,7 +2117,11 @@ end
 
 function Button:RefreshBattlePet()
 	if (self.Mode == "battlepet") then
-		self.Texture = select(9, C_PetJournal.GetPetInfoByPetID(self.BattlePetId));
+		if (self.BattlePetId == Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_ID) then
+			self.Texture = Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_TEXTURE;
+		else
+			self.Texture = select(9, C_PetJournal.GetPetInfoByPetID(self.BattlePetId));
+		end
 		self.Texture = self.Texture or "Interface/Icons/INV_Misc_QuestionMark";
 		self:DisplayActive();
 	end
@@ -2126,7 +2156,7 @@ function Button:RefreshEquipmentSet()
 			-- This equip set is gone so clear it from the button
 			return self:ClearCommand();
 		end
-		local TextureName = select(2, GetEquipmentSetInfo(Index));
+		local TextureName = select(2, C_EquipmentSet.GetEquipmentSetInfo(Index));
 		if (TextureName) then
 			self.Texture = TextureName;
 			self:DisplayActive();

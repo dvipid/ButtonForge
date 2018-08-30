@@ -9,6 +9,8 @@
 local Const = BFConst;
 Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL = 150544;
 Const.SUMMON_RANDOM_FAVORITE_MOUNT_ID = 268435455;
+Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_ID = "BattlePet-0-FFFFFFFFFFFFFF";
+Const.SUMMON_RANDOM_FAVORITE_BATTLE_PET_TEXTURE = "Interface/Icons/INV_Pet_Achievement_CaptureAPetFromEachFamily_Battle";
 Const.Version				= 0.9;
 Const.VersionMinor			= 50;
 Const.MAX_ACCOUNT_MACROS 	= 120;
