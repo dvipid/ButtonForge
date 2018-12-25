@@ -1537,8 +1537,11 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 	SpellFlyout:Hide();
 	if (Command == "spell") then
 		local SpellName = GetSpellInfo(Subsubvalue);
-		if ( SpellName ) then
-			PickupSpellBookItem(SpellName)
+		-- For some reason, that PVP spell needs to be called with PickupSpell instead of PickupSpellBookItem
+		if ( Subsubvalue == Const.PVP_SPELL_GLADIATORS_MEDALLION ) then
+			PickupSpell(Subsubvalue);
+		elseif ( SpellName ) then
+			PickupSpellBookItem(SpellName);
 		else
 			PickupSpell(Subsubvalue);
 		end
