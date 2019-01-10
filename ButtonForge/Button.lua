@@ -1277,14 +1277,14 @@ function Button:TranslateMacro()
 				self.MacroMode = "companion";
 			else]]
 				self.SpellName = SpellName;
-				self.SpellNameRank = Util.GetFullSpellName(SpellName, SpellRank);
+				self.SpellNameRank = GetSpellInfo(SpellName); --BFA fix: Cache is indexed by name and the old function returned the ID
 				self.SpellId = SpellId;
 				self.MacroMode = "spell";
 			--end
 		else
 			local ItemName, ItemLink = GetMacroItem(self.MacroIndex);
 			if (ItemName) then
-				self.ItemId = Util.GetItemId(ItemName) or 0; --basically we can't easily get the id, but for the item function calls below, itemid in the context of a macro should be fine
+				self.ItemId = Util.GetItemId(ItemName) or GetItemInfoInstant(ItemName) or 0; --basically we can't easily get the id, but for the item function calls below, itemid in the context of a macro should be fine
 				self.ItemName = ItemName;
 				self.ItemLink = ItemLink;
 				self.MacroMode = "item";
