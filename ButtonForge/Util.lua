@@ -1875,7 +1875,8 @@ end
 	Companion Functions
 -------------------------------------------]]
 function Util.CacheCompanions()
-    --[[Util.Critters = {};
+	Util.Critters = {};
+    --[[
     for i = 1, GetNumCompanions("CRITTER") do
         local Id, Name = GetCompanionInfo("CRITTER", i);
 		if (not Name) then
@@ -1884,14 +1885,14 @@ function Util.CacheCompanions()
         Util.Critters[Name] = i;
     end]]
 	
-    --[[Util.Mounts = {};
-    for i = 1, C_MountJournal.GetNumMounts() do
-        local Name, Id = C_MountJournal.GetDisplayedMountInfo(i);
-		if (not Name) then
+	Util.Mounts = {};
+	for i, mountID in pairs(C_MountJournal.GetMountIDs()) do
+		local creatureName, spellID = C_MountJournal.GetMountInfoByID(mountID);
+		if (not creatureName) then
 			return;
 		end
-        Util.Mounts[Name] = i;
-    end]]
+        Util.Mounts[spellID] = mountID;
+	end
 	Util.CompanionsCached = true;
 end
 

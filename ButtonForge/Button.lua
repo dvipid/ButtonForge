@@ -1268,19 +1268,15 @@ function Button:TranslateMacro()
 		self.MacroTargetDead = TargetDead;
 		local SpellName, SpellRank, SpellId = GetMacroSpell(self.MacroIndex);
 		if (SpellName) then
-			--[[local CompanionType, CompanionIndex = Util.LookupCompanion(SpellName);
+			local CompanionType, CompanionID = Util.LookupCompanion(SpellName);
 			if (CompanionType) then
 				self.CompanionType = CompanionType;
-				self.CompanionIndex = CompanionIndex;
-				local SpellId = select(3, GetCompanionInfo(CompanionType, CompanionIndex));
-				self.CompanionSpellName = GetSpellInfo(SpellId);
-				self.MacroMode = "companion";
-			else]]
-				self.SpellName = SpellName;
-				self.SpellNameRank = GetSpellInfo(SpellName); --BFA fix: Cache is indexed by name and the old function returned the ID
-				self.SpellId = SpellId;
-				self.MacroMode = "spell";
-			--end
+				self.CompanionIndex = CompanionID;
+			end
+			self.SpellName = SpellName;
+			self.SpellNameRank = GetSpellInfo(SpellName); --BFA fix: Cache is indexed by name and the old function returned the ID
+			self.SpellId = SpellId;
+			self.MacroMode = "spell";
 		else
 			local ItemName, ItemLink = GetMacroItem(self.MacroIndex);
 			if (ItemName) then
@@ -1730,6 +1726,9 @@ function Button:UpdateTooltipMacro()
 		local Index, BookType = Util.LookupSpellIndex(self.SpellNameRank);
 		if (Index) then
 			GameTooltip:SetSpellBookItem(Index, BookType);
+		elseif (self.CompanionType == "MOUNT") then
+			GameTooltip_SetDefaultAnchor(GameTooltip, self.Widget);		--It appears that the sethyperlink (specifically this one) requires that the anchor be constantly refreshed!?
+			GameTooltip:SetHyperlink("spell:"..self.SpellName);
 		end
 	elseif (self.MacroMode == "item") then
 		local EquippedSlot = Util.LookupItemNameEquippedSlot(self.ItemId);
