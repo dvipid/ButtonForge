@@ -1105,7 +1105,7 @@ end
 --]]
 function Bar:DestroyBar()
 	if (not InCombatLockdown()) then
-		PlaySoundFile("Sound\\Spells\\Meltoretarget.Wav");
+		PlaySoundFile(569366); --sound/spells/meltoretarget.ogg
 		Util.DeallocateBar(self);
 	end
 	UILib.ToggleDestroyBarMode(true);
