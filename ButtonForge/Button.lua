@@ -535,6 +535,13 @@ function Button:SetCommandFromTriplet(Command, Data, Subvalue, Subsubvalue)
 	
 	if (Command == "spell") then
 		self:SetCommandSpell(Subsubvalue);  --Data = Index, Subvalue = Book (spell/pet)
+	elseif (Command == "petaction") then
+		if (Data > 5) then
+			-- "Assist, Attack, Defensive, Passive, Follow, Move To, Stay" cause issues so lets ignore them for now. They all have their id between 0 and 5.
+			self:SetCommandSpell(Data);
+		else
+			return false;
+		end
 	elseif (Command == "item") then
 		self:SetCommandItem(Data, Subvalue);   --Data = Id, Subvalue = Link
 	elseif (Command == "macro") then

@@ -1536,15 +1536,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 	UILib.StopDraggingIcon();
 	SpellFlyout:Hide();
 	if (Command == "spell") then
-		local SpellName = GetSpellInfo(Subsubvalue);
-		-- For some reason, that PVP spell needs to be called with PickupSpell instead of PickupSpellBookItem
-		if ( Subsubvalue == Const.PVP_SPELL_GLADIATORS_MEDALLION ) then
-			PickupSpell(Subsubvalue);
-		elseif ( SpellName ) then
-			PickupSpellBookItem(SpellName);
-		else
-			PickupSpell(Subsubvalue);
-		end
+		PickupSpell(Subsubvalue);
 	elseif (Command == "item") then
 		PickupItem(Data);
 	elseif (Command == "macro") then
