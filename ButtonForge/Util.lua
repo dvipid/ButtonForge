@@ -1536,7 +1536,13 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 	UILib.StopDraggingIcon();
 	SpellFlyout:Hide();
 	if (Command == "spell") then
-		PickupSpell(Subsubvalue);
+		-- pet spell or not
+		local name = GetSpellInfo(Subsubvalue);
+		if ( Util.PetSpellIndex[name] ) then
+			PickupSpellBookItem(Util.PetSpellIndex[name], BOOKTYPE_PET);
+		else
+			PickupSpell(Subsubvalue);
+		end;
 	elseif (Command == "item") then
 		PickupItem(Data);
 	elseif (Command == "macro") then
@@ -1668,7 +1674,7 @@ end
 -------------------------------------------]]
 function Util.GetFullSpellName(Name, Rank)
 --BFA fix: GetSpellInfo now returns a nil for the rank.  That's passed in here
---So we check to make sure ranx exists or only pass back the name itself.
+--So we check to make sure rank exists or only pass back the name itself.
 	if (Rank) then
 		Rank = "("..Rank..")";
 	else
@@ -1759,21 +1765,16 @@ end
 function Util.CachePetSpellIndexes()
 	local i = 1;
 	local NewPSI = {};
-	--Util.NewPetSpellIndex = {};
 	while true do
-		local NameRank = Util.GetFullSpellName(GetSpellInfo(i, BOOKTYPE_PET));
-		if (not NameRank) then
-			break;
+		local spellName, spellSubName = GetSpellBookItemName(i, BOOKTYPE_PET)
+		if not spellName then
+			do break end
 		end
-		--if (not Util.PetSpellIndex[NameRank]) then
-		--	Util.NewPetSpellIndex[NameRanl] = i;
-		--end
-		NewPSI[NameRank] = i;
-		i = i + 1;
+		NewPSI[spellName] = i;
+		i = i + 1
 	end
 
-	Util.PetSpellIndex = NewPSI;
-	
+	Util.PetSpellIndex = NewPSI;	
 end
 
 function Util.LookupSpellIndex(NameRank)
