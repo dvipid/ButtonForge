@@ -39,7 +39,7 @@
 		</Scripts>	
 	</Frame>
 
-	<Frame name="BFBindingDialog" parent="UIParent" hidden="true" clampedtoscreen="true" enablemouse="true" movable="true" frameStrata="FULLSCREEN_DIALOG">
+	<Frame name="BFBindingDialog" parent="UIParent" hidden="true" clampedtoscreen="true" enablemouse="true" movable="true" frameStrata="FULLSCREEN_DIALOG" inherits="BackdropTemplate">
 		<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508883-59c2-4f83-ae10-27aaad48391b" />-->
 		<Size>
 			<AbsDimension x="341" y="137" />

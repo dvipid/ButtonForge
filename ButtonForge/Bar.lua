@@ -141,7 +141,7 @@ function Bar.New(BarSave)
 			NewBar.ButtonFrame = ButtonFrame;
 		
 		--[[Background Layer, this will contain all controls and is used in resizing]]--
-			local Background = CreateFrame("FRAME", nil, ControlFrame);
+			local Background = CreateFrame("FRAME", nil, ControlFrame, "BackdropTemplate");
 			Background:SetSize(1, 1);
 			Background:SetPoint("TOPLEFT", ControlFrame, "TOPLEFT");
 			Background:SetBackdrop({bgFile = Const.ImagesDir.."Backdrop.tga", edgeFile = "Interface/Tooltips/UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16, insets = {left=3, right=3, bottom=3, top=3}});
@@ -182,7 +182,7 @@ function Bar.New(BarSave)
 			NewBar.TileTexture = TileTexture;
 		
 		--[[Label Frame]]--
-			local LabelFrame = CreateFrame("FRAME", nil, ControlFrame);
+			local LabelFrame = CreateFrame("FRAME", nil, ControlFrame, "BackdropTemplate");
 			LabelFrame:SetSize(1, 1);
 			LabelFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "Interface/Tooltips/UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 8, insets = {left=1.5, right=1.5, bottom=1.5, top=1.5}});
 			LabelFrame:SetBackdropColor(0, 0, 0, 1);

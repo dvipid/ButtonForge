@@ -9,12 +9,12 @@
 local UILib = BFUILib;
 local Const = BFConst;
 
-local VertLine = CreateFrame("FRAME", nil, UIParent);
-VertLine:SetBackdrop({bgFile = Const.ImagesDir.."VertLine.tga", edgeFile = nil, tile = false, tileSize = 1, edgeSize = 0, insets = {left=0, right=0, bottom=0, top=0}});
+local VertLine = CreateFrame("FRAME", nil, UIParent, "BackdropTemplate");
+VertLine:SetBackdrop({bgFile = Const.ImagesDir.."VertLine.tga", edgeFile = nil, tile = false, tileSize = 1, edgeSize = 1, insets = {left=0, right=0, bottom=0, top=0}});
 VertLine:SetWidth(Const.VLineThickness / UIParent:GetScale());
 
-local HorizLine = CreateFrame("FRAME", nil, UIParent);
-HorizLine:SetBackdrop({bgFile = Const.ImagesDir.."HorizontalLine.tga", edgeFile = nil, tile = false, tileSize = 1, edgeSize = 0, insets = {left=0, right=0, bottom=0, top=0}});
+local HorizLine = CreateFrame("FRAME", nil, UIParent, "BackdropTemplate");
+HorizLine:SetBackdrop({bgFile = Const.ImagesDir.."HorizontalLine.tga", edgeFile = nil, tile = false, tileSize = 1, edgeSize = 1, insets = {left=0, right=0, bottom=0, top=0}});
 HorizLine:SetHeight(Const.HLineThickness / UIParent:GetScale());
 
 

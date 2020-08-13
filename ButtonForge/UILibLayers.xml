@@ -2,7 +2,7 @@
 	
 	<Script file="UILibLayers.lua"/>
 	
-	<Frame name="BFOverlay" enablemouse="true" hidden="true" virtual="true">
+	<Frame name="BFOverlay" enablemouse="true" hidden="true" virtual="true" inherits="BackdropTemplate">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT">
 				<Offset>
