@@ -6,7 +6,7 @@ https://www.curseforge.com/wow/addons/button-forge
 **Author: Alternator (Massiner of Nathrezim)**
 
 ## Instructions
-1. Delete the entire ButtonForge folder inside ...World of Warcraft\\\_beta_\Interface\AddOns
+1. Delete the entire ButtonForge folder inside ...World of Warcraft\\\_retail_\Interface\AddOns
 2. Download the latest build on GitHub: [https://github.com/dvipid/ButtonForge/archive/master.zip](https://github.com/dvipid/ButtonForge/archive/master.zip)
 3. Unzip it somewhere
 4. Move the ButtonForge folder that was unzipped to your AddOns folder
@@ -21,4 +21,4 @@ https://www.curseforge.com/wow/addons/button-forge
 
 6. Start World of Warcraft
 7. If you suspect that you don't have the fix, continue to step 8.
-8. With World of Warcraft running, reopen that TOC file and make sure it still at version 0.9.60, if not and you are using an add-on manager like Twitch App, make sure that it's not putting back an old build.
+8. With World of Warcraft running, reopen that TOC file and make sure it still at version 0.9.60, if not and you are using an add-on manager, make sure that it is not replaced by an old build.
