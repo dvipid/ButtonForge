@@ -2,7 +2,10 @@
 Mod for World of Warcraft
 
 Author: Massiner of Nathrezim
-Version: 0.9.50
+Contributor: xfsbill
+Past Contributors: DT85, DandierSphinx
+
+Version: 1.0.1
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -20,6 +23,10 @@ Restrictions:
 
 
 History:
+23-Nov-2020			v1.0.1	- Fixed an issue opening/closing some tradeskills window
+							
+19-Nov-2020			v1	- Updated for Wow v9.0 - This update is provided by xfsbill , jee_dae (possibly others ?) - thanks for keeping a version of the addon working all this time!
+							
 26-July-2018		v0.9.50 - Updated for Wow v8.0 - this update is provided by DT85 (Zaranias - Aman'thul) & DandierSphinx... A big thanks for this!!!
 							- The below issues all prevented Button Forge functioning correctly or in some cases at all
 								- Corrected issue with removed UPDATE_WORLD_STATES event

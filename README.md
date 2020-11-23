@@ -10,12 +10,12 @@ https://www.curseforge.com/wow/addons/button-forge
 2. Download the latest build on GitHub: [https://github.com/dvipid/ButtonForge/archive/master.zip](https://github.com/dvipid/ButtonForge/archive/master.zip)
 3. Unzip it somewhere
 4. Move the ButtonForge folder that was unzipped to your AddOns folder
-5. Open the TOC file and make sure Version is 0.9.60
+5. Open the TOC file and make sure Version is 1.0.1
 
-    \## Interface: 90001  
+    \## Interface: 90002  
 \## Title: Button Forge  
 \## Notes: Add as many or few extra Action Bars and Buttons to your user interface to complement the standard (or other) Action Bars  
-\## Version: 0.9.60  
+\## Version: 1.0.1  
 \## Author: Massiner of Nathrezim  
 \... ... some more lines there
 

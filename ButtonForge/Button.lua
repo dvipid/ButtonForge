@@ -1149,9 +1149,25 @@ function Button:SetAttributes(Type, Value)
 	
 	--Now if a valid type is passed in set it
 	if (Type == "spell") then
-		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
+
+		prof1, prof2 = GetProfessions();
+		if ( prof1 ) then
+			prof1_name, _, _, _, _, _, prof1_skillLine = GetProfessionInfo(prof1);
+		end
+		if ( prof2 ) then
+			prof2_name, _, _, _, _, _, prof2_skillLine = GetProfessionInfo(prof2);
+		end
+
 		local SpellName = GetSpellInfo(Value);
-		if ( SpellName ) then
+		-- Patch to fix tradeskills
+		if ( prof1 and SpellName == prof1_name ) then
+			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("macrotext", "/run RunScript('if (C_TradeSkillUI.GetTradeSkillLine()) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof1_skillLine..") end')");
+		elseif ( prof2 and SpellName == prof2_name ) then
+			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("macrotext", "/run RunScript('if (C_TradeSkillUI.GetTradeSkillLine()) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
+		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
+		elseif ( SpellName ) then
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute(Type, SpellName);
 		else
