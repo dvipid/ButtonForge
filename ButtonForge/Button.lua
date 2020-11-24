@@ -1162,10 +1162,10 @@ function Button:SetAttributes(Type, Value)
 		-- Patch to fix tradeskills
 		if ( prof1 and SpellName == prof1_name ) then
 			self.Widget:SetAttribute("type", "macro");
-			self.Widget:SetAttribute("macrotext", "/run RunScript('if (C_TradeSkillUI.GetTradeSkillLine()) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof1_skillLine..") end')");
+			self.Widget:SetAttribute("macrotext", "/run RunScript('if (select(6, C_TradeSkillUI.GetTradeSkillLine()) == prof1_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof1_skillLine..") end')");
 		elseif ( prof2 and SpellName == prof2_name ) then
 			self.Widget:SetAttribute("type", "macro");
-			self.Widget:SetAttribute("macrotext", "/run RunScript('if (C_TradeSkillUI.GetTradeSkillLine()) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
+			self.Widget:SetAttribute("macrotext", "/run RunScript('if (select(6, C_TradeSkillUI.GetTradeSkillLine()) == prof2_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
 		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
 		elseif ( SpellName ) then
 			self.Widget:SetAttribute("type", Type);
