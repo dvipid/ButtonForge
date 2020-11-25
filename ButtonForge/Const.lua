@@ -92,6 +92,7 @@ Const.DarkOrange = "ffEE5500";
 
 Const.SlashCommands = {};
 Const.SlashCommands["-bar"] = {params = "^%s*(..-)%s*$", group = "bar"};
+Const.SlashCommands["-list"] = {params = "^()$", incompat = {"ALL"}};
 Const.SlashCommands["-macrotext"] = {params = "bool", group = "bar"};
 Const.SlashCommands["-keybindtext"] = {params = "bool", group = "bar"};
 Const.SlashCommands["-tooltips"] = {params = "bool", group = "bar"};

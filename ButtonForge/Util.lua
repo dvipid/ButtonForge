@@ -1316,10 +1316,21 @@ function SlashCmdList.BUTTONFORGE(msg, editbox)
 					BarName = Commands["-bar"][1];
 				elseif (Commands["-destroybar"]) then
 					BarName = Commands["-destroybar"][1];
-				end		
+				end
+				local barFound = false;
 				for i = 1, #Bars do
 					if ((not BarName) or strlower(BarName) == strlower(Bars[i].BarSave["Label"])) then
 						Util.ApplySlashCommands(Commands, Bars[i]);
+						barFound = true;
+					end
+				end
+				-- bar name not found, check with Index
+				if ( barFound == false ) then
+					for i = 1, #Bars do
+						if ( tonumber(BarName) == i ) then
+							Util.ApplySlashCommands(Commands, Bars[i]);
+							barFound = true;
+						end
 					end
 				end
 			end
@@ -1342,6 +1353,17 @@ function Util.ApplySlashCommands(Commands, Bar)
 			return
 		end
 		Commands["-rename"] = Commands["-createbar"];	--this could arguably work by having an empty param to createbar but I think it will feel more natural to require a name with this command
+	end
+
+	if (Commands["-list"]) then
+		local Bars = Util.ActiveBars;
+		for i = 1, #Bars do
+			local label = string.gsub(Util.GetLocaleString("SlashListBarWithLabel"), "<LABEL>", Bars[i].BarSave["Label"]);
+			if (Bars[i].BarSave["Label"] == "") then
+				label = string.gsub(Util.GetLocaleString("SlashListBarWithIndex"), "<LABEL>", i);
+			end
+			DEFAULT_CHAT_FRAME:AddMessage(label, .5, 1, 0, 1);
+		end
 	end
 	
 	if (Commands["-destroybar"]) then
