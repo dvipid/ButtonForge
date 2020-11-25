@@ -96,6 +96,9 @@ Misc:RegisterEvent("SPELL_FLYOUT_UPDATE");			--Refresh the spell_flyouts (mainly
 Misc:RegisterEvent("UI_SCALE_CHANGED");
 Misc:RegisterEvent("MODIFIER_STATE_CHANGED");
 
+Misc:RegisterEvent("ZONE_CHANGED");
+Misc:RegisterEvent("ZONE_CHANGED_INDOORS");
+Misc:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 
 
 
@@ -488,6 +491,10 @@ function Misc:OnEvent(Event, ...)
 	elseif (Event == "EDITBOX_MESSAGE") then
 		self.EditBoxMessage, self.EditBox = ...;
 		self:SetScript("OnUpdate", self.OnUpdate);
+
+	elseif (Event == "ZONE_CHANGED" or Event == "ZONE_CHANGED_INDOORS" or Event == "ZONE_CHANGED_NEW_AREA") then
+		Util.RefreshZoneAbility();
+		
 	end
 end
 function Misc:OnUpdate(Elapsed)

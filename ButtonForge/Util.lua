@@ -1857,6 +1857,23 @@ function Util.RefreshBattlePets()
 	end
 end
 
+function Util.RefreshZoneAbility()
+	local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
+	local found = false;
+	for i, zoneAbility in ipairs(zoneAbilities) do
+		for j, spell in ipairs(Util.ActiveSpells) do
+			if ( zoneAbility.spellID == spell.SpellId ) then
+				ZoneAbilityFrame:SetShown(false);
+				found = true;
+				break;
+			end
+		end
+	end
+	if (found == false) then
+		ZoneAbilityFrame:SetShown(true);
+	end
+end
+
 function Util.AddSpell(Value)
 	if (not Util.FindInTable(Util.ActiveSpells, Value)) then
 		table.insert(Util.ActiveSpells, Value);
@@ -1865,7 +1882,7 @@ function Util.AddSpell(Value)
 		local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
 		for i, zoneAbility in ipairs(zoneAbilities) do
 			if (zoneAbility.spellID == Value.SpellId) then
-				ZoneAbilityFrame:Hide();
+				ZoneAbilityFrame:SetShown(false);
 				break;
 			end
 		end
@@ -1881,7 +1898,7 @@ function Util.RemoveSpell(Value)
 		local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
 		for i, zoneAbility in ipairs(zoneAbilities) do
 			if (zoneAbility.spellID == Value.SpellId) then
-				ZoneAbilityFrame:Show();
+				ZoneAbilityFrame:SetShown(true);
 				break;
 			end
 		end
