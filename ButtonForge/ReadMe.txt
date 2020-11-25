@@ -23,7 +23,8 @@ Restrictions:
 
 
 History:
-24-Nov-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
+25-Nov-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
+							- Added slash commands to list bars and allow to interact with bars without a label
 							
 23-Nov-2020			v1.0.1	- Fixed an issue opening/closing some tradeskills window
 							
