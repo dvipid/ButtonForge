@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.0.1
+Version: 1.0.2
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+24-Nov-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
+							
 23-Nov-2020			v1.0.1	- Fixed an issue opening/closing some tradeskills window
 							
 19-Nov-2020			v1	- Updated for Wow v9.0 - This update is provided by xfsbill , jee_dae (possibly others ?) - thanks for keeping a version of the addon working all this time!
