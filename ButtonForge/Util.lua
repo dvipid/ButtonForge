@@ -1881,17 +1881,18 @@ end
 
 function Util.RefreshZoneAbility()
 	local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
-	local found = false;
+	local found = 0;
 	for i, zoneAbility in ipairs(zoneAbilities) do
 		for j, spell in ipairs(Util.ActiveSpells) do
 			if ( zoneAbility.spellID == spell.SpellId ) then
-				ZoneAbilityFrame:SetShown(false);
-				found = true;
+				found = found + 1;
 				break;
 			end
 		end
 	end
-	if (found == false) then
+	if (found == table.getn(zoneAbilities)) then
+		ZoneAbilityFrame:SetShown(false);
+	else
 		ZoneAbilityFrame:SetShown(true);
 	end
 end
@@ -1899,15 +1900,7 @@ end
 function Util.AddSpell(Value)
 	if (not Util.FindInTable(Util.ActiveSpells, Value)) then
 		table.insert(Util.ActiveSpells, Value);
-
-		-- hide the zone ability button if we placed that spell in a bar
-		local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
-		for i, zoneAbility in ipairs(zoneAbilities) do
-			if (zoneAbility.spellID == Value.SpellId) then
-				ZoneAbilityFrame:SetShown(false);
-				break;
-			end
-		end
+		Util.RefreshZoneAbility();
 	end
 end
 
@@ -1915,15 +1908,7 @@ function Util.RemoveSpell(Value)
 	local Index = Util.FindInTable(Util.ActiveSpells, Value);
 	if (Index) then
 		table.remove(Util.ActiveSpells, Index);
-
-		-- show the zone ability button if we removed that spell from a bar
-		local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
-		for i, zoneAbility in ipairs(zoneAbilities) do
-			if (zoneAbility.spellID == Value.SpellId) then
-				ZoneAbilityFrame:SetShown(true);
-				break;
-			end
-		end
+		Util.RefreshZoneAbility();
 	end
 end
 
