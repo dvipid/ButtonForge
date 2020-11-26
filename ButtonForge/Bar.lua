@@ -534,8 +534,7 @@ function Bar:Configure(BarSave)
 	self:SetAlpha(BarSave["Alpha"]);
 	self:SetGUI(BarSave["GUI"]);
 
-	-- Uncomment this once Clamp insets are working again
-	--self.ControlFrame:SetClampedToScreen(true);
+	self.ControlFrame:SetClampedToScreen(true);
 end
 
 --[[
