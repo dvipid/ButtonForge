@@ -448,8 +448,6 @@ function Util.Load()
 	Util.StartMacroCheckDelay();
 	Util.RefreshOnUpdateFunction();
 	
-	SLASH_BUTTONFORGE1 = Util.GetLocaleString("SlashButtonForge1"); -- = "/buttonforge";	--these two identifiers probably shouldn't change, but if need be they can be?!
-	SLASH_BUTTONFORGE2 = Util.GetLocaleString("SlashButtonForge2"); -- = "/bufo";
 	collectgarbage("collect");
 	Util.CallbackEvent("INITIALISED");
 end
@@ -1207,7 +1205,9 @@ function Util.SlashShowMessageByLine(Message)
 	end
 end
 
-function SlashCmdList.BUTTONFORGE(msg, editbox)
+SLASH_BUTTONFORGE1 = Util.GetLocaleString("SlashButtonForge1"); -- = "/buttonforge";	--these two identifiers probably shouldn't change, but if need be they can be?!
+SLASH_BUTTONFORGE2 = Util.GetLocaleString("SlashButtonForge2"); -- = "/bufo";
+SlashCmdList["BUTTONFORGE"] = function(msg, editbox)
 	local FirstCommand;
 	local PreparedCommands = {};
 	local Command, Params;
