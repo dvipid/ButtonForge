@@ -25,7 +25,8 @@ Restrictions:
 History:
 25-Nov-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
 							- Added slash commands to list bars and allow to interact with bars without a label
-							- Reintroduced clamping bars to the sceen (a feature that was disabled all the way back in 2015)
+							- Reintroduced clamping bars to the screen (a feature that was disabled all the way back in 2015)
+							- Added keybind support for gamepads
 							
 23-Nov-2020			v1.0.1	- Fixed an issue opening/closing some tradeskills window
 							
