@@ -36,6 +36,9 @@
 					BFKeyBinder.OnInputBindingOverlay("MOUSEWHEELDOWN");
 				end
 			</OnMouseWheel>
+			<OnGamePadButtonDown>
+				BFKeyBinder.OnInputBindingOverlay(button);
+			</OnGamePadButtonDown>
 		</Scripts>	
 	</Frame>
 
