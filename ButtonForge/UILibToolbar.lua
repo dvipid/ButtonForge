@@ -42,6 +42,16 @@ CreateBonusBarButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT",  20 / 0.66, -74 /
 API.SetSource(CreateBonusBarButton, true);
 CreateBonusBarButton:Hide();
 
+local RightClickSelfCastButton = API.CreateButton("BFToolbarRightClickSelfCast", {Type = "custom", CustomName = "rightclickselfcast"});
+RightClickSelfCastButton:Hide();
+RightClickSelfCastButton:SetParent(BFToolbar);
+RightClickSelfCastButton:SetScale(0.66);
+RightClickSelfCastButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 20 / 0.66 + 40, -74 / 0.66);
+API.SetSource(RightClickSelfCastButton, true);
+RightClickSelfCastButton:Hide();
+
+
+
 --This overloading of togglecreatebarmode is yuck, it will do the job for now, but will need
 --cleaning up when the ui functions get unified a bit better
 function UILib.ToggleCreateBarMode(ForceOff)
@@ -139,6 +149,10 @@ end
 
 
 function UILib.ToggleRightClickSelfCast(Value)
+	if (InCombatLockdown()) then
+		UIErrorsFrame:AddMessage(ERR_AFFECTING_COMBAT, 1.0, 0.1, 0.1, 1.0);
+		return;
+	end
 	if (Value ~= nil) then
 		Util.RightClickSelfCast(Value);	
 	elseif (ButtonForgeSave["RightClickSelfCast"]) then
@@ -149,16 +163,15 @@ function UILib.ToggleRightClickSelfCast(Value)
 	
 	if (ButtonForgeSave["RightClickSelfCast"]) then
 		BFToolbarRightClickSelfCast.Tooltip = Util.GetLocaleString("RightClickSelfCastTooltip")..Util.GetLocaleString("Enabled");
-		BFToolbarRightClickSelfCast:SetChecked(true);
 	else
 		BFToolbarRightClickSelfCast.Tooltip = Util.GetLocaleString("RightClickSelfCastTooltip")..Util.GetLocaleString("Disabled");
-		BFToolbarRightClickSelfCast:SetChecked(false);
 	end
 	
 	if (GetMouseFocus() == BFToolbarRightClickSelfCast) then
 		GameTooltip:SetText(BFToolbarRightClickSelfCast.Tooltip, nil, nil, nil, nil, 1);
 	end
 	
+	API.TriggerUpdateChecked();
 	EventFull.RefreshButtons = true;
 	EventFull.RefChecked = true;
 end
