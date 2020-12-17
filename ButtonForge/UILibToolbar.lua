@@ -19,6 +19,11 @@ CreateBarButton:SetParent(BFToolbar);
 CreateBarButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 20, -32);
 API.SetSource(CreateBarButton, true);
 
+local DestroyBarButton = API.CreateButton("BFToolbarDestroyBar", {Type = "custom", CustomName = "destroybarmode"});
+DestroyBarButton:SetParent(BFToolbar);
+DestroyBarButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 60, -32);
+API.SetSource(DestroyBarButton, true);
+
 local ConfigureModeButton = API.CreateButton("BFToolbarConfigureAction", {Type = "custom", CustomName = "configuremode"});
 ConfigureModeButton:SetParent(BFToolbar);
 ConfigureModeButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 160, -32);
@@ -75,14 +80,16 @@ end
 function UILib.ToggleDestroyBarMode(ForceOff)
 	if (BFDestroyBarOverlay:IsShown() or ForceOff) then
 		BFDestroyBarOverlay:Hide();
-		BFToolbarDestroyBar:SetChecked(false);
 		SetCursor(nil);
 		UILib.SetMask(nil);
 	elseif (not InCombatLockdown()) then
 		BFDestroyBarOverlay:Show();
-		BFToolbarDestroyBar:SetChecked(true);
 		SetCursor("CAST_ERROR_CURSOR");
+	else
+		UIErrorsFrame:AddMessage(ERR_AFFECTING_COMBAT, 1.0, 0.1, 0.1, 1.0);
 	end
+
+	API.TriggerUpdateChecked();
 	EventFull.RefreshButtons = true;
 	EventFull.RefChecked = true;
 	Util.VDriverOverride();
