@@ -34,6 +34,14 @@ ConfigureModeButton:SetParent(BFToolbar);
 ConfigureModeButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 160, -32);
 API.SetSource(ConfigureModeButton, true);
 
+
+local CreateBonusBarButton = API.CreateButton("BFToolbarCreateBonusBar", {Type = "custom", CustomName = "createbonusbarmode"});
+CreateBonusBarButton:SetParent(BFToolbar);
+CreateBonusBarButton:SetScale(0.66);
+CreateBonusBarButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT",  20 / 0.66, -74 / 0.66);
+API.SetSource(CreateBonusBarButton, true);
+CreateBonusBarButton:Hide();
+
 --This overloading of togglecreatebarmode is yuck, it will do the job for now, but will need
 --cleaning up when the ui functions get unified a bit better
 function UILib.ToggleCreateBarMode(ForceOff)
@@ -65,17 +73,18 @@ function UILib.ToggleCreateBonusBarMode(ForceOff)
 	end
 	if (BFCreateBarOverlay:IsShown() or ForceOff) then
 		BFCreateBarOverlay:Hide();
-		BFToolbarCreateBar:SetChecked(false);
-		BFToolbarCreateBonusBar:SetChecked(false);
 		UILib.CreateBarMode = false;
 		UILib.CreateBonusBarMode = false;
 		SetCursor(nil);
 	elseif (not InCombatLockdown()) then
 		UILib.CreateBonusBarMode = true;
 		BFCreateBarOverlay:Show();
-		BFToolbarCreateBonusBar:SetChecked(true);
 		SetCursor("REPAIRNPC_CURSOR");
+	else
+		UIErrorsFrame:AddMessage(ERR_AFFECTING_COMBAT, 1.0, 0.1, 0.1, 1.0);
 	end
+	
+	API.TriggerUpdateChecked();
 	EventFull.RefreshButtons = true;
 	EventFull.RefChecked = true;
 end
