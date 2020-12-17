@@ -24,6 +24,11 @@ DestroyBarButton:SetParent(BFToolbar);
 DestroyBarButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 60, -32);
 API.SetSource(DestroyBarButton, true);
 
+local AdvancedButton = API.CreateButton("BFToolbarAdvanced", {Type = "custom", CustomName = "advancedtoolsmode"});
+AdvancedButton:SetParent(BFToolbar);
+AdvancedButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 120, -32);
+API.SetSource(AdvancedButton, true);
+
 local ConfigureModeButton = API.CreateButton("BFToolbarConfigureAction", {Type = "custom", CustomName = "configuremode"});
 ConfigureModeButton:SetParent(BFToolbar);
 ConfigureModeButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 160, -32);
@@ -116,6 +121,8 @@ function UILib.ToggleAdvancedTools()
 		BFToolbarCreateBonusBar:Show();
 		BFToolbarRightClickSelfCast:Show();
 	end
+
+	API.TriggerUpdateChecked();
 	EventFull.RefreshButtons = true;
 	EventFull.RefChecked = true;
 end
