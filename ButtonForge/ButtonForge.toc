@@ -6,8 +6,15 @@
 ## SavedVariables: ButtonForgeGlobalSettings, ButtonForgeGlobalProfiles, ButtonForgeGlobalBackup
 ## SavedVariablesPerCharacter: ButtonForgeSave, BFSave
 ## OptionalDeps: Masque
+BFButtonEngine\BFButtonForgeEngine.xml
 Declares.lua
 Const.lua
+CustomAction_AdvancedConfigureMode.lua
+CustomAction_ConfigureMode.lua
+CustomAction_CreateBarMode.lua
+CustomAction_CreateBonusBarMode.lua
+CustomAction_DestroyBarMode.lua
+CustomAction_RightClickSelfCastToggle.lua
 Locale-enUS.lua
 Locale-koKR.lua
 Locale-ruRU.lua
