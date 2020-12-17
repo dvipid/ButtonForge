@@ -31,6 +31,7 @@ UILibInputBox.lua
 UILibLines.lua
 Util.lua
 UILibToolbar.xml
+UILibToolbar.lua
 KeyBinder.xml
 Button.lua
 Bar.lua

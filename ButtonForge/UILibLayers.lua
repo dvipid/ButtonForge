@@ -5,6 +5,10 @@
 	Notes:
 ]]
 
+local AddonName, AddonTable = ...;
+local Engine = AddonTable.ButtonEngine;
+local API = Engine.API_V2;
+
 local UILib = BFUILib;
 local Util = BFUtil;
 local EventFull	= BFEventFrames["Full"];
@@ -23,6 +27,7 @@ function UILib.ConfigureModeEnabled()
 	EventFull.RefChecked = true;
 	EventFull.RefUsable = true;
 	PlaySound(839, "Master");
+	API.TriggerUpdateChecked();
 end
 
 
@@ -40,6 +45,7 @@ function UILib.ConfigureModeDisabled()
 	EventFull.RefChecked = true;
 	EventFull.RefUsable = true;
 	PlaySound(840, "Master");
+	API.TriggerUpdateChecked();
 end
 
 

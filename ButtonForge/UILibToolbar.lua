@@ -5,10 +5,19 @@
 	Notes:
 ]]
 
+local AddonName, AddonTable = ...;
+local Engine = AddonTable.ButtonEngine;
+local API = Engine.API_V2;
+
 local UILib = BFUILib;
 local Util = BFUtil;
 local Const = BFConst;
 local EventFull	= BFEventFrames["Full"];
+
+local ConfigureModeButton = API.CreateButton("BFToolbarConfigureAction", {Type = "custom", CustomName = "configuremode"});
+ConfigureModeButton:SetParent(BFToolbar);
+ConfigureModeButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 160, -32);
+API.SetSource(ConfigureModeButton, true);
 
 --This overloading of togglecreatebarmode is yuck, it will do the job for now, but will need
 --cleaning up when the ui functions get unified a bit better
