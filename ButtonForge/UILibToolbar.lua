@@ -14,6 +14,11 @@ local Util = BFUtil;
 local Const = BFConst;
 local EventFull	= BFEventFrames["Full"];
 
+local CreateBarButton = API.CreateButton("BFToolbarCreateBar", {Type = "custom", CustomName = "createbarmode"});
+CreateBarButton:SetParent(BFToolbar);
+CreateBarButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 20, -32);
+API.SetSource(CreateBarButton, true);
+
 local ConfigureModeButton = API.CreateButton("BFToolbarConfigureAction", {Type = "custom", CustomName = "configuremode"});
 ConfigureModeButton:SetParent(BFToolbar);
 ConfigureModeButton:SetPoint("TOPLEFT", BFToolbar, "TOPLEFT", 160, -32);
@@ -25,16 +30,18 @@ function UILib.ToggleCreateBarMode(ForceOff)
 	if (BFCreateBarOverlay:IsShown() or ForceOff) then
 		BFCreateBarOverlay:Hide();
 		BFToolbarCreateBar:SetChecked(false);
-		BFToolbarCreateBonusBar:SetChecked(false);
 		UILib.CreateBarMode = false;
 		UILib.CreateBonusBarMode = false;
 		SetCursor(nil);
 	elseif (not InCombatLockdown()) then
 		UILib.CreateBarMode = true;
 		BFCreateBarOverlay:Show();
-		BFToolbarCreateBar:SetChecked(true);
 		SetCursor("REPAIRNPC_CURSOR");
+	else
+		UIErrorsFrame:AddMessage(ERR_AFFECTING_COMBAT, 1.0, 0.1, 0.1, 1.0);
 	end
+	
+	API.TriggerUpdateChecked();
 	EventFull.RefreshButtons = true;
 	EventFull.RefChecked = true;
 end

@@ -5,6 +5,10 @@
 	Notes:
 ]]
 
+local AddonName, AddonTable = ...;
+local Engine = AddonTable.ButtonEngine;
+local API = Engine.API_V2;
+
 local Util 		= BFUtil;
 local Const 	= BFConst;
 local UILib 	= BFUILib;
@@ -1625,6 +1629,7 @@ function Util.PreCombatStateUpdate()
 	UILib.ToggleCreateBarMode(true);
 	UILib.ToggleDestroyBarMode(true);
 	Util.RefreshBarGUIStatus();
+	API.TriggerUpdateUsable();
 end
 
 function Util.PostCombatStateUpdate()
@@ -1654,6 +1659,7 @@ function Util.PostCombatStateUpdate()
 		Util.RefreshEquipmentSets();
 		Util.DelayedRefreshEquipmentSets = nil;
 	end
+	API.TriggerUpdateUsable();
 end
 
 --[[ Add and remove buttons to a list that gets updated for the range timer --]]
