@@ -7,6 +7,10 @@ Notes:	':' syntax represents a function that will be called by an actual BF Bar 
 
 ]]
 
+local AddonName, AddonTable = ...;
+local Engine = AddonTable.ButtonEngine;
+local API = Engine.API_V2;
+
 BFBar 		= BFBar or {}; 		local Bar = BFBar;
 BFUtil 		= BFUtil or {}; 	local Util = BFUtil;
 BFConst 	= BFConst or {}; 	local Const = BFConst;
@@ -391,23 +395,19 @@ function Bar:PrepareButtonSecureState()
 		local Buttons = self.Buttons;
 		for i = 1, #Buttons do
 			local B, Key;
-			B = Buttons[i].Widget;
+			B = Buttons[i];
 			B:Enable();
 			Key = B:GetAttribute("KeyBindValue");
 			ClearOverrideBindings(B);
 			if (Key) then
-				if (Util.ForceOffCastOnKeyDown) then
-					SetOverrideBindingClick(B, false, Key, B:GetName());
-				else
-					SetOverrideBindingClick(B, false, Key, B:GetName(), "KeyBind");
-				end
+				SetOverrideBindingClick(B, false, Key, B:GetName(), "KeyBind");
 			end
 		end
 	else
 		local Buttons = self.Buttons;
 		for i = 1, #Buttons do
 			local B;
-			B = Buttons[i].Widget;
+			B = Buttons[i];
 			B:Disable();
 			ClearOverrideBindings(B);
 		end
@@ -434,7 +434,7 @@ function Bar:PrepareButtonSecureState()
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
 		local B, id;
-		B = Buttons[i].Widget;
+		B = Buttons[i];
 		id = B:GetAttribute("id");
 		if (id) then
 			B:SetAttribute("action", id + ((page - 1) * 12));
@@ -601,9 +601,12 @@ function Bar:SetButtonsFromSave()
 	for r = 1, Rows do
 		for c = 1, Cols do
 			local i = (r-1) * Cols + c;
-			local NewButton = Util.NewButton(self.ButtonFrame, self.BarSave["Buttons"][i], self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			local NewButton = API.CreateButton(nil, self.BarSave["Buttons"][i], true);
+			NewButton:SetParent(self.ButtonFrame);
+			NewButton.ButtonSave = self.BarSave["Buttons"][i];
+			--Util.NewButton(self.ButtonFrame, self.BarSave["Buttons"][i], self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
 			table.insert(self.Buttons, i, NewButton);
-			NewButton.Widget:SetPoint("TOPLEFT", self.ButtonFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
+			NewButton:SetPoint("TOPLEFT", self.ButtonFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
 		end
 	end
 	
@@ -612,7 +615,7 @@ function Bar:SetButtonsFromSave()
 	
 	BFrame:Execute([[wipe(Buttons);]]);
 	for i = 1, #Buttons do
-		BFrame:SetFrameRef("Button", Buttons[i].Widget);
+		BFrame:SetFrameRef("Button", Buttons[i]);
 		BFrame:Execute([[tinsert(Buttons, owner:GetFrameRef("Button"));]]);
 	end
 	
@@ -642,7 +645,7 @@ function Bar:SetNumButtons(Cols, Rows)
 	--First deallocate any buttons from removed rows
 	if (self.Rows > Rows) then
 		for i = self.Cols*self.Rows, self.Cols*Rows+1, -1 do
-			Util.DeallocateButton(Buttons[i]);
+			API.RemoveButton(Buttons[i]);
 			table.remove(Buttons);	
 		end
 		self.Rows = Rows;
@@ -652,7 +655,7 @@ function Bar:SetNumButtons(Cols, Rows)
 		for r = self.Rows, 1, - 1 do
 			for c = self.Cols, Cols + 1, - 1 do
 				local i = (r-1) * self.Cols + c;
-				Util.DeallocateButton(Buttons[i]);
+				API.RemoveButton(Buttons[i]);
 				table.remove(Buttons, i);
 			end
 		end
@@ -664,9 +667,11 @@ function Bar:SetNumButtons(Cols, Rows)
 		for c = self.Cols+1, Cols do
 			local i = (r-1) * Cols + c;
 			local ButtonSave = {};
-			local NewButton = Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			local NewButton = API.CreateButton(nil, ButtonSave, true); --Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			NewButton:SetParent(self.ButtonFrame);
+			NewButton.ButtonSave = ButtonSave;
 			table.insert(Buttons, i, NewButton);
-			NewButton.Widget:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
+			NewButton:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
 		end
 	end
 	self.Cols = Cols;
@@ -676,9 +681,11 @@ function Bar:SetNumButtons(Cols, Rows)
 		for c = 1, Cols do
 			local i = (r-1) * Cols + c;
 			local ButtonSave = {}; 
-			local NewButton = Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			local NewButton = API.CreateButton(nil, ButtonSave, true); --Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			NewButton:SetParent(self.ButtonFrame);
+			NewButton.ButtonSave = ButtonSave;
 			table.insert(Buttons, i, NewButton);
-			NewButton.Widget:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);			
+			NewButton:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);			
 		end
 	end
 	self.Rows = Rows;
@@ -687,7 +694,7 @@ function Bar:SetNumButtons(Cols, Rows)
 	BFrame:Execute([[wipe(Buttons);]]);
 	local TempButtonsSave = {};
 	for i = 1, #Buttons do
-		if (self.BarSave["BonusBar"]) then
+		--[[if (self.BarSave["BonusBar"]) then
 			if (i <= 12 and (not Buttons[i].Mode) and (not Util.BarHasButton(self, "bonusaction", i))) then
 				Buttons[i]:SetCommandBonusAction(i);
 				Buttons[i]:FullRefresh();
@@ -698,9 +705,9 @@ function Bar:SetNumButtons(Cols, Rows)
 			--	Buttons[i]:SetCommandCustomAction("possesscancel");
 			--	Buttons[i]:FullRefresh();
 			end
-		end
+		end]]
 		tinsert(TempButtonsSave, Buttons[i].ButtonSave);
-		BFrame:SetFrameRef("Button", Buttons[i].Widget);
+		BFrame:SetFrameRef("Button", Buttons[i]);
 		BFrame:Execute([[tinsert(Buttons, owner:GetFrameRef("Button"));]]);
 	end
 	
@@ -870,8 +877,8 @@ function Bar.CFOnEnter(Widget)
 	local self = Widget.ParentBar;
 	if (KeyBinder.SelectedBar == self and KeyBinder.SelectedButton == nil) then
 		SetCursor("CAST_CURSOR");
-	elseif (not UILib.GetDragInfo()) then
-		SetCursor(nil);
+	--elseif (not UILib.GetDragInfo()) then
+	--	SetCursor(nil);
 	end
 end
 
@@ -1212,7 +1219,7 @@ function Bar:GridShow()
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
 		if (not Buttons[i].Mode) then
-			Buttons[i].Widget:Show();
+			Buttons[i]:Show();
 		end
 	end
 end
@@ -1220,7 +1227,7 @@ function Bar:GridHide()
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
 		if (not Buttons[i].Mode) then
-			Buttons[i].Widget:Hide();
+			Buttons[i]:Hide();
 		end
 	end
 end
@@ -1259,16 +1266,16 @@ function Bar:GUIOff()
 	self.ButtonFrame:SetAlpha(0);
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
-		Buttons[i].Widget:EnableMouse(false);
-		Buttons[i]:UpdateCooldown();
+		Buttons[i]:EnableMouse(false);
+	--	Buttons[i]:UpdateCooldown();
 	end
 end
 function Bar:GUIOn()
 	self.ButtonFrame:SetAlpha(self.BarSave["Alpha"]);
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
-		Buttons[i].Widget:EnableMouse(true);
-		Buttons[i]:UpdateCooldown();
+		Buttons[i]:EnableMouse(true);
+	--	Buttons[i]:UpdateCooldown();
 	end
 end
 
@@ -1300,9 +1307,9 @@ function Bar:SetTooltips(Value)
 		self.TooltipButton.Tooltip = Util.GetLocaleString("TooltipsTooltip")..Util.GetLocaleString("Hidden");
 	end
 	
-	for i = 1, #self.Buttons do
-		self.Buttons[i]:SetTooltipEnabled(Value);
-	end
+	--for i = 1, #self.Buttons do
+		--self.Buttons[i]:SetTooltipEnabled(Value);
+	--end
 	
 	UILib.RefreshTooltip(self.TooltipButton);
 end
@@ -1331,9 +1338,9 @@ function Bar:SetButtonsLocked(Value)
 		self.LockButton.Tooltip = Util.GetLocaleString("ButtonLockTooltip")..Util.GetLocaleString("Unlocked");
 	end
 	
-	for i = 1, #self.Buttons do
-		self.Buttons[i]:SetButtonLock(Value);
-	end
+	--for i = 1, #self.Buttons do
+	--	self.Buttons[i]:SetButtonLock(Value);
+	--end
 	UILib.RefreshTooltip(self.LockButton);
 end
 function Bar:GetButtonsLocked()
@@ -1700,9 +1707,9 @@ function Bar.ColsStop(Widget)
 	Background:SetScript("OnSizeChanged", nil);
 	Background:StopMovingOrSizing();
 	Background:SetResizable(false);
-	for i = 1, #Buttons do
-		Buttons[i]:Fade(false);
-	end
+	--for i = 1, #Buttons do
+	--	Buttons[i]:Fade(false);
+	--end
 	self:SetNumButtons(NumCols, self.Rows);
 	
 	self:UpdateSize();
@@ -1716,7 +1723,7 @@ function Bar.ColsOnSizeChanged(Widget, Width, Height)
 	local Scale = self.BarSave["Scale"]
 	local NumCols = max(math.floor((Width - Const.I2 + self.BG * Scale) / (self.BSize * Scale) + 0.00001), 1);
 	local i = 1;
-	
+	--[[
 	for r = 1, self.Rows do
 		for c = 1, self.Cols do
 			if (c > NumCols) then
@@ -1727,7 +1734,7 @@ function Bar.ColsOnSizeChanged(Widget, Width, Height)
 			i = i + 1;
 		end
 	end
-	
+	]]
 
 	if (Width < Const.BS * Scale + Const.I2) then
 		self.Background:SetWidth(Const.BS * Scale + Const.I2);
@@ -1765,9 +1772,9 @@ function Bar.RowsStop(Widget)
 	Background:SetScript("OnSizeChanged", nil);
 	Background:StopMovingOrSizing();
 	Background:SetResizable(false);
-	for i = 1, #Buttons do
-		Buttons[i]:Fade(false);
-	end
+	--for i = 1, #Buttons do
+	--	Buttons[i]:Fade(false);
+	--end
 	self:SetNumButtons(self.Cols, NumRows);
 
 	self:UpdateSize();
@@ -1783,7 +1790,7 @@ function Bar.RowsOnSizeChanged(Widget, Width, Height)
 	local NumRows = max(math.floor((Height - Const.I2 + self.BG * Scale) / (self.BSize * Scale) + 0.00001), 1);
 	local i = 1;
 	
-	for r = 1, self.Rows do
+	--[[for r = 1, self.Rows do
 		for c = 1, self.Cols do
 			if (r > NumRows) then
 				self.Buttons[i]:Fade(true);
@@ -1792,7 +1799,7 @@ function Bar.RowsOnSizeChanged(Widget, Width, Height)
 			end
 			i = i + 1;
 		end
-	end
+	end]]
 	
 
 	if (Height < Const.BS * Scale + Const.I2) then
@@ -1883,9 +1890,9 @@ function Bar:SetMacroText(Value)
 	end
 	self.BarSave["MacroText"] = Value;
 		
-	for i = 1, #self.Buttons do
-		self.Buttons[i]:SetMacroText(Value);
-	end
+	--for i = 1, #self.Buttons do
+	--	self.Buttons[i]:SetMacroText(Value);
+	--end
 end
 function Bar:GetMacroText()
 	if (self.BarSave["MacroText"]) then
@@ -1902,9 +1909,9 @@ function Bar:SetKeyBindText(Value)
 	end
 	self.BarSave["KeyBindText"] = Value;
 	
-	for i = 1, #self.Buttons do
-		self.Buttons[i]:SetKeyBindText(Value);
-	end
+	--for i = 1, #self.Buttons do
+	--	self.Buttons[i]:SetKeyBindText(Value);
+	--end
 end
 function Bar:GetKeyBindText()
 	if (self.BarSave["KeyBindText"]) then
@@ -1928,8 +1935,8 @@ function Bar:SetButtonGap(Value)
 		for r = 1, self.Rows do
 			for c = 1, self.Cols do
 				local i = (r-1) * self.Cols + c;
-				self.Buttons[i].Widget:ClearAllPoints();
-				self.Buttons[i].Widget:SetPoint("TOPLEFT", self.ButtonFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
+				self.Buttons[i]:ClearAllPoints();
+				self.Buttons[i]:SetPoint("TOPLEFT", self.ButtonFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
 			end
 		end
 		self:UpdateSize();

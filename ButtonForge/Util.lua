@@ -450,7 +450,7 @@ function Util.Load()
 	UILib.ToggleRightClickSelfCast(ButtonForgeSave["RightClickSelfCast"] or false);
 	Util.Loaded = true;
 	Util.StartMacroCheckDelay();
-	Util.RefreshOnUpdateFunction();
+	--Util.RefreshOnUpdateFunction();
 	
 	collectgarbage("collect");
 	Util.CallbackEvent("INITIALISED");
@@ -965,10 +965,15 @@ end
 
 --[[ Since the Spellbook has an annoying tendancy to cover bars this function will raise (or relower) the buttons to so they can be clicked
 	Note: It will do this for everything but items - since that could quickly get annoying when moving items around (there isn't really a perfect solution, so best to not go overboard)
-	Also it doesn't do a combat lockdown check, it is expected that this has been done up the chain (the bars will auto drop to the low strata if combat begins!)
 --]]
 function Util.RefreshBarStrata(ForceUpdate)
-	local LowStrata = Util.InCombat or DestroyBarOverlay:IsShown() or (GetCursorInfo() == "item" and not IsShiftKeyDown()) or not Util.CursorAction;
+
+	if (InCombatLockdown()) then
+		return;
+	end
+
+	local Cursor = API.GetCursorInfo();
+	local LowStrata = not (Cursor and (Cursor ~= "item" or IsShiftKeyDown()));
 	if (LowStrata ~= Util.LowStrata or ForceUpdate) then
 		Util.LowStrata = LowStrata;
 		local Bars = Util.ActiveBars;
@@ -1009,7 +1014,12 @@ function Util.RefreshGridStatus(ForceUpdate)
 end
 
 function Util.RefreshBarGUIStatus()
-	local BarGUIForceOn = (not Util.InCombat) and (ConfigureLayer:IsShown() or DestroyBarOverlay:IsShown() or (IsShiftKeyDown() and Util.CursorAction));
+	if (InCombatLockdown()) then
+		return;
+	end
+
+	local Cursor = API.GetCursorInfo();
+	local BarGUIForceOn = ConfigureLayer:IsShown() or DestroyBarOverlay:IsShown() or (IsShiftKeyDown() and Cursor);
 	local Bars = Util.ActiveBars;
 	if (BarGUIForceOn) then	
 		for i = 1, #Bars do
@@ -1691,16 +1701,22 @@ function Util.RightClickSelfCast(Value)
 		return;
 	end
 	
+
 	if (Value) then
-		for i = 1, #Util.ActiveButtons do
-			Util.ActiveButtons[i].Widget:SetAttribute("unit2", "player");
+		for i = 1, #Util.ActiveBars do
+			local Buttons = Util.ActiveBars[i].Buttons;
+			for j = 1, #Buttons do
+				Buttons[j]:SetAttribute("unit2", "player");
+			end
 		end
 	else
-		for i = 1, #Util.ActiveButtons do
-			Util.ActiveButtons[i].Widget:SetAttribute("unit2", nil);
-		end	
+		for i = 1, #Util.ActiveBars do
+			local Buttons = Util.ActiveBars[i].Buttons;
+			for j = 1, #Buttons do
+				Buttons[j]:SetAttribute("unit2", nil);
+			end
+		end
 	end
-	
 	ButtonForgeSave["RightClickSelfCast"] = Value;
 end
 
@@ -2195,26 +2211,26 @@ function Util.AddMacro(Value)
 	if (not Util.FindInTable(Util.ActiveMacros, Value)) then
 		table.insert(Util.ActiveMacros, Value);
 	end
-	Util.RefreshOnUpdateFunction();
+	--Util.RefreshOnUpdateFunction();
 end
 
 function Util.RemoveMacro(Value)
 	local Index = Util.FindInTable(Util.ActiveMacros, Value);
 	if (Index) then
 		table.remove(Util.ActiveMacros, Index);
-		Util.RefreshOnUpdateFunction();
+		--Util.RefreshOnUpdateFunction();
 	end
 end
 
 --[[ Monitor the macro check delay --]]
 function Util.StartMacroCheckDelay()
-	Delay:SetScript("OnUpdate", Delay.OnUpdate);
+	--Delay:SetScript("OnUpdate", Delay.OnUpdate);
 end
 
 function Util.StopMacroCheckDelay()
-	Delay:SetScript("OnUpdate", nil);
-	Util.MacroCheckDelayComplete = true;
-	Util.RefreshMacros();
+	--Delay:SetScript("OnUpdate", nil);
+	--Util.MacroCheckDelayComplete = true;
+	--Util.RefreshMacros();
 end
 
 

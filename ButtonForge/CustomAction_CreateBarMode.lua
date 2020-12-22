@@ -11,6 +11,7 @@ local API = Engine.API_V2;
 
 local Const 	= BFConst;
 local Util 		= BFUtil;
+local UILib 	= BFUILib;
 
 local function GetAction()
 	return "/script BFUILib.ToggleCreateBarMode()";
@@ -19,7 +20,7 @@ local function GetIcon()
 	return Const.ImagesDir.."CreateBar.tga";
 end
 local function IsChecked()
-	return BFCreateBarOverlay:IsShown();
+	return UILib.CreateBarMode;
 end
 local function IsUsable()
 	return not InCombatLockdown();
