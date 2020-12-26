@@ -115,23 +115,6 @@ function Bar.New(BarSave)
 														owner:SetFrameLevel(owner:GetAttribute("Order") * 6 + 4);
 													end
 												end]]);	--When the bar has grid hide and the user enters combat ensure the grid is actually hidden (unfortunately there are not many other options apart from this heavy handed approach)
-			ButtonFrame:WrapScript(BFSecureSpecialBarFrame, "OnAttributeChanged",
-												[[local B, id, page;
-												if (value == "overridebar") then
-													page = 14;
-												elseif (value == "vehicleui") then
-													page = 12;
-												else
-													page = 12;
-												end
-												
-												for i = 1, #Buttons do
-													B = Buttons[i];
-													id = B:GetAttribute("id");
-													if (id) then
-														B:SetAttribute("action", id + ((page - 1) * 12));
-													end
-												end]]);
 			
 			ButtonFrame.ParentBar = NewBar;
 			NewBar.ButtonFrame = ButtonFrame;
@@ -405,33 +388,6 @@ function Bar:PrepareButtonSecureState()
 		end
 	end
 
-	-- 2) Combat prep - by definition this will be false! - so umm yeah nothing is in this section (included since there is a secure handler...)
-	
-	-- 3) Prep the special action buttons if there is some kind of override bar
-	local page, barType;
-	barType = BFSecureSpecialBarFrame:GetAttribute("bar");
-	--[[if (barType == "overridebar") then
-		page = 14;
-	elseif (barType == "vehicleui") then
-		page = 12;
-	else
-		page = 12;
-	end
-	--]]
-	if (HasOverrideActionBar()) then
-		page = 14;
-	else
-		page = 12;
-	end
-	local Buttons = self.Buttons;
-	for i = 1, #Buttons do
-		local B, id;
-		B = Buttons[i];
-		id = B:GetAttribute("id");
-		if (id) then
-			B:SetAttribute("action", id + ((page - 1) * 12));
-		end
-	end
 end
 
 
@@ -686,18 +642,20 @@ function Bar:SetNumButtons(Cols, Rows)
 	BFrame:Execute([[wipe(Buttons);]]);
 	local TempButtonsSave = {};
 	for i = 1, #Buttons do
-		--[[if (self.BarSave["BonusBar"]) then
-			if (i <= 12 and (not Buttons[i].Mode) and (not Util.BarHasButton(self, "bonusaction", i))) then
-				Buttons[i]:SetCommandBonusAction(i);
-				Buttons[i]:FullRefresh();
-			elseif (i == 13 and (not Buttons[i].Mode) and (not Util.BarHasButton(self, "customaction", "vehicleexit"))) then
-				Buttons[i]:SetCommandCustomAction("vehicleexit");
-				Buttons[i]:FullRefresh();
+		if (self.BarSave["BonusBar"]) then
+			if (i <= 12) then -- and (not Buttons[i].Mode) and (not Util.BarHasButton(self, "bonusaction", i))) then
+				API.SetActionCustom(Buttons[i], "bonusaction", i);
+				--Buttons[i]:SetCommandBonusAction(i);
+				--Buttons[i]:FullRefresh();
+			elseif (i == 13) then -- and (not Buttons[i].Mode) and (not Util.BarHasButton(self, "customaction", "vehicleexit"))) then
+				API.SetActionCustom(Buttons[i], "vehicleexit");
+				--Buttons[i]:SetCommandCustomAction("vehicleexit");
+				--Buttons[i]:FullRefresh();
 			--elseif (i == 14 and (not Buttons[i].Mode) and (not Util.BarHasButton(self, "customaction", "possesscancel"))) then
 			--	Buttons[i]:SetCommandCustomAction("possesscancel");
 			--	Buttons[i]:FullRefresh();
 			end
-		end]]
+		end
 		tinsert(TempButtonsSave, Buttons[i].ButtonSave);
 		BFrame:SetFrameRef("Button", Buttons[i]);
 		BFrame:Execute([[tinsert(Buttons, owner:GetFrameRef("Button"));]]);
