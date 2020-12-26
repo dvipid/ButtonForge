@@ -504,7 +504,7 @@ function Util.LoadProfile(ProfileName)
 	Util.RefreshMacros();
 	Util.RefreshEquipmentSets();
 	Util.RefreshSpells();
-	Util.RefreshGridStatus(true);
+	--Util.RefreshGridStatus(true);
 	Util.RefreshBarStrata(true);
 	Util.RefreshBarGUIStatus();
 	DEFAULT_CHAT_FRAME:AddMessage(Util.GetLocaleString("LoadedProfile"), .5, 1, 0, 1);
@@ -546,7 +546,7 @@ function Util.LoadProfileTemplate(ProfileName)
 		end
 	end
 
-	Util.RefreshGridStatus(true);
+	--Util.RefreshGridStatus(true);
 	Util.RefreshBarStrata(true);
 	Util.RefreshBarGUIStatus();
 	DEFAULT_CHAT_FRAME:AddMessage(Util.GetLocaleString("LoadedProfileTemplate"), .5, 1, 0, 1);
@@ -605,7 +605,7 @@ function Util.UndoProfile()
 	Util.RefreshMacros();
 	Util.RefreshEquipmentSets();
 	Util.RefreshSpells();
-	Util.RefreshGridStatus(true);
+	--Util.RefreshGridStatus(true);
 	Util.RefreshBarStrata(true);
 	Util.RefreshBarGUIStatus();
 	DEFAULT_CHAT_FRAME:AddMessage(Util.GetLocaleString("UndoneProfile"), .5, 1, 0, 1);
@@ -993,24 +993,7 @@ end
 
 
 function Util.RefreshGridStatus(ForceUpdate)
-	local Hide = Util.InCombat or not (Util.CursorAction or ConfigureLayer:IsShown() or DestroyBarOverlay:IsShown());
-	if (Hide ~= Util.GridHidden or ForceUpdate) then
-		Util.GridHidden = Hide;
-		local Bars = Util.ActiveBars;
-		if (Hide) then
-			for i = 1, #Bars do
-				if (not Bars[i].BarSave["GridAlwaysOn"]) then
-					Bars[i]:GridHide();
-				end
-			end
-		else
-			for i = 1, #Bars do
-				if (not Bars[i].BarSave["GridAlwaysOn"]) then
-					Bars[i]:GridShow();
-				end
-			end
-		end
-	end
+	API.OverrideGridHide(ConfigureLayer:IsShown() or DestroyBarOverlay:IsShown());
 end
 
 function Util.RefreshBarGUIStatus()
@@ -1634,7 +1617,7 @@ end
 --[[ These two functions will take care of non secure gui updates when the player enters or exits combat ]]--
 function Util.PreCombatStateUpdate()
 	Util.InCombat = true;
-	Util.RefreshGridStatus();
+	--Util.RefreshGridStatus();
 	Util.RefreshBarStrata();	--Im surprised that these refreshes dont lead to taint, I must be forgetting something??!
 	UILib.ToggleCreateBarMode(true);
 	UILib.ToggleDestroyBarMode(true);
@@ -1645,7 +1628,7 @@ end
 function Util.PostCombatStateUpdate()
 	Util.InCombat = false;
 	Util.VDriverOverride();
-	Util.RefreshGridStatus();
+	--Util.RefreshGridStatus();
 	Util.RefreshBarStrata();
 	Util.RefreshBarGUIStatus();
 	

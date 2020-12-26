@@ -104,14 +104,6 @@ function Bar.New(BarSave)
 			ButtonFrame:WrapScript(BFSecureForCombatFrame, "OnAttributeChanged",
 												[[local B;
 												if (value == "true") then
-													if (not GridAlwaysOn) then
-														for i = 1, #Buttons do
-															B = Buttons[i];
-															if (not B:GetAttribute("type")) then
-																B:Hide();
-															end
-														end
-													end
 													if (not GUI) then
 														owner:SetAlpha(0);
 														for i = 1, #Buttons do
@@ -1195,15 +1187,19 @@ function Bar:SetGridAlwaysOn(Value)
 		if (Value) then
 			self.GridButton:SetNormalTexture(Const.ImagesDir.."GridOn.tga");
 			self.GridButton.Tooltip = Util.GetLocaleString("GridTooltip")..Util.GetLocaleString("Shown");
-			self.ButtonFrame:Execute("GridAlwaysOn = true;");
-			self:GridShow();
+			--self.ButtonFrame:Execute("GridAlwaysOn = true;");
+			--self:GridShow();
 		else
 			self.GridButton:SetNormalTexture(Const.ImagesDir.."GridOff.tga");
 			self.GridButton.Tooltip = Util.GetLocaleString("GridTooltip")..Util.GetLocaleString("Hidden");
-			self.ButtonFrame:Execute("GridAlwaysOn = false;");
-			if (Util.GridHidden) then
-				self:GridHide();
-			end
+			--self.ButtonFrame:Execute("GridAlwaysOn = false;");
+			--if (Util.GridHidden) then
+			--	self:GridHide();
+			--end
+		end
+		local Buttons = self.Buttons;
+		for i = 1, #Buttons do
+			API.SetAlwaysShowGrid(Buttons[i], Value);
 		end
 		UILib.RefreshTooltip(self.GridButton);
 	end
@@ -1219,7 +1215,7 @@ function Bar:GridShow()
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
 		if (not Buttons[i].Mode) then
-			Buttons[i]:Show();
+			--Buttons[i]:Show();
 		end
 	end
 end
@@ -1227,7 +1223,7 @@ function Bar:GridHide()
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do
 		if (not Buttons[i].Mode) then
-			Buttons[i]:Hide();
+			--Buttons[i]:Hide();
 		end
 	end
 end
