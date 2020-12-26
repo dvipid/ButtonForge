@@ -13,7 +13,7 @@ local Const 	= BFConst;
 local Util 		= BFUtil;
 
 local function GetAction()
-	return "/script BFUILib.ToggleAdvancedTools();";
+	return "macro", "macrotext", "/script BFUILib.ToggleAdvancedTools();";
 end
 local function GetIcon()
 	return Const.ImagesDir.."AdvancedTools.tga";

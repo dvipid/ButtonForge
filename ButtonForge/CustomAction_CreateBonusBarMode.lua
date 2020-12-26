@@ -14,7 +14,7 @@ local Util	 	= BFUtil;
 local UILib 	= BFUILib;
 
 local function GetAction()
-	return "/script BFUILib.ToggleCreateBonusBarMode();";
+	return "macro", "macrotext", "/script BFUILib.ToggleCreateBonusBarMode();";
 end
 local function GetIcon()
 	return Const.ImagesDir.."CreateBonusBar.tga";

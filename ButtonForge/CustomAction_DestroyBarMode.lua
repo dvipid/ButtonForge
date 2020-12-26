@@ -13,7 +13,7 @@ local Const 	= BFConst;
 local Util	 	= BFUtil;
 
 local function GetAction()
-	return "/script BFUILib.ToggleDestroyBarMode();";
+	return "macro", "macrotext", "/script BFUILib.ToggleDestroyBarMode();";
 end
 local function GetIcon()
 	return Const.ImagesDir.."DestroyBar.tga";

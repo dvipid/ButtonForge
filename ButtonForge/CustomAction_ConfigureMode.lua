@@ -13,7 +13,7 @@ local Const 	= BFConst;
 local Util	 	= BFUtil;
 
 local function GetAction()
-	return "/click BFToolbarToggle";
+	return "click", "clickbutton", BFToolbarToggle;
 end
 local function GetIcon()
 	return Const.ImagesDir.."Configure.tga";

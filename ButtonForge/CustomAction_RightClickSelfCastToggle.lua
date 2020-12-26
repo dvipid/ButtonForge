@@ -13,7 +13,7 @@ local Const 	= BFConst;
 local Util		= BFUtil;
 
 local function GetAction()
-	return "/script BFUILib.ToggleRightClickSelfCast();";
+	return "macro", "macrotext", "/script BFUILib.ToggleRightClickSelfCast();";
 end
 local function GetIcon()
 	return Const.ImagesDir.."RightClickSelfCast.tga";
