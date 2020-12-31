@@ -1343,12 +1343,24 @@ function Button:UnitBuffBySpell(unit, spell)
 end;
 
 function Button:UpdateTextureSpell()
-	if (Const.StealthSpellIds[self.SpellId] ~= nil) then
-		if (IsStealthed() == true) then
-			self.WIcon:SetTexture("Interface/Icons/Spell_Nature_Invisibilty");
+	local spellHasBuffActive = false;
+	for i=1,40 do
+		local spellId = select(10, UnitBuff("player", i));
+		if spellId then
+			if spellId == self.SpellId then
+				spellHasBuffActive = true;
+				break;
+			end
 		else
-			self.WIcon:SetTexture(self.Texture);
-		end
+			-- no more buffs
+			break;
+		end;
+	end;
+
+	if (spellHasBuffActive == true and Const.StealthSpellIds[self.SpellId] ~= nil) then
+		self.WIcon:SetTexture("Interface/Icons/Spell_Nature_Invisibilty");
+	else
+		self.WIcon:SetTexture(self.Texture);
 	end
 end
 function Button:UpdateTextureWispSpell()
@@ -1580,11 +1592,7 @@ function Button:UpdateUsableSpell()
 		self.WIcon:SetVertexColor(0.5, 0.5, 1.0);
 		self.WNormalTexture:SetVertexColor(0.5, 0.5, 1.0);
 	else
-		if (Const.StealthSpellIds[self.SpellId] ~= nil) then
-			self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
-		else
-			self.WIcon:SetVertexColor(0.4, 0.4, 0.4);
-		end
+		self.WIcon:SetVertexColor(0.4, 0.4, 0.4);
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
 	end
 end
