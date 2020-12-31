@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.0.2
+Version: 1.0.3
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+??-Jan-2021			v1.0.3	- Replaced Stealth and Prowl with their proper stealth icon
+
 02-Dec-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
 							- Added slash commands to list bars and allow to interact with bars without a label
 							- Reintroduced clamping bars to the screen (a feature that was disabled all the way back in 2015)
