@@ -1663,8 +1663,8 @@ function Button:UpdateTextCountSpell()
 		self.WCount:SetText(count);
 		return;
 	end
-	local charges = GetSpellCharges(self.SpellNameRank);
-	if (charges ~= nil) then
+	local charges, maxCharges = GetSpellCharges(self.SpellNameRank);
+	if (charges ~= nil and maxCharges ~= 1) then
 		self.WCount:SetText(charges);
 		return;
 	end
