@@ -676,7 +676,7 @@ end
 
 --[[ The following functions will configure the button to operate correctly for the specific type of action (these functions must be able to handle the player not knowing spells/macros etc) --]]
 function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
-	self.UpdateTexture 	= Button.Empty;	
+	self.UpdateTexture 	= Button.UpdateTextureSpell;
 	self.UpdateChecked 	= Button.UpdateCheckedSpell;
 	self.UpdateEquipped = Button.Empty;
 	self.UpdateCooldown	= Button.UpdateCooldownSpell;
@@ -1342,6 +1342,15 @@ function Button:UnitBuffBySpell(unit, spell)
 	return nil;
 end;
 
+function Button:UpdateTextureSpell()
+	if (Const.StealthSpellIds[self.SpellId] ~= nil) then
+		if (IsStealthed() == true) then
+			self.WIcon:SetTexture("Interface/Icons/Spell_Nature_Invisibilty");
+		else
+			self.WIcon:SetTexture(self.Texture);
+		end
+	end
+end
 function Button:UpdateTextureWispSpell()
 --BFA fix: UnitBuff can no longer be called with the spell name as a param
 	if (self.UnitBuffBySpell("player", self.SpellName)) then			--NOTE: This en-US, hopefully it will be fine for other locales as well??
@@ -1571,7 +1580,11 @@ function Button:UpdateUsableSpell()
 		self.WIcon:SetVertexColor(0.5, 0.5, 1.0);
 		self.WNormalTexture:SetVertexColor(0.5, 0.5, 1.0);
 	else
-		self.WIcon:SetVertexColor(0.4, 0.4, 0.4);
+		if (Const.StealthSpellIds[self.SpellId] ~= nil) then
+			self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
+		else
+			self.WIcon:SetVertexColor(0.4, 0.4, 0.4);
+		end
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
 	end
 end

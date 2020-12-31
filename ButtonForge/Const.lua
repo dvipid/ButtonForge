@@ -56,6 +56,11 @@ Const.ThresholdHSnapSq		= 10 * 10;
 Const.ThresholdHPressureSq	= 20 * 20;
 
 
+Const.StealthSpellIds = {};
+Const.StealthSpellIds[1784] = 1;		-- Stealth
+Const.StealthSpellIds[5215] = 1;		-- Prowl
+
+
 Const.WispSpellIds = {};
 Const.WispSpellIds[19746]	= 1;		--Concentration Aura
 Const.WispSpellIds[32223]	= 1;		--Crusader Aura
