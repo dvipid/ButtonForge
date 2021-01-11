@@ -92,13 +92,13 @@ function Misc:OnEvent(Event, ...)
 	if (Event == "MODIFIER_STATE_CHANGED") then
 		Util.RefreshBarStrata();
 		Util.RefreshBarGUIStatus();
-					
+
 	elseif (Event == "PLAYER_REGEN_DISABLED") then
 		Util.PreCombatStateUpdate();
-		
+
 	elseif (Event == "PLAYER_REGEN_ENABLED") then
 		Util.PostCombatStateUpdate();
-		
+
 	elseif (Event == "UI_SCALE_CHANGED") then
 		UILib.RescaleLines();
 
@@ -111,6 +111,13 @@ function Misc.BFButtonEvents(Event, ...)
 	if (Event == APIC.EVENT_SHOWGRID) then
 		Util.RefreshBarStrata();
 		Util.RefreshBarGUIStatus();
+
+	elseif (Event == APIC.EVENT_SETACTION and IsShiftKeyDown()) then
+		local Button, Action = ...;
+		if (Action.Type == "flyout") then
+			API.MouseOverFlyoutDirectionUI(Button, true);
+		end
+		
 	end
 end
 API.RegisterForEvents(nil, Misc.BFButtonEvents);

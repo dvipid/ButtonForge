@@ -10,6 +10,7 @@ Notes:	':' syntax represents a function that will be called by an actual BF Bar 
 local AddonName, AddonTable = ...;
 local Engine = AddonTable.ButtonEngine;
 local API = Engine.API_V2;
+local CAPI = Engine.Constants;
 
 BFBar 		= BFBar or {}; 		local Bar = BFBar;
 BFUtil 		= BFUtil or {}; 	local Util = BFUtil;
@@ -537,6 +538,12 @@ function Bar:GetScale()
 	return self.BarSave["Scale"];
 end
 
+local function OnUpdateButtonEvent(BarSaveButton, Event, Button, ...)
+	if (Event == CAPI.EVENT_FLYOUTDIRECTION) then
+		BarSaveButton.FlyoutDirection = ...;
+	end
+end
+
 function Bar:SetButtonsFromSave()
 	if (InCombatLockdown()) then
 		return;
@@ -549,7 +556,10 @@ function Bar:SetButtonsFromSave()
 	for r = 1, Rows do
 		for c = 1, Cols do
 			local i = (r-1) * Cols + c;
-			local NewButton = API.CreateButton(nil, self.BarSave["Buttons"][i], true);
+			local NewButton = API.CreateButton(nil, self.BarSave["Buttons"][i].Action, true);
+			API.SetKeyBindText(NewButton, self.BarSave["Buttons"][i].KeyBindText);
+			API.SetFlyoutDirection(NewButton, self.BarSave["Buttons"][i].FlyoutDirection);
+			API.RegisterForEvents(NewButton, OnUpdateButtonEvent, self.BarSave["Buttons"][i]);
 			NewButton:SetParent(self.ButtonFrame);
 			NewButton.ButtonSave = self.BarSave["Buttons"][i];
 			--Util.NewButton(self.ButtonFrame, self.BarSave["Buttons"][i], self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
@@ -615,7 +625,9 @@ function Bar:SetNumButtons(Cols, Rows)
 		for c = self.Cols+1, Cols do
 			local i = (r-1) * Cols + c;
 			local ButtonSave = {};
-			local NewButton = API.CreateButton(nil, ButtonSave, true); --Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			ButtonSave.Action = {};
+			local NewButton = API.CreateButton(nil, ButtonSave.Action, true); --Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			API.RegisterForEvents(NewButton, OnUpdateButtonEvent, ButtonSave);
 			NewButton:SetParent(self.ButtonFrame);
 			NewButton.ButtonSave = ButtonSave;
 			table.insert(Buttons, i, NewButton);
@@ -628,8 +640,10 @@ function Bar:SetNumButtons(Cols, Rows)
 	for r = self.Rows+1, Rows do
 		for c = 1, Cols do
 			local i = (r-1) * Cols + c;
-			local ButtonSave = {}; 
-			local NewButton = API.CreateButton(nil, ButtonSave, true); --Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			local ButtonSave = {};
+			ButtonSave.Action = {};
+			local NewButton = API.CreateButton(nil, ButtonSave.Action, true); --Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
+			API.RegisterForEvents(NewButton, OnUpdateButtonEvent, ButtonSave);
 			NewButton:SetParent(self.ButtonFrame);
 			NewButton.ButtonSave = ButtonSave;
 			table.insert(Buttons, i, NewButton);
