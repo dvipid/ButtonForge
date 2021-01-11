@@ -32,8 +32,8 @@ local function IsChecked(Button)
 end
 local function IsUsable(Button)
 	local Action = Button:GetAttribute("action");
-	local _, id = GetActionInfo(Action);
-	if (id and id ~= 0) then
+	local Icon = GetActionTexture(Action);			-- This is a basic test to see if a bonus action is actually there, GetActionInfo will say Spell 0 for a few things that are in fact there (e.g. basic attack)
+	if (Icon) then
 		return IsUsableAction(Button:GetAttribute("action"));
 	end
 end
@@ -47,13 +47,27 @@ local function IsGlowing(Button)
 	else
 		return false;
 	end
-end	
+end
 local function UpdateTooltip(Button)
 	local Action = Button:GetAttribute("action");
 	if (Action ~= 0) then
 		GameTooltip:SetAction(Action);
 	else
 		GameTooltip:SetText(Util.GetLocaleString("BonusActionTooltip"), nil, nil, nil, nil, 1);
+	end
+end
+local function IsFlashing(Button)
+	local Action = Button:GetAttribute("action");
+	return IsAttackAction(Action) or IsCurrentAction(Action);
+end	
+local function IsInRange(Button)
+	local ActionInRange = IsActionInRange(Button:GetAttribute("action"));
+	if (ActionInRange == true) then
+		return 1;
+	elseif (ActionInRange == false) then
+		return 0;
+	else
+		return;
 	end
 end
 
@@ -65,8 +79,13 @@ API.RegisterCustomAction("bonusaction", {
 	, GetCooldown = GetCooldown
 	, IsGlowing = IsGlowing
 	, UpdateTooltip = UpdateTooltip
+	--, IsFlashing = IsFlashing
+	, IsInRange = IsInRange
 	});
-
+	-- IsFlashing just doesn't work that well, even on the standard action bars,
+	-- the flash indicator for attack looks to only be sometimes accurate as of 9.0.2 - testing with mind control of wild boar
+	-- I've scanned through any function that looked like it might have the answer, but ultimately none were right, GetPetActionInfo() came closest
+	-- but the IsActive return appeared to be inverted , and also sometimes not inverted?!?!
 
 --[[
 	- It is not the id attribute, but instead the action attribute that the BonusAction will fire.
@@ -80,12 +99,15 @@ local function UpdateAction(Button)
 		Button:SetAttribute("action", id + OverrideBarActionOffset);
 	elseif (HasVehicleActionBar()) then
 		Button:SetAttribute("action", id + VehicleBarActionOffset);
+	elseif (IsPossessBarVisible()) then
+		Button:SetAttribute("action", id + VehicleBarActionOffset);
 	else
 		Button:SetAttribute("action", 0);
 	end
+	API.TriggerFullUpdate();
 end
 
-RegisterAttributeDriver(SecureBonusActionUpdaterFrame, "bar", "[overridebar] overridebar; [vehicleui] vehicleui; normal");
+RegisterAttributeDriver(SecureBonusActionUpdaterFrame, "bar", "[overridebar] overridebar; [vehicleui] vehicleui; [possessbar] possessbar; normal");
 SecureBonusActionUpdaterFrame:Execute([[Buttons = newtable();]]);
 SecureBonusActionUpdaterFrame:SetAttribute("_onattributechanged", string.format(
 	[[
@@ -97,11 +119,14 @@ SecureBonusActionUpdaterFrame:SetAttribute("_onattributechanged", string.format(
 			offset = %i;
 		elseif (value == "vehicleui") then
 			offset = %i;
+		elseif (value == "possessbar") then
+			offset = %i;
 		else
 			for i = 1, #Buttons do
 				B = Buttons[i];
 				B:SetAttribute("action", 0);
 			end
+			owner:CallMethod("TriggerFullUpdate");
 			return;
 		end
 												
@@ -110,7 +135,11 @@ SecureBonusActionUpdaterFrame:SetAttribute("_onattributechanged", string.format(
 			id = B:GetAttribute("id");
 			B:SetAttribute("action", id + offset);
 		end
-	]], OverrideBarActionOffset, VehicleBarActionOffset));
+		owner:CallMethod("TriggerFullUpdate");
+	]], OverrideBarActionOffset, VehicleBarActionOffset, VehicleBarActionOffset));
+function SecureBonusActionUpdaterFrame.TriggerFullUpdate()
+	API.TriggerFullUpdate();
+end
 
 
 local function RemoveButtonFromUpdater(Button)
