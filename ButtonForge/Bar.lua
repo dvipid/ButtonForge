@@ -557,7 +557,16 @@ function Bar:SetButtonsFromSave()
 		for c = 1, Cols do
 			local i = (r-1) * Cols + c;
 			local NewButton = API.CreateButton(nil, self.BarSave["Buttons"][i].Action, true);
-			API.SetKeyBindText(NewButton, self.BarSave["Buttons"][i].KeyBindText);
+			local Binding = self.BarSave["Buttons"][i].KeyBinding;
+			API.SetKeyBindText(NewButton, Binding);
+			NewButton:SetAttribute("KeyBindValue", Binding);
+			if (Binding ~= nil and Binding ~= "") then
+				if (Util.ForceOffCastOnKeyDown) then
+					SetOverrideBindingClick(NewButton, false, Binding, NewButton:GetName());
+				else
+					SetOverrideBindingClick(NewButton, false, Binding, NewButton:GetName(), "KeyBind");
+				end
+			end
 			API.SetFlyoutDirection(NewButton, self.BarSave["Buttons"][i].FlyoutDirection);
 			API.RegisterForEvents(NewButton, OnUpdateButtonEvent, self.BarSave["Buttons"][i]);
 			NewButton:SetParent(self.ButtonFrame);
@@ -1628,11 +1637,7 @@ end
 --]]
 function Bar.KeyBindMode(Widget)
 	local self = Widget.ParentBar;
-
-	if (Widget:GetChecked()) then
-		for i = 1, #self.Buttons do
-			self.Buttons[i]:SetOnEnter("KeyBind");
-		end
+	if (self.KBButton:GetChecked()) then
 		KeyBinder.SetButtonSelectorMode(self);
 		SetCursor("CAST_CURSOR");
 	else
@@ -1640,9 +1645,6 @@ function Bar.KeyBindMode(Widget)
 	end
 end
 function Bar:CancelKeyBindMode()
-	for i = 1, #self.Buttons do
-		self.Buttons[i]:SetOnEnter();
-	end
 	UILib.SetMask(nil);
 	self.KBButton:SetChecked(false);
 	SetCursor(nil);

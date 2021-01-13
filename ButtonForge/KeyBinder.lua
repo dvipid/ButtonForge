@@ -5,8 +5,14 @@
 	Notes:
 ]]
 
+local AddonName, AddonTable = ...;
+local Engine = AddonTable.ButtonEngine;
+local API = Engine.API_V2;
+local CAPI = Engine.Constants;
+
 if (BFKeyBinder == nil) then BFKeyBinder = {}; end local KeyBinder = BFKeyBinder;
 if (BFUILib == nil) then BFUILib = {}; end local UILib = BFUILib;
+if (BFUtil == nil) then BFUtil = {}; end local Util = BFUtil;
 
 KeyBinder.SelectedBar = nil;
 KeyBinder.SelectedButton = nil;
@@ -53,7 +59,7 @@ function KeyBinder.ShowBindingDialog(Button)
 		end
 		BFBindingDialog:Show();
 		BFBindingDialog:ClearAllPoints();
-		BFBindingDialog:SetPoint("RIGHT", KeyBinder.SelectedButton.Widget, "LEFT");
+		BFBindingDialog:SetPoint("RIGHT", KeyBinder.SelectedButton, "LEFT");
 		UILib.LockMask();
 		--I'm now streamlining this to go straight into Input Binding Mode
 		KeyBinder.InputBindingMode()
@@ -93,14 +99,31 @@ function KeyBinder.OnHideBindingOverlay()
 end
 
 function KeyBinder.UpdateBinding(Binding)
-	if (not KeyBinder.SelectedButton:SetKeyBind(Binding)) then
+	if (InCombatLockdown()) then
 		BFBindingDialog.Message.Text:SetText("Bindings Cannot be Updated While in Combat");
-		return;
+		return false;
 	end
+	local Button = KeyBinder.SelectedButton;
+	API.SetKeyBindText(Button, Binding);
+	ClearOverrideBindings(Button);
+
 	if (Binding ~= nil and Binding ~= "") then
 		BFBindingDialogBinding:SetText(Binding);
+
+		if (Util.ForceOffCastOnKeyDown) then
+			SetOverrideBindingClick(Button, false, Binding, Button:GetName());
+		else
+			SetOverrideBindingClick(Button, false, Binding, Button:GetName(), "KeyBind");
+		end
+		Button.ButtonSave["KeyBinding"] = Binding;
+		Button:SetAttribute("KeyBindValue", Binding);
+
 		BFBindingDialog.Message.Text:SetText("Key Bound Successfully");
+
 	else
+		--clear the binding
+		Button.ButtonSave["KeyBinding"] = nil;
+		Button:SetAttribute("KeyBindValue", nil);
 		BFBindingDialogBinding:SetText(NORMAL_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
 		BFBindingDialog.Message.Text:SetText("");
 	end
@@ -108,6 +131,7 @@ function KeyBinder.UpdateBinding(Binding)
 	--I'm streamlining this to auto hide the bind dialog when a binding is set
 	KeyBinder.HideBindingDialog();
 end
+
 
 
 function KeyBinder.OnInputBindingOverlay(Input)

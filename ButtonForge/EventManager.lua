@@ -25,6 +25,8 @@ local Full = BFEventFrames["Full"];
 local Misc = BFEventFrames["Misc"];
 local Util = BFUtil;
 
+BFKeyBinder = BFKeyBinder or {};local KeyBinder = BFKeyBinder;
+
 Misc:SetFrameStrata("BACKGROUND");
 
 
@@ -107,7 +109,6 @@ end
 Misc:SetScript("OnEvent", Misc.OnEvent);
 
 function Misc.BFButtonEvents(Event, ...)
-
 	if (Event == APIC.EVENT_SHOWGRID) then
 		Util.RefreshBarStrata();
 		Util.RefreshBarGUIStatus();
@@ -117,7 +118,18 @@ function Misc.BFButtonEvents(Event, ...)
 		if (Action.Type == "flyout") then
 			API.MouseOverFlyoutDirectionUI(Button, true);
 		end
-		
+	
+	elseif (Event == APIC.EVENT_ONENTERBUTTON) then
+		local Button = ...;
+		if (Button:GetParent().ParentBar.KBButton:GetChecked()) then
+			UILib.SetMask(Button, KeyBinder.ShowBindingDialog, KeyBinder.CancelButtonSelectorMode, Button, "CAST_CURSOR","Interface/TARGETINGFRAME/UI-RaidTargetingIcon_1", {0, 1, 0, 1});
+		end
+	elseif (Event == APIC.EVENT_ONLEAVEBUTTON and (...):GetParent().ParentBar.KBButton:GetChecked()) then
+		--UILib.SetMask(nil);
+	elseif (Event == APIC.EVENT_REMOVEBUTTON) then
+		local Button = ...;
+		ClearOverrideBindings(Button);
+		Button:SetAttribute("KeyBindValue", nil);
 	end
 end
 API.RegisterForEvents(nil, Misc.BFButtonEvents);
