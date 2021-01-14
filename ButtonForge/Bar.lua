@@ -303,7 +303,7 @@ function Bar.New(BarSave)
 			--table.insert(NewBar.LeftControls, NewBar.LabelButton);
 
 		-- a bit hacky - but to get this out sooner rather than a bigger refactor
-			local NumSpecs = GetNumSpecializations() 
+			local NumSpecs = 4; --GetNumSpecializations()
 			for i = 1, NumSpecs do
 				--[[Hide On Talent # Button]]--
 				NewBar["HSpec"..i.."Button"] = UILib.CreateButton(Background, Const.MiniIconSize, Const.MiniIconSize,		--parent, width, height
