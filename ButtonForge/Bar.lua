@@ -1284,9 +1284,9 @@ function Bar:SetTooltips(Value)
 		self.TooltipButton.Tooltip = Util.GetLocaleString("TooltipsTooltip")..Util.GetLocaleString("Hidden");
 	end
 	
-	--for i = 1, #self.Buttons do
-		--self.Buttons[i]:SetTooltipEnabled(Value);
-	--end
+	for i = 1, #self.Buttons do
+		API.SetShowTooltip(self.Buttons[i], Value);
+	end
 	
 	UILib.RefreshTooltip(self.TooltipButton);
 end
@@ -1315,9 +1315,9 @@ function Bar:SetButtonsLocked(Value)
 		self.LockButton.Tooltip = Util.GetLocaleString("ButtonLockTooltip")..Util.GetLocaleString("Unlocked");
 	end
 	
-	--for i = 1, #self.Buttons do
-	--	self.Buttons[i]:SetButtonLock(Value);
-	--end
+	for i = 1, #self.Buttons do
+		API.SetLocked(self.Buttons[i], Value);
+	end
 	UILib.RefreshTooltip(self.LockButton);
 end
 function Bar:GetButtonsLocked()
