@@ -23,25 +23,25 @@ local function GetAction(Button, CustomData)
 	return "action", "id", CustomData;
 end
 local function GetIcon(Button, CustomData)
-	local Icon = GetActionTexture(Button:GetAttribute("action"));
+	local Icon = GetActionTexture(Button:GetAttribute("action") or 0);
 	return Icon or Const.ImagesDir.."Bonus"..CustomData..".tga";
 end
 local function IsChecked(Button)
-	local Action = Button:GetAttribute("action");
+	local Action = Button:GetAttribute("action") or 0;
 	return IsCurrentAction(Action) or IsAutoRepeatAction(Action);
 end
 local function IsUsable(Button)
-	local Action = Button:GetAttribute("action");
+	local Action = Button:GetAttribute("action") or 0;
 	local Icon = GetActionTexture(Action);			-- This is a basic test to see if a bonus action is actually there, GetActionInfo will say Spell 0 for a few things that are in fact there (e.g. basic attack)
 	if (Icon) then
-		return IsUsableAction(Button:GetAttribute("action"));
+		return IsUsableAction(Action);
 	end
 end
 local function GetCooldown(Button)
-	return GetActionCooldown(Button:GetAttribute("action"));
+	return GetActionCooldown(Button:GetAttribute("action") or 0);
 end
 local function IsGlowing(Button)
-	local spellType, id, subType = GetActionInfo(Button:GetAttribute("action"));
+	local spellType, id, subType = GetActionInfo(Button:GetAttribute("action") or 0);
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
 		return true;
 	else
@@ -49,7 +49,7 @@ local function IsGlowing(Button)
 	end
 end
 local function UpdateTooltip(Button)
-	local Action = Button:GetAttribute("action");
+	local Action = Button:GetAttribute("action") or 0;
 	if (Action ~= 0) then
 		GameTooltip:SetAction(Action);
 	else
@@ -57,11 +57,11 @@ local function UpdateTooltip(Button)
 	end
 end
 local function IsFlashing(Button)
-	local Action = Button:GetAttribute("action");
+	local Action = Button:GetAttribute("action") or 0;
 	return IsAttackAction(Action) or IsCurrentAction(Action);
 end	
 local function IsInRange(Button)
-	local ActionInRange = IsActionInRange(Button:GetAttribute("action"));
+	local ActionInRange = IsActionInRange(Button:GetAttribute("action") or 0);
 	if (ActionInRange == true) then
 		return 1;
 	elseif (ActionInRange == false) then
