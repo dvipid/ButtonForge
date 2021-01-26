@@ -1389,6 +1389,10 @@ function Util.ApplySlashCommands(Commands, Bar)
 	if (Commands["-lockbuttons"]) then
 		Bar:SetButtonsLocked(Commands["-lockbuttons"][1]);
 	end
+
+	if (Commands["-flyout"]) then
+		Bar:SetFlyoutDirection(Commands["-flyout"][1]);
+	end
 	
 	if (Commands["-scale"]) then
 		Bar:SetScale(tonumber(Commands["-scale"][1]));

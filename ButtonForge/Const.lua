@@ -103,6 +103,7 @@ Const.SlashCommands["-keybindtext"] = {params = "bool", group = "bar"};
 Const.SlashCommands["-tooltips"] = {params = "bool", group = "bar"};
 Const.SlashCommands["-emptybuttons"] = {params = "bool", group = "bar"};
 Const.SlashCommands["-lockbuttons"] = {params = "bool", group = "bar"};
+Const.SlashCommands["-flyout"] = {params = "^%s*(..-)%s*$", group = "bar"};
 Const.SlashCommands["-scale"] = {params = "^%s*(%d*%.?%d+)%s*$", group = "bar"};
 Const.SlashCommands["-rows"] = {params = "^%s*(%d+)%s*$", group = "bar", requires = {"-createbar", "-bar"}};
 Const.SlashCommands["-cols"] = {params = "^%s*(%d+)%s*$", group = "bar", requires = {"-createbar", "-bar"}};

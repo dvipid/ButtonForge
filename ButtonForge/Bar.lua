@@ -561,6 +561,27 @@ function Bar:GetPosition()
 	return self.BarSave["Left"], self.BarSave["Top"], self.BarSave["Left"]..", "..self.BarSave["Top"];
 end
 
+function Bar:SetFlyoutDirection(Direction)
+	local flyoutDirection = "UP"; -- default
+	if (Direction == "left" or Direction == "LEFT") then
+		flyoutDirection = "LEFT";
+	elseif (Direction == "right" or Direction == "RIGHT") then
+		flyoutDirection = "RIGHT";
+	elseif (Direction == "down" or Direction == "DOWN") then
+		flyoutDirection = "DOWN";
+	end
+
+	self.BarSave["FlyoutDirection"] = flyoutDirection;
+
+	for r = 1, self.Rows do
+		for c = 1, self.Cols do
+			local i = (r-1) * self.Cols + c;
+			self.Buttons[i].Widget:SetAttribute("flyoutDirection", flyoutDirection);
+			self.Buttons[i]:UpdateFlyout();
+		end
+	end
+end
+
 function Bar:SetScale(Scale, NoCheck)
 	Scale = (Scale or 0) + 0;
 	if (Scale <= 0) then
@@ -604,6 +625,10 @@ function Bar:SetButtonsFromSave()
 			local NewButton = Util.NewButton(self.ButtonFrame, self.BarSave["Buttons"][i], self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
 			table.insert(self.Buttons, i, NewButton);
 			NewButton.Widget:SetPoint("TOPLEFT", self.ButtonFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
+			if (self.BarSave["FlyoutDirection"]) then
+				NewButton.Widget:SetAttribute("flyoutDirection", self.BarSave["FlyoutDirection"]);
+				NewButton:UpdateFlyout();
+			end
 		end
 	end
 	
@@ -667,6 +692,10 @@ function Bar:SetNumButtons(Cols, Rows)
 			local NewButton = Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
 			table.insert(Buttons, i, NewButton);
 			NewButton.Widget:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
+			if (self.BarSave["FlyoutDirection"]) then
+				NewButton.Widget:SetAttribute("flyoutDirection", self.BarSave["FlyoutDirection"]);
+				NewButton:UpdateFlyout();
+			end
 		end
 	end
 	self.Cols = Cols;
@@ -678,7 +707,11 @@ function Bar:SetNumButtons(Cols, Rows)
 			local ButtonSave = {}; 
 			local NewButton = Util.NewButton(BFrame, ButtonSave, self.BarSave["ButtonsLocked"], self.BarSave["TooltipsOn"], self.BarSave["MacroText"], self.BarSave["KeyBindText"]);
 			table.insert(Buttons, i, NewButton);
-			NewButton.Widget:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);			
+			NewButton.Widget:SetPoint("TOPLEFT", BFrame, "TOPLEFT", (c-1) * self.BSize, (1-r) * self.BSize);
+			if (self.BarSave["FlyoutDirection"]) then
+				NewButton.Widget:SetAttribute("flyoutDirection", self.BarSave["FlyoutDirection"]);
+				NewButton:UpdateFlyout();
+			end
 		end
 	end
 	self.Rows = Rows;

@@ -24,6 +24,7 @@ Restrictions:
 
 History:
 ??-Jan-2021			v1.0.3	- Replaced Stealth and Prowl with their proper stealth icon
+					- Experimental: Configurable flyout direction through slash commands
 
 02-Dec-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
 							- Added slash commands to list bars and allow to interact with bars without a label

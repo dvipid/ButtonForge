@@ -98,6 +98,7 @@ Locale["SlashHelpFormatted"]	=
 	"|c"..Const.LightBlue.."-tooltips <on/off>|r\n"..
 	"|c"..Const.LightBlue.."-emptybuttons <on/off>|r\n"..
 	"|c"..Const.LightBlue.."-lockbuttons <on/off>|r\n"..
+	"|c"..Const.LightBlue.."-flyout <up/down/left/right>|r\n"..
 	"|c"..Const.LightBlue.."-macrotext <on/off>|r\n"..
 	"|c"..Const.LightBlue.."-keybindtext <on/off>|r\n"..
 	"|c"..Const.LightBlue.."-hidespec1 <on/off>|r\n"..

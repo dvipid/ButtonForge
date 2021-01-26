@@ -2233,13 +2233,20 @@ function Button:UpdateFlyout()
 		-- Update arrow
 		Widget.FlyoutArrow:Show();
 		Widget.FlyoutArrow:ClearAllPoints();
-		--if (self:GetParent() == MultiBarRight or self:GetParent() == MultiBarLeft) then
-			--self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
-			--SetClampedTextureRotation(self.FlyoutArrow, 270);
-		--else
+		local direction = self.Widget:GetAttribute("flyoutDirection");
+		if (direction == "LEFT") then
+			Widget.FlyoutArrow:SetPoint("LEFT", Widget, "LEFT", -arrowDistance, 0);
+			SetClampedTextureRotation(Widget.FlyoutArrow, 270);
+		elseif (direction == "RIGHT") then
+			Widget.FlyoutArrow:SetPoint("RIGHT", Widget, "RIGHT", arrowDistance, 0);
+			SetClampedTextureRotation(Widget.FlyoutArrow, 90);
+		elseif (direction == "DOWN") then
+			Widget.FlyoutArrow:SetPoint("BOTTOM", Widget, "BOTTOM", 0, -arrowDistance);
+			SetClampedTextureRotation(Widget.FlyoutArrow, 180);
+		else
 			Widget.FlyoutArrow:SetPoint("TOP", Widget, "TOP", 0, arrowDistance);
 			SetClampedTextureRotation(Widget.FlyoutArrow, 0);
-		--end
+		end
 	else
 		Widget.FlyoutBorder:Hide();
 		Widget.FlyoutBorderShadow:Hide();
