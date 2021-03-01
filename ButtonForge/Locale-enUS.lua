@@ -95,23 +95,23 @@ Locale["SlashHelpFormatted"]	=
 	"|c"..Const.LightBlue.."-scale <size>|r (1 is normal scale)\n"..
 	"|c"..Const.LightBlue.."-gap <size>|r (6 is normal gap)\n"..
 	"|c"..Const.LightBlue.."-coords <left> <top>|r\n"..
-	"|c"..Const.LightBlue.."-tooltips <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-emptybuttons <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-lockbuttons <on/off>|r\n"..
+	"|c"..Const.LightBlue.."-tooltips <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-emptybuttons <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-lockbuttons <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-flyout <up/down/left/right>|r\n"..
-	"|c"..Const.LightBlue.."-macrotext <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-keybindtext <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hidespec1 <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hidespec2 <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hidespec3 <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hidespec4 <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hidevehicle <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hideoverridebar <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-hidepetbattle <on/off>|r\n"..
+	"|c"..Const.LightBlue.."-macrotext <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-keybindtext <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hidespec1 <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hidespec2 <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hidespec3 <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hidespec4 <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hidevehicle <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hideoverridebar <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-hidepetbattle <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-vismacro <visibility macro>|r\n"..
-	"|c"..Const.LightBlue.."-gui <on/off>|r (off = hides bar without disabling keybinds)\n"..
+	"|c"..Const.LightBlue.."-gui <on/off/toggle>|r (off = hides bar without disabling keybinds)\n"..
 	"|c"..Const.LightBlue.."-alpha <opacity>|r (0 - 1, 1 is completely opaque)\n"..
-	"|c"..Const.LightBlue.."-enabled <on/off>|r\n"..
+	"|c"..Const.LightBlue.."-enabled <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-info|r\n"..
 	"|c"..Const.LightBlue.."-technicalinfo|r\n"..
 	"|c"..Const.LightBlue.."-createbar <bar name>|r\n"..
@@ -123,9 +123,9 @@ Locale["SlashHelpFormatted"]	=
 	"|c"..Const.LightBlue.."-deleteprofile <profile name>|r\n"..
 	"|c"..Const.LightBlue.."-listprofiles|r\n"..	
 	"|c"..Const.LightBlue.."-macrocheckdelay <number>|r (5 seconds is default) \n"..
-	"|c"..Const.LightBlue.."-removemissingmacros <on/off>|r\n"..
-	"|c"..Const.LightBlue.."-forceoffcastonkeydown <on/off>|r (will apply at next login)\n"..
-	"|c"..Const.LightBlue.."-usecollectionsfavoritemountbutton <on/off>|r\n"..
+	"|c"..Const.LightBlue.."-removemissingmacros <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-forceoffcastonkeydown <on/off/toggle>|r (will apply at next login)\n"..
+	"|c"..Const.LightBlue.."-usecollectionsfavoritemountbutton <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-globalsettings|r\n"..
 	"Examples:\n"..
 	"|c"..Const.LightBlue.."/bufo -bar Mounts -tooltips off -emptybuttons off -scale 0.75|r\n"..

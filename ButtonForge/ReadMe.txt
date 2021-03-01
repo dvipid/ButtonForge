@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+2021				v1.0.4	- Updated help (/bufo)
+
 28-Jan-2021			v1.0.3	- Replaced Stealth and Prowl with their proper stealth icon
 					- Experimental: Configurable flyout direction through slash commands
 
