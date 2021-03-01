@@ -1578,7 +1578,34 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 		if ( Util.PetSpellIndex[name] ) then
 			PickupSpellBookItem(Util.PetSpellIndex[name], BOOKTYPE_PET);
 		else
-			PickupSpell(Subsubvalue);
+			-- Shadowlands Covenants spells seem to be different from standard spell
+			-- attempt to detect them because PickupSpell won't work with those
+			skillType, contextualID = GetSpellBookItemInfo(name);
+			if contextualID ~= nil then
+				PickupSpell(Subsubvalue);
+			else
+				-- scan spellbook and pickupspell by slot id
+				function findSpell(spellName, bookType)
+				   local i, s;
+				   local found = false;
+				   for i = 1, MAX_SKILLLINE_TABS do
+				      local name, texture, offset, numSpells = GetSpellTabInfo(i);
+				      if (not name) then break; end
+				      for s = offset + 1, offset + numSpells do
+				         local    spell, rank = GetSpellBookItemName(s, bookType);
+				         if (spell == spellName) then found = true; end
+				         if (found and spell ~=spellName) then return s-1; end
+				      end
+				   end
+				   if (found) then return s; end
+				   return nil;
+				end
+				local bookType = BOOKTYPE_SPELL;
+				local id = findSpell(name, bookType);
+				if id ~= nil then
+					PickupSpellBookItem(id,bookType);
+				end
+			end
 		end;
 	elseif (Command == "item") then
 		PickupItem(Data);
