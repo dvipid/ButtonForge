@@ -71,7 +71,6 @@ function Bar.New(BarSave)
 				ButtonFrame:SetAttribute("_onshow", [[local B, Key;
 													for i = 1, #Buttons do
 														B = Buttons[i];
-														B:Enable(); 
 														Key = B:GetAttribute("KeyBindValue"); 
 														if (Key) then 
 															B:SetBindingClick(false, Key, B);
@@ -81,7 +80,6 @@ function Bar.New(BarSave)
 				ButtonFrame:SetAttribute("_onshow", [[local B, Key;
 													for i = 1, #Buttons do
 														B = Buttons[i];
-														B:Enable(); 
 														Key = B:GetAttribute("KeyBindValue"); 
 														if (Key) then 
 															B:SetBindingClick(false, Key, B, "KeyBind");
@@ -91,7 +89,6 @@ function Bar.New(BarSave)
 			ButtonFrame:SetAttribute("_onhide", [[local B, Key;
 												for i = 1, #Buttons do 
 													B = Buttons[i];
-													B:Disable();
 													Key = B:GetAttribute("KeyBindValue");
 													if (Key) then
 														B:ClearBindings();

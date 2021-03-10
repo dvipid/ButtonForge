@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.0.3
+Version: 1.0.4
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,11 +23,12 @@ Restrictions:
 
 
 History:
-2021				v1.0.4	- Updated help (/bufo)
-					- Fixes PickupSpell for Shadowlands Covenant spells
+09-March-2021		v1.0.4	- Updated for Wow v9.0.5
+							- Updated help (/bufo)
+							- Fixed an issue disabling/enabling button frames
 
 28-Jan-2021			v1.0.3	- Replaced Stealth and Prowl with their proper stealth icon
-					- Experimental: Configurable flyout direction through slash commands
+							- Experimental: Configurable flyout direction through slash commands
 
 02-Dec-2020			v1.0.2	- Removed Zone Ability frame when placed into a bar
 							- Added slash commands to list bars and allow to interact with bars without a label
