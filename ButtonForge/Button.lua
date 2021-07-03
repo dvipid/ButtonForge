@@ -698,6 +698,12 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 		self.UpdateTexture = Button.UpdateTextureWispSpell;		
 	end
 
+	local BaseSpellID = FindBaseSpellByID(Id);
+    if (BaseSpellID ~= Id and BaseSpellID ~= nil) then
+    	local name = GetSpellInfo(BaseSpellID);
+    	self.Widget:SetAttribute("spell", name);
+    end
+
 	self.Mode 			= "spell";
 	self.SpellId 		= Id;
 	self.SpellNameRank 	= NameRank;
@@ -1527,7 +1533,12 @@ function Button:UpdateCooldown()
 
 end
 function Button:UpdateCooldownSpell()
-	local Start, Duration, Enable = GetSpellCooldown(self.SpellNameRank);
+	local Start, Duration, Enable;
+	if(self.SpellId == Const.COVENANT_WARRIOR_FURY_CONDEMN_ID) then -- it seems there is an exception with that spell and GetSpellCooldown called from the spellname return a wrong duration.
+		Start, Duration, Enable = GetSpellCooldown(self.SpellId);
+	else
+		Start, Duration, Enable = GetSpellCooldown(self.SpellNameRank);
+	end
 	local Charges, MaxCharges, ChargeStart, ChargeDuration = GetSpellCharges(self.SpellNameRank);
 
 	if (Start ~= nil) then

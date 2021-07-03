@@ -1580,7 +1580,10 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 		else
 			-- Shadowlands Covenants spells seem to be different from standard spell
 			-- attempt to detect them because PickupSpell won't work with those
-			skillType, contextualID = GetSpellBookItemInfo(name);
+			contextualID = nil;
+			if name ~= nil then
+				skillType, contextualID = GetSpellBookItemInfo(name);
+			end
 			if contextualID ~= nil then
 				PickupSpell(Subsubvalue);
 			else
