@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+03-August-2021		v1.0.6	- Fixed an issue with PVP Talent spell Spirit of the Redeemer
+
 03-July-2021		v1.0.5	- Fixed an issue displaying cooldown for Fury Warrior Condemn spell
 
 09-March-2021		v1.0.4	- Updated for Wow v9.0.5

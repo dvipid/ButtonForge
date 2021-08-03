@@ -621,14 +621,22 @@ end
 --[[ Set the individual types of actions (all data needed is supplied to the functions as args) --]]
 function Button:SetCommandExplicitSpell(Id, NameRank, Name, Book)
 	local IsTalent = Util.IsSpellIdTalent(Id);
+
+	-- PVP talent with a Passive base spell has a weird behavior. There might be other spells with the same issue. Temporary fix until we find something more generic
+	if (Id == Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_ID) then
+		NameRank = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
+    	Name = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
+    	IsTalent = true;
+    end
+
 	self:SetEnvSpell(Id, NameRank, Name, Book, IsTalent);
 	if (IsTalent) then
 		-- Talents only can be triggered off the name, The API is really random as to when it works better with the name vs ID
-		self:SetAttributes("spell", NameRank);	
+		self:SetAttributes("spell", NameRank);
 	else
 		-- Normal spells work both ways... But! some spells like Shaman Hex() have same name variants, in those cases I need to cast the specific ID
 		-- And yes, as it stands if Blizz do same name variant Talents, then well bugger...
-		self:SetAttributes("spell", Id);	
+		self:SetAttributes("spell", Id);
 	end
 	self:SaveSpell(Id, NameRank, Name, Book);
 end
@@ -1164,7 +1172,7 @@ function Button:SetAttributes(Type, Value)
 			prof2_name, _, _, _, _, _, prof2_skillLine = GetProfessionInfo(prof2);
 		end
 
-		local SpellName = GetSpellInfo(Value);
+		local SpellName, _, _, _, _, _, SpellId = GetSpellInfo(Value);
 		-- Patch to fix tradeskills
 		if ( prof1 and SpellName == prof1_name ) then
 			self.Widget:SetAttribute("type", "macro");
@@ -1174,6 +1182,10 @@ function Button:SetAttributes(Type, Value)
 			self.Widget:SetAttribute("macrotext", "/run RunScript('if (select(6, C_TradeSkillUI.GetTradeSkillLine()) == prof2_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
 		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
 		elseif ( SpellName ) then
+			-- PVP talent with a Passive base spell has a weird behavior. There might be other spells with the same issue. Temporary fix until we find something more generic
+			if (SpellId == Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_ID) then
+				SpellName = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
+			end
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute(Type, SpellName);
 		else
