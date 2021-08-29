@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.0.4
+Version: 1.0.7
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,7 +23,8 @@ Restrictions:
 
 
 History:
-03-August-2021		v1.0.6	- Fixed an issue with PVP Talent spell Spirit of the Redeemer
+28-August-2021		v1.0.7  - Fixed an issue with Priest PVP Talent spell "Inner Light and Shadow" (Thanks to techno_tpuefol)
+03-August-2021		v1.0.6	- Fixed an issue with Priest PVP Talent spell "Spirit of the Redeemer"
 
 03-July-2021		v1.0.5	- Fixed an issue displaying cooldown for Fury Warrior Condemn spell
 

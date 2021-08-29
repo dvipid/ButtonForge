@@ -1180,6 +1180,12 @@ function Button:SetAttributes(Type, Value)
 		elseif ( prof2 and SpellName == prof2_name ) then
 			self.Widget:SetAttribute("type", "macro");
 			self.Widget:SetAttribute("macrotext", "/run RunScript('if (select(6, C_TradeSkillUI.GetTradeSkillLine()) == prof2_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
+
+		-- Patch for Priest PVP Talent "Inner Light and Shadow" (Thanks to techno_tpuefol)
+		elseif (SpellId == Const.PRIEST_PVP_TALENT_INNER_LIGHT_ID or SpellId == Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID) then
+			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("macrotext", "/cast !Inner Light");
+
 		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
 		elseif ( SpellName ) then
 			-- PVP talent with a Passive base spell has a weird behavior. There might be other spells with the same issue. Temporary fix until we find something more generic
@@ -1188,8 +1194,9 @@ function Button:SetAttributes(Type, Value)
 			end
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute(Type, SpellName);
+
+		-- fallback to the old method if the name cannot be resolved
 		else
-			-- fallback to the old method if the name cannot be resolved
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute(Type, Value);
 		end
