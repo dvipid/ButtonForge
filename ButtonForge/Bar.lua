@@ -1642,11 +1642,10 @@ function Bar:SetVD(VDText)
 			self.VDButton:SetNormalTexture(Const.ImagesDir.."VDriverSet.tga");
 
 			-- Support for custom macro "[map:mapID]"
-			local Match, RequestedMapId = string.match(VDText, '(map%s*:%s*(%d+))');
-			if ( Match ~= nil and (RequestedMapId + 0) > 0 ) then
-				local CurrentMapID = C_Map.GetBestMapForUnit("player");
+			local Match, RequestedMapIds = string.match(VDText, '(map%s*:%s*(%d+[%s,%s%d+]*))');
+			if ( Match ~= nil and RequestedMapIds ~= nil ) then
 				local VDText_Modified = VDText;
-				if ( CurrentMapID == (RequestedMapId + 0) ) then
+				if ( Util.CheckMapForUnit(RequestedMapIds) ) then
 					VDText_Modified = VDText_Modified:gsub(Match, ""); -- always true
 				else
 					VDText_Modified = VDText_Modified:gsub(Match, "dead, nodead"); -- always false
@@ -1677,8 +1676,8 @@ end
 function Bar:ApplyCustomMacrosVD()
 	VDText = self:GetVD();
 	-- we only need to reapply the VD for custom macros
-	local Match, RequestedMapId = string.match(VDText, '(map%s*:%s*(%d+))');
-	if ( Match ~= nil and (RequestedMapId + 0) > 0 ) then
+	local Match = string.match(VDText, '(map%s*:%s*(%d+[%s,%s%d+]*))');
+	if ( Match ~= nil ) then
 		self:SetVD(VDText);
 	end
 end

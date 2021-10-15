@@ -1931,6 +1931,16 @@ function Util.RefreshZoneAbility()
 	end
 end
 
+function Util.CheckMapForUnit(mapIds) --comma-delimited list
+	local currentMapID = C_Map.GetBestMapForUnit("player");
+	for mapId in string.gmatch(mapIds, "([^,]+)") do
+		if ( currentMapID == (mapId + 0) ) then
+			return true;
+		end
+	end
+	return false;
+end
+
 function Util.TriggerZoneChanged()
 	-- Refesh Zone Abilities
 	Util.RefreshZoneAbility();
