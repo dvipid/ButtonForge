@@ -1931,6 +1931,16 @@ function Util.RefreshZoneAbility()
 	end
 end
 
+function Util.TriggerZoneChanged()
+	-- Refesh Zone Abilities
+	Util.RefreshZoneAbility();
+
+	-- Support for custom macros
+	for i = 1, #Util.ActiveBars do
+		Util.ActiveBars[i]:ApplyCustomMacrosVD();
+	end
+end
+
 function Util.AddSpell(Value)
 	if (not Util.FindInTable(Util.ActiveSpells, Value)) then
 		table.insert(Util.ActiveSpells, Value);

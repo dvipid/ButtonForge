@@ -493,7 +493,7 @@ function Misc:OnEvent(Event, ...)
 		self:SetScript("OnUpdate", self.OnUpdate);
 
 	elseif (Event == "ZONE_CHANGED" or Event == "ZONE_CHANGED_INDOORS" or Event == "ZONE_CHANGED_NEW_AREA") then
-		Util.RefreshZoneAbility();
+		Util.TriggerZoneChanged();
 		
 	end
 end

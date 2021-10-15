@@ -1640,7 +1640,22 @@ function Bar:SetVD(VDText)
 		VDText = VDText or "";
 		if (VDText ~= "") then
 			self.VDButton:SetNormalTexture(Const.ImagesDir.."VDriverSet.tga");
-			RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText);
+
+			-- Support for custom macro "[map:mapID]"
+			local Match, RequestedMapId = string.match(VDText, '(map%s*:%s*(%d+))');
+			if ( Match ~= nil and (RequestedMapId + 0) > 0 ) then
+				local CurrentMapID = C_Map.GetBestMapForUnit("player");
+				local VDText_Modified = VDText;
+				if ( CurrentMapID == (RequestedMapId + 0) ) then
+					VDText_Modified = VDText_Modified:gsub(Match, ""); -- always true
+				else
+					VDText_Modified = VDText_Modified:gsub(Match, "dead, nodead"); -- always false
+				end
+				RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText_Modified);
+			else
+				-- default (no custom macros)
+				RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText);
+			end
 			self.VDButton.Tooltip = Util.GetLocaleString("VisibilityTooltip").."|c"..Const.DarkBlue..VDText.."|r";
 		else
 			self.VDButton:SetNormalTexture(Const.ImagesDir.."VDriver.tga");
@@ -1658,6 +1673,14 @@ function Bar:SetVD(VDText)
 end
 function Bar:GetVD()
 	return self.BarSave["VDriver"];
+end
+function Bar:ApplyCustomMacrosVD()
+	VDText = self:GetVD();
+	-- we only need to reapply the VD for custom macros
+	local Match, RequestedMapId = string.match(VDText, '(map%s*:%s*(%d+))');
+	if ( Match ~= nil and (RequestedMapId + 0) > 0 ) then
+		self:SetVD(VDText);
+	end
 end
 function Bar:CancelInputVD()
 	self.VDButton:SetChecked(false);
