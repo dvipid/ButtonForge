@@ -100,7 +100,9 @@ Misc:RegisterEvent("ZONE_CHANGED");
 Misc:RegisterEvent("ZONE_CHANGED_INDOORS");
 Misc:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 
-
+Misc:RegisterEvent("QUEST_ACCEPTED");
+Misc:RegisterEvent("QUEST_REMOVED");
+Misc:RegisterEvent("SUPER_TRACKING_CHANGED");
 
 --[[------------------------------------------------------------------------
 	Checked Events
@@ -494,7 +496,10 @@ function Misc:OnEvent(Event, ...)
 
 	elseif (Event == "ZONE_CHANGED" or Event == "ZONE_CHANGED_INDOORS" or Event == "ZONE_CHANGED_NEW_AREA") then
 		Util.TriggerZoneChanged();
-		
+
+	elseif (Event == "QUEST_ACCEPTED" or Event == "QUEST_REMOVED" or Event == "SUPER_TRACKING_CHANGED") then
+		Util.TriggerQuestsChanged();
+
 	end
 end
 function Misc:OnUpdate(Elapsed)

@@ -1641,20 +1641,18 @@ function Bar:SetVD(VDText)
 		if (VDText ~= "") then
 			self.VDButton:SetNormalTexture(Const.ImagesDir.."VDriverSet.tga");
 
+			-- Note: Only 1 custom macro per type is allowed
+
+			VDText_Modified = VDText;
+
 			-- Support for custom macro "[map:mapID]"
-			local Match, RequestedMapIds = string.match(VDText, '(map%s*:%s*(%d+[%s,%s%d+]*))');
-			if ( Match ~= nil and RequestedMapIds ~= nil ) then
-				local VDText_Modified = VDText;
-				if ( Util.CheckMapForUnit(RequestedMapIds) ) then
-					VDText_Modified = VDText_Modified:gsub(Match, ""); -- always true
-				else
-					VDText_Modified = VDText_Modified:gsub(Match, "dead, nodead"); -- always false
-				end
-				RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText_Modified);
-			else
-				-- default (no custom macros)
-				RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText);
-			end
+			VDText_Modified = Util.CustomMacro_Map(VDText_Modified);
+
+			-- Support for custom macro "[quest:questID]"
+			VDText_Modified = Util.CustomMacro_Quest(VDText_Modified);
+
+			RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText_Modified);
+
 			self.VDButton.Tooltip = Util.GetLocaleString("VisibilityTooltip").."|c"..Const.DarkBlue..VDText.."|r";
 		else
 			self.VDButton:SetNormalTexture(Const.ImagesDir.."VDriver.tga");
@@ -1676,8 +1674,9 @@ end
 function Bar:ApplyCustomMacrosVD()
 	VDText = self:GetVD();
 	-- we only need to reapply the VD for custom macros
-	local Match = string.match(VDText, '(map%s*:%s*(%d+[%s,%s%d+]*))');
-	if ( Match ~= nil ) then
+	local VDText_Map   = Util.CustomMacro_Map(VDText);
+	local VDText_Quest = Util.CustomMacro_Quest(VDText);
+	if ( VDText_Map ~= VDText or VDText_Quest ~= VDText ) then
 		self:SetVD(VDText);
 	end
 end

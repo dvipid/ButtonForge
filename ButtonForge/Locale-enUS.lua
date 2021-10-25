@@ -126,6 +126,8 @@ Locale["SlashHelpFormatted"]	=
 	"|c"..Const.LightBlue.."-removemissingmacros <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-forceoffcastonkeydown <on/off/toggle>|r (will apply at next login)\n"..
 	"|c"..Const.LightBlue.."-usecollectionsfavoritemountbutton <on/off/toggle>|r\n"..
+	"|c"..Const.LightBlue.."-where|r\n"..
+	"|c"..Const.LightBlue.."-quests|r\n"..
 	"|c"..Const.LightBlue.."-globalsettings|r\n"..
 	"Examples:\n"..
 	"|c"..Const.LightBlue.."/bufo -bar Mounts -tooltips off -emptybuttons off -scale 0.75|r\n"..
