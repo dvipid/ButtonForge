@@ -1651,6 +1651,9 @@ function Bar:SetVD(VDText)
 			-- Support for custom macro "[quest:questID]"
 			VDText_Modified = Util.CustomMacro_Quest(VDText_Modified);
 
+			-- Support for custom macro "[aura:spellID]"
+			VDText_Modified = Util.CustomMacro_Aura(VDText_Modified);
+
 			RegisterStateDriver(self.ButtonFrame, "visibility", Text..VDText_Modified);
 
 			self.VDButton.Tooltip = Util.GetLocaleString("VisibilityTooltip").."|c"..Const.DarkBlue..VDText.."|r";
@@ -1676,7 +1679,8 @@ function Bar:ApplyCustomMacrosVD()
 	-- we only need to reapply the VD for custom macros
 	local VDText_Map   = Util.CustomMacro_Map(VDText);
 	local VDText_Quest = Util.CustomMacro_Quest(VDText);
-	if ( VDText_Map ~= VDText or VDText_Quest ~= VDText ) then
+	local VDText_Aura = Util.CustomMacro_Aura(VDText);
+	if ( VDText_Map ~= VDText or VDText_Quest ~= VDText or VDText_Aura ~= VDText ) then
 		self:SetVD(VDText);
 	end
 end

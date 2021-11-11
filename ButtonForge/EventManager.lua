@@ -104,6 +104,8 @@ Misc:RegisterEvent("QUEST_ACCEPTED");
 Misc:RegisterEvent("QUEST_REMOVED");
 Misc:RegisterEvent("SUPER_TRACKING_CHANGED");
 
+Misc:RegisterEvent("UNIT_AURA");
+
 --[[------------------------------------------------------------------------
 	Checked Events
 --------------------------------------------------------------------------]]
@@ -499,6 +501,9 @@ function Misc:OnEvent(Event, ...)
 
 	elseif (Event == "QUEST_ACCEPTED" or Event == "QUEST_REMOVED" or Event == "SUPER_TRACKING_CHANGED") then
 		Util.TriggerQuestsChanged();
+
+	elseif (Event == "UNIT_AURA") then
+		Util.TriggerAuraChanged();
 
 	end
 end

@@ -1469,6 +1469,19 @@ function Util.ApplySlashCommands(Commands, Bar)
 
 	end
 
+	if (Commands["-aura"]) then
+
+		for i=1,40 do 
+			local name,_,_,_,_,_,_,_,_,spellId=UnitAura("player",i);
+			if(spellId ~= nil) then
+				Util.SlashShowMessageByLine(format("%s |c"..Const.LightBlue.."(%d)|r", name, spellId));
+			else
+				break;
+			end
+		end
+	
+	end
+
 	if (Commands["-quests"]) then
 
 		local String = "";
@@ -2025,6 +2038,31 @@ function Util.CustomMacro_Quest(VDText)
 	return VDText;
 end
 
+function Util.CustomMacro_Aura(VDText)
+	local match, spellIds = string.match(VDText, '(aura%s*:%s*(%d+[%s;%s%d+]*))');
+	if ( match ~= nil and spellIds ~= nil ) then
+
+		for spellId in string.gmatch(spellIds, "([^;]+)") do
+
+			for i=1,40 do 
+				local name,_,_,_,_,_,_,_,_,auraId=UnitAura("player",i);
+				if(auraId ~= nil) then
+					if ( auraId == tonumber(spellId) ) then
+						return VDText:gsub(match, ""); -- always true
+					end
+				else
+					break;
+				end
+			end
+
+		end
+
+		return VDText:gsub(match, "dead, nodead"); -- always false
+
+	end	
+	return VDText;
+end
+
 
 function Util.TriggerZoneChanged()
 	-- Refesh Zone Abilities
@@ -2037,6 +2075,13 @@ function Util.TriggerZoneChanged()
 end
 
 function Util.TriggerQuestsChanged()
+	-- Support for custom macros
+	for i = 1, #Util.ActiveBars do
+		Util.ActiveBars[i]:ApplyCustomMacrosVD();
+	end
+end
+
+function Util.TriggerAuraChanged()
 	-- Support for custom macros
 	for i = 1, #Util.ActiveBars do
 		Util.ActiveBars[i]:ApplyCustomMacrosVD();

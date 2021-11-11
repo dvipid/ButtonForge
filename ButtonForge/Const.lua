@@ -17,7 +17,7 @@ Const.PRIEST_PVP_TALENT_INNER_LIGHT_ID = 355897;
 Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID = 355898;
 Const.COVENANT_WARRIOR_FURY_CONDEMN_ID = 330325;
 Const.Version				= 1.0;
-Const.VersionMinor			= 0.9;
+Const.VersionMinor			= 0.10;
 Const.MAX_ACCOUNT_MACROS 	= 120;
 Const.ButtonNaming 			= "ButtonForge"
 Const.ButtonSeq 			= 1;					--This value will increment (so not technically a const...)
@@ -146,6 +146,7 @@ Const.SlashCommands["-usecollectionsfavoritemountbutton"] = {params = "bool", gr
 
 Const.SlashCommands["-quests"] = {params = "^()$", incompat = {"ALL"}};
 Const.SlashCommands["-where"] = {params = "^()$", incompat = {"ALL"}};
+Const.SlashCommands["-aura"] = {params = "^()$", incompat = {"ALL"}};
 
 
 
