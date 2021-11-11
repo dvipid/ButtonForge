@@ -23,8 +23,9 @@ Restrictions:
 
 
 History:
--2021		v1.0.10  - Experimental: Support custom visibility macro aura:spellID
-							- Adds slash commands to list active auras (spellID)
+11-November-2021	v1.0.10  - Updated for Wow v9.1.5
+							 - Experimental: Support custom visibility macro aura:spellID
+							 - Adds slash commands to list active auras (spellID)
 
 25-October-2021		v1.0.9  - Fixed an issue with new custom visibility macro map:mapID
 							- Experimental: Support custom visibility macro quest:questID
