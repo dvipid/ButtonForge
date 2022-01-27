@@ -1642,7 +1642,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 				skillType, contextualID = GetSpellBookItemInfo(name);
 			end
 			if contextualID ~= nil then
-				PickupSpell(Subsubvalue);
+				PickupSpell(contextualID);
 			else
 				-- scan spellbook and pickupspell by slot id
 				function findSpell(spellName, bookType)

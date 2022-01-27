@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.0.10
+Version: 1.0.11
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+27-January-2022		v1.0.11  - Fixed an issue picking up some spells
+
 11-November-2021	v1.0.10  - Updated for Wow v9.1.5
 							 - Experimental: Support custom visibility macro aura:spellID
 							 - Adds slash commands to list active auras (spellID)
