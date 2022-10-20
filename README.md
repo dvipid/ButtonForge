@@ -1,4 +1,4 @@
-# ButtonForge - Shadowlands
+# ButtonForge - Dragonflight
 
 This is a branch of ButtonForge originally created by Alternator
 https://www.curseforge.com/wow/addons/button-forge
