@@ -87,7 +87,7 @@ Locale["SlashHelpFormatted"]	=
 	"ButtonForge Usage:\n"..
 	"Valid slash commands: |c"..Const.LightBlue.."/buttonforge|r, |c"..Const.LightBlue.."/bufo|r\n"..
 	"Valid switches:\n"..
-	"|c"..Const.LightBlue.."-bar <bar name>|r (the bar to apply changes to, or if not set then all bars)\n"..
+	"|c"..Const.LightBlue.."-bar <bar name(s)>|r (the bar to apply changes to, or comma-delimited list of bars, or if not set then all bars)\n"..
 	"|c"..Const.LightBlue.."-list|r\n"..
 	"|c"..Const.LightBlue.."-rename <new name>|r\n"..
 	"|c"..Const.LightBlue.."-rows <number>|r\n"..
@@ -139,8 +139,9 @@ Locale["SlashHelpFormatted"]	=
 Locale["SlashCommandRequired"]		= "<COMMANDA> requires <COMMANDB> to also be specified";
 Locale["SlashCommandIncompatible"]	= "<COMMANDA> is incompatible with <COMMANDB>";
 Locale["SlashCommandAlone"]			= "<COMMANDA> cannot be used with other commands";
-Locale["SlashListBarWithLabel"]		= "- <LABEL> |c"..Const.LightBlue.." Examples: /bufo -bar <LABEL> -info";
-Locale["SlashListBarWithIndex"]		= "- <LABEL> (No label set, use Index) |c"..Const.LightBlue.." Examples: /bufo -bar <LABEL> -info";
+Locale["SlashListBarWithLabel"]		= "- <INDEX> (<LABEL>) |c"..Const.LightBlue.." Examples: /bufo -bar <LABEL> -info";
+Locale["SlashListBarWithIndex"]		= "- <INDEX> (No label set, use Index) |c"..Const.LightBlue.." Examples: /bufo -bar <INDEX> -info";
+Locale["SlashListBarNotFound"]      = "Invalid bar name or index: <LABEL>";
 
 Locale["SlashBarNameRequired"]		=
 [[ButtonForge slash command failed:

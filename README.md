@@ -12,13 +12,13 @@ https://www.curseforge.com/wow/addons/button-forge
 4. Move the ButtonForge folder that was unzipped to your AddOns folder
 5. Open the TOC file and make sure Version is 1.0.10
 
-    \## Interface: 90105  
+    \## Interface: 100000  
 \## Title: Button Forge  
 \## Notes: Add as many or few extra Action Bars and Buttons to your user interface to complement the standard (or other) Action Bars  
-\## Version: 1.0.11  
+\## Version: 1.1.0  
 \## Author: Massiner of Nathrezim  
 \... ... some more lines there
 
 6. Start World of Warcraft
 7. If you suspect that you don't have the fix, continue to step 8.
-8. With World of Warcraft running, reopen that TOC file and make sure it still at version 1.0.11, if not and you are using an add-on manager, make sure that it is not replaced by an old build.
+8. With World of Warcraft running, reopen that TOC file and make sure it still at version 1.1.0, if not and you are using an add-on manager, make sure that it is not replaced by an old build.

@@ -15,6 +15,7 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<!--
 		<Backdrop bgFile="Interface/Tooltips/UI-Tooltip-Background" edgeFile="" tile="true">
 			<TileSize>
 				<AbsValue val="16" />
@@ -23,6 +24,7 @@
 				<AbsValue val="16" />
 			</EdgeSize>
 		</Backdrop>
+	-->
 	</Frame>
 
 	

@@ -1426,7 +1426,7 @@ function Button:DisplayActive(TexCoords)
 	local Icon = self.WIcon;
 	
 	Icon:SetTexture(self.Texture);
-	self.Widget:SetNormalTexture("Interface/Buttons/UI-Quickslot2");
+	--self.Widget:SetNormalTexture("Interface/Buttons/UI-Quickslot2");
 	if (TexCoords) then
 		Icon:SetTexCoord(unpack(TexCoords));
 	else
@@ -1440,7 +1440,7 @@ function Button:DisplayMissing()
 	local Icon = self.WIcon;
 
 	Icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
-	self.Widget:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
+	--self.Widget:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
 	Icon:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	Icon:Show();
 
@@ -2244,43 +2244,77 @@ end
 --This is currently coded to always be up... this will probably need to be adaptable down the track
 function Button:UpdateFlyout()
 	local Widget = self.Widget;
-	if (self.Mode == "flyout") then
-		-- Update border and determine arrow position
-		local arrowDistance;
-		if (SpellFlyout:GetParent() == Widget) then
-		--	SpellFlyout.isActionBar = false;
-		end
-		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == Widget) or GetMouseFocus() == Widget) then
-			Widget.FlyoutBorder:Show();
-			Widget.FlyoutBorderShadow:Show();
-			arrowDistance = 5;
-		else
-			Widget.FlyoutBorder:Hide();
-			Widget.FlyoutBorderShadow:Hide();
-			arrowDistance = 2;
-		end
-		
-		-- Update arrow
-		Widget.FlyoutArrow:Show();
-		Widget.FlyoutArrow:ClearAllPoints();
-		local direction = self.Widget:GetAttribute("flyoutDirection");
-		if (direction == "LEFT") then
-			Widget.FlyoutArrow:SetPoint("LEFT", Widget, "LEFT", -arrowDistance, 0);
-			SetClampedTextureRotation(Widget.FlyoutArrow, 270);
-		elseif (direction == "RIGHT") then
-			Widget.FlyoutArrow:SetPoint("RIGHT", Widget, "RIGHT", arrowDistance, 0);
-			SetClampedTextureRotation(Widget.FlyoutArrow, 90);
-		elseif (direction == "DOWN") then
-			Widget.FlyoutArrow:SetPoint("BOTTOM", Widget, "BOTTOM", 0, -arrowDistance);
-			SetClampedTextureRotation(Widget.FlyoutArrow, 180);
-		else
-			Widget.FlyoutArrow:SetPoint("TOP", Widget, "TOP", 0, arrowDistance);
-			SetClampedTextureRotation(Widget.FlyoutArrow, 0);
-		end
-	else
-		Widget.FlyoutBorder:Hide();
+
+	if (not Widget.FlyoutArrowContainer or
+		not Widget.FlyoutBorderShadow) then
+		return;
+	end
+
+	if (self.Mode ~= "flyout") then
 		Widget.FlyoutBorderShadow:Hide();
-		Widget.FlyoutArrow:Hide();
+		Widget.FlyoutArrowContainer:Hide();
+		return;
+	end
+
+	-- Update border
+	local isMouseOverButton =  GetMouseFocus() == Widget;
+	local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == Widget;
+	if (isFlyoutShown or isMouseOverButton) then
+		Widget.FlyoutBorderShadow:Show();
+	else
+		Widget.FlyoutBorderShadow:Hide();
+	end
+
+	-- Update arrow
+	local isButtonDown;
+	if (isButtonDownOverride ~= nil) then
+		isButtonDown = isButtonDownOverride;
+	else
+		isButtonDown = Widget:GetButtonState() == "PUSHED";
+	end
+
+	local flyoutArrowTexture = Widget.FlyoutArrowContainer.FlyoutArrowNormal;
+
+	if (isButtonDown) then
+		flyoutArrowTexture = Widget.FlyoutArrowContainer.FlyoutArrowPushed;
+
+		Widget.FlyoutArrowContainer.FlyoutArrowNormal:Hide();
+		Widget.FlyoutArrowContainer.FlyoutArrowHighlight:Hide();
+	elseif (isMouseOverButton) then
+		flyoutArrowTexture = Widget.FlyoutArrowContainer.FlyoutArrowHighlight;
+
+		Widget.FlyoutArrowContainer.FlyoutArrowNormal:Hide();
+		Widget.FlyoutArrowContainer.FlyoutArrowPushed:Hide();
+	else
+		Widget.FlyoutArrowContainer.FlyoutArrowHighlight:Hide();
+		Widget.FlyoutArrowContainer.FlyoutArrowPushed:Hide();
+	end
+
+	Widget.FlyoutArrowContainer:Show();
+	flyoutArrowTexture:Show();
+	flyoutArrowTexture:ClearAllPoints();
+
+	local arrowDirection = Widget:GetAttribute("flyoutDirection");
+	local arrowDistance = isFlyoutShown and 1 or 4;
+
+	-- If you are on an action bar then base your direction based on the action bar's orientation
+	local actionBar = Widget:GetParent();
+	if (actionBar.actionButtons) then
+		arrowDirection = actionBar.isHorizontal and "UP" or "LEFT";
+	end
+
+	if (arrowDirection == "LEFT") then
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 90 or 270);
+		flyoutArrowTexture:SetPoint("LEFT", Widget, "LEFT", -arrowDistance, 0);
+	elseif (arrowDirection == "RIGHT") then
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 270 or 90);
+		flyoutArrowTexture:SetPoint("RIGHT", Widget, "RIGHT", arrowDistance, 0);
+	elseif (arrowDirection == "DOWN") then
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 0 or 180);
+		flyoutArrowTexture:SetPoint("BOTTOM", Widget, "BOTTOM", 0, -arrowDistance);
+	else
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 180 or 0);
+		flyoutArrowTexture:SetPoint("TOP", Widget, "TOP", 0, arrowDistance);
 	end
 end
 

@@ -14,8 +14,13 @@ function UILib.CreateButton(Parent, Width, Height, Point, NormalTexture, PushedT
 	Widget:SetSize(Width, Height);
 	Widget:SetPoint(unpack(Point));
 	Widget:SetNormalTexture(NormalTexture);
-	Widget:SetPushedTexture(PushedTexture);
-	Widget:SetCheckedTexture(CheckedTexture);
+	if (PushedTexture ~= nil) then
+		Widget:SetPushedTexture(PushedTexture);
+	end
+	Widget:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down");
+	if (CheckedTexture ~= nil) then
+		Widget:SetCheckedTexture(CheckedTexture);
+	end
 	Widget:SetHighlightTexture(HighlightTexture);
 	Widget.Tooltip = Tooltip;
 	Widget:SetScript("OnClick", OnClickScript);

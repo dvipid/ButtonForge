@@ -54,6 +54,7 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<!--
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset left="11" right="12" top="12" bottom="11" />
@@ -65,6 +66,7 @@
 				<AbsValue val="32" />
 			</EdgeSize>
 		</Backdrop>
+	-->
 		<Layers>
 			<Layer>
 				<Texture parentKey="TitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">

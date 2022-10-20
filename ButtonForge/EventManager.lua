@@ -87,7 +87,7 @@ Misc:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");	--refresh spells (and prevent
 Misc:RegisterEvent("EQUIPMENT_SETS_CHANGED");		--resync equip sets
 Misc:RegisterEvent("PLAYER_REGEN_DISABLED");		--enter combat
 Misc:RegisterEvent("PLAYER_REGEN_ENABLED");			--out of combat 
-Misc:RegisterEvent("CURSOR_UPDATE");				--possibly show button grids
+Misc:RegisterEvent("CURSOR_CHANGED");				--possibly show button grids
 Misc:RegisterEvent("ACTIONBAR_SHOWGRID");			--...
 Misc:RegisterEvent("ACTIONBAR_HIDEGRID");			--...
 Misc:RegisterEvent("BAG_UPDATE");					--Refresh the bag item index cache
@@ -412,7 +412,7 @@ Conditional:SetScript("OnEvent", Conditional.OnEvent);
 
 
 function Misc:OnEvent(Event, ...)	
-	if (Event == "CURSOR_UPDATE") then
+	if (Event == "CURSOR_CHANGED") then
 		local Command = GetCursorInfo();
 		if (Command == "item") then
 			--We are now carrying an item, we do this since some items won't trigger the SHOW/HIDE GRID event (macros, spells, etc always do)

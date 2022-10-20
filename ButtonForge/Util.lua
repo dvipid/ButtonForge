@@ -1311,25 +1311,39 @@ SlashCmdList["BUTTONFORGE"] = function(msg, editbox)
 			if (Commands["-createbar"]) then
 				Util.ApplySlashCommands(Commands);
 			else
-				local BarName;
+				local BarNames;
 				if (Commands["-bar"]) then
-					BarName = Commands["-bar"][1];
+					BarNames = Commands["-bar"][1];
 				elseif (Commands["-destroybar"]) then
-					BarName = Commands["-destroybar"][1];
+					BarNames = Commands["-destroybar"][1];
 				end
-				local barFound = false;
-				for i = 1, #Bars do
-					if ((not BarName) or strlower(BarName) == strlower(Bars[i].BarSave["Label"])) then
-						Util.ApplySlashCommands(Commands, Bars[i]);
-						barFound = true;
-					end
-				end
-				-- bar name not found, check with Index
-				if ( barFound == false ) then
+
+				if (not BarNames) then
+					-- apply to all bars
 					for i = 1, #Bars do
-						if ( tonumber(BarName) == i ) then
-							Util.ApplySlashCommands(Commands, Bars[i]);
-							barFound = true;
+						Util.ApplySlashCommands(Commands, Bars[i]);
+					end
+				else
+					local BarName;
+					for BarName in string.gmatch(BarNames, '([^,]+)') do
+						local barFound = false;
+						for i = 1, #Bars do
+							if ((not BarName) or strlower(BarName) == strlower(Bars[i].BarSave["Label"])) then
+								Util.ApplySlashCommands(Commands, Bars[i]);
+								barFound = true;
+							end
+						end
+						-- bar name not found, check with Index
+						if ( barFound == false ) then
+							for i = 1, #Bars do
+								if ( tonumber(BarName) == i ) then
+									Util.ApplySlashCommands(Commands, Bars[i]);
+									barFound = true;
+								end
+							end
+						end
+						if (barFound == false) then
+							DEFAULT_CHAT_FRAME:AddMessage(string.gsub(Util.GetLocaleString("SlashListBarNotFound"), "<LABEL>", BarName), .5, 1, 0, 1);
 						end
 					end
 				end
@@ -1339,7 +1353,7 @@ SlashCmdList["BUTTONFORGE"] = function(msg, editbox)
 		end
 
 	else
-		Util.SlashShowMessageByLine(Util.GetLocaleString("SlashHelpFormatted"));		--]]
+		Util.SlashShowMessageByLine(Util.GetLocaleString("SlashHelpFormatted"));
 	end
 
 end
@@ -1359,8 +1373,9 @@ function Util.ApplySlashCommands(Commands, Bar)
 		local Bars = Util.ActiveBars;
 		for i = 1, #Bars do
 			local label = string.gsub(Util.GetLocaleString("SlashListBarWithLabel"), "<LABEL>", Bars[i].BarSave["Label"]);
+			label = string.gsub(label, "<INDEX>", i);
 			if (Bars[i].BarSave["Label"] == "") then
-				label = string.gsub(Util.GetLocaleString("SlashListBarWithIndex"), "<LABEL>", i);
+				label = string.gsub(Util.GetLocaleString("SlashListBarWithIndex"), "<INDEX>", i);
 			end
 			DEFAULT_CHAT_FRAME:AddMessage(label, .5, 1, 0, 1);
 		end
