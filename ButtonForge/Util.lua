@@ -2186,7 +2186,7 @@ function Util.CacheBagItems()
 	local BagItemNameId = {};
 	local ItemId;
 	local ItemName;
-	for b = 4, 0, -1 do
+	for b = NUM_BAG_SLOTS, 0, -1 do
 		for s = GetContainerNumSlots(b), 1, -1 do
 			ItemId = GetContainerItemID(b, s);
 			ItemName = GetItemInfo(ItemId or "");
@@ -2273,7 +2273,7 @@ function Util.LookupItemInvSlot(ItemId)
 
 	local Id;
 	local Name = "";
-	for b = 0, 4 do
+	for b = 0, NUM_BAG_SLOTS do
 		for s = 1, GetContainerNumSlots(b) do
 			Id = GetContainerItemID(b, s);
 			if (Id) then

@@ -23,7 +23,7 @@ Restrictions:
 
 
 History:
--Nov-2022			v1.1.0   - Updated for Wow v10.0.0 Dragonflight
+25-October-2022		v1.1.0   - Updated for Wow v10.0.0 Dragonflight
 							 - Slash command /bufo -bar now support a list of bars (ex.: /bufo -bar 1,2,3)
 
 27-January-2022		v1.0.11  - Fixed an issue picking up some spells

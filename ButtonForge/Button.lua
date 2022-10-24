@@ -144,7 +144,7 @@ function Button:SetupActionButtonClick()
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		Widget:RegisterForClicks("AnyUp", "AnyDown");
 		local SecurePreClickSnippet =
-			[[if (down and button == "KeyBind") then
+			[[if (down and (button == "KeyBind" or button == "LeftButton")) then
 				return "LeftButton";
 			end
 			if ((not down) and button ~= "KeyBind") then
