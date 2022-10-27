@@ -5,6 +5,7 @@
 ## Author: Massiner of Nathrezim
 ## SavedVariables: ButtonForgeGlobalSettings, ButtonForgeGlobalProfiles, ButtonForgeGlobalBackup
 ## SavedVariablesPerCharacter: ButtonForgeSave, BFSave
+## X-Curse-Project-ID: 25215
 ## OptionalDeps: Masque
 Declares.lua
 Const.lua
