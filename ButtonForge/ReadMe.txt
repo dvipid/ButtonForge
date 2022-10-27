@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.1.0
+Version: 1.1.1
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+27-October-2022		v1.1.0.1 - Fixes right-click self-cast
+
 25-October-2022		v1.1.0   - Updated for Wow v10.0.0 Dragonflight
 							 - Slash command /bufo -bar now support a list of bars (ex.: /bufo -bar 1,2,3)
 

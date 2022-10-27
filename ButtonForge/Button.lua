@@ -146,6 +146,8 @@ function Button:SetupActionButtonClick()
 		local SecurePreClickSnippet =
 			[[if (down and (button == "KeyBind" or button == "LeftButton")) then
 				return "LeftButton";
+			elseif (down and (button == "KeyBind" or button == "RightButton")) then
+				return "RightButton";
 			end
 			if ((not down) and button ~= "KeyBind") then
 				return;
