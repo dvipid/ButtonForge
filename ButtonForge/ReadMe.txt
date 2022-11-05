@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.1.0.1
+Version: 1.1.0.3
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,12 @@ Restrictions:
 
 
 History:
+November-2022		v1.1.0.3 - Fixes tradeskill buttons
+							 - Fixes keybinding abbreviations
+							 - Fixes bonus bar
+
+28-October-2022		v1.1.0.2 - Temporary fix to try matching the behaviour of Blizzard UI in regard to ActionButtonUseKeyDown
+
 27-October-2022		v1.1.0.1 - Fixes right-click self-cast
 
 25-October-2022		v1.1.0   - Updated for Wow v10.0.0 Dragonflight

@@ -1701,9 +1701,9 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 			end
 		end;
 	elseif (Command == "bonusaction") then
-		local page = 12; --The page for vehicleactionbar
+		local page = Const.BonusActionPageOffset;
 		if (HasOverrideActionBar()) then
-			page = 14;
+			page = Const.OverrideActionPageOffset;
 		end
 		local Texture = GetActionTexture(Data + ((page - 1) * 12));
 		if (Texture and (HasOverrideActionBar() or HasVehicleActionBar())) then
@@ -2811,3 +2811,14 @@ function Util.LookupEquipmentSetIndex(EquipmentSetID)
 	
 end
 
+function Util.GetBindingText(Key)
+	local s = {};
+	for v in string.gmatch(Key, "([^-]+)") do
+		if (Const.KeyBindingAbbr[v] ~= nil) then
+			table.insert(s, Const.KeyBindingAbbr[v]);
+		else
+			table.insert(s, GetBindingText(v, 1));
+		end
+	end
+	return table.concat(s, "-");
+end

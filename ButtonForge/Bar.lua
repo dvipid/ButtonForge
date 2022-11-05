@@ -119,11 +119,11 @@ function Bar.New(BarSave)
 			ButtonFrame:WrapScript(BFSecureSpecialBarFrame, "OnAttributeChanged",
 												[[local B, id, page;
 												if (value == "overridebar") then
-													page = 14;
+													page = 18; --Const.OverrideActionPageOffset
 												elseif (value == "vehicleui") then
-													page = 12;
+													page = 16; --Const.BonusActionPageOffset
 												else
-													page = 12;
+													page = 16; --Const.BonusActionPageOffset
 												end
 												
 												for i = 1, #Buttons do
@@ -416,17 +416,17 @@ function Bar:PrepareButtonSecureState()
 	local page, barType;
 	barType = BFSecureSpecialBarFrame:GetAttribute("bar");
 	--[[if (barType == "overridebar") then
-		page = 14;
+		page = Const.OverrideActionPageOffset;
 	elseif (barType == "vehicleui") then
-		page = 12;
+		page = Const.BonusActionPageOffset;
 	else
-		page = 12;
+		page = Const.BonusActionPageOffset;
 	end
 	--]]
 	if (HasOverrideActionBar()) then
-		page = 14;
+		page = Const.OverrideActionPageOffset;
 	else
-		page = 12;
+		page = Const.BonusActionPageOffset;
 	end
 	local Buttons = self.Buttons;
 	for i = 1, #Buttons do

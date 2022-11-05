@@ -141,27 +141,36 @@ function Button:SetupActionButtonClick()
 	
 	SecureClickWrapperFrame:UnwrapScript(Widget, "OnClick");
 	
+	-- /console ActionButtonUseKeyDown 1
+	-- activate when pressing
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		Widget:RegisterForClicks("AnyUp", "AnyDown");
 		local SecurePreClickSnippet =
-			[[if (down and (button == "KeyBind" or button == "LeftButton")) then
-				return "LeftButton";
-			elseif (down and (button == "KeyBind" or button == "RightButton")) then
-				return "RightButton";
-			end
-			if ((not down) and button ~= "KeyBind") then
-				return;
-			end
-			return false;]];
+			[[if (down and button ~= "KeyBind") then
+				-- workaround so we can move spells around without casting them on keydown
+				if (IsShiftKeyDown() == true) then
+					return false;
+				end
+			end]];
+--		local SecurePreClickSnippet =
+--			[[if (down and button == "KeyBind") then
+--				return "LeftButton";
+--			end
+--			if ((not down) and button ~= "KeyBind") then
+--				return;
+--			end
+--			return false;]];
 		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 		
+	-- /console ActionButtonUseKeyDown 0
+	-- activate when releasing
 	else
 		Widget:RegisterForClicks("AnyUp");
-		local SecurePreClickSnippet = 
-			[[if (button == "KeyBind") then
-				return "LeftButton";
-			end]];
-		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
+--		local SecurePreClickSnippet = 
+--			[[if (button == "KeyBind") then
+--				return "LeftButton";
+--			end]];
+--		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 	end
 	
 end
@@ -306,7 +315,7 @@ end
 function Button:RefreshKeyBindDisplay()
 	local Key = self.ButtonSave["KeyBinding"];
 	if (Key ~= nil and self.KeyBindTextEnabled) then
-		self.WHotKey:SetText(GetBindingText(Key, "KEY_", 1));
+		self.WHotKey:SetText(Util.GetBindingText(Key));
 		--if not self.WHotKey.__LBF_SetPoint then
 			--self.WHotKey:ClearAllPoints();
 			--self.WHotKey:SetPoint("TOPLEFT", self.Widget, "TOPLEFT", -2, -2);
@@ -941,8 +950,8 @@ function Button:SetEnvBonusAction(Id)
 	
 	self.Mode 			= "bonusaction";
 	self.BonusActionId	= Id;
-	self.BonusActionSlot = Id + 132;
-	self.Texture 		= GetActionTexture(self.BonusActionSlot);-- "Interface/Icons/"..(GetEquipmentSetInfoByName(Name) or "");	--safe provided Name ~= nil
+	--self.BonusActionSlot = Id + ((Const.BonusActionPageOffset - 1) * 12);
+	--self.Texture 		= GetActionTexture(self.BonusActionSlot);-- Not Used
 	self.Target			= "target";
 	self.Tooltip		= Util.GetLocaleString("BonusActionTooltip")..Id;
 	self:ResetAppearance();
@@ -1175,13 +1184,14 @@ function Button:SetAttributes(Type, Value)
 		end
 
 		local SpellName, _, _, _, _, _, SpellId = GetSpellInfo(Value);
+		
 		-- Patch to fix tradeskills
 		if ( prof1 and SpellName == prof1_name ) then
 			self.Widget:SetAttribute("type", "macro");
-			self.Widget:SetAttribute("macrotext", "/run RunScript('if (select(6, C_TradeSkillUI.GetTradeSkillLine()) == prof1_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof1_skillLine..") end')");
+			self.Widget:SetAttribute("macrotext", "/run RunScript('local professionInfo = C_TradeSkillUI.GetBaseProfessionInfo(); if (professionInfo.professionID == prof1_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof1_skillLine..") end')");
 		elseif ( prof2 and SpellName == prof2_name ) then
 			self.Widget:SetAttribute("type", "macro");
-			self.Widget:SetAttribute("macrotext", "/run RunScript('if (select(6, C_TradeSkillUI.GetTradeSkillLine()) == prof2_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
+			self.Widget:SetAttribute("macrotext", "/run RunScript('local professionInfo = C_TradeSkillUI.GetBaseProfessionInfo(); if (professionInfo.professionID == prof2_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
 
 		-- Patch for Priest PVP Talent "Inner Light and Shadow" (Thanks to techno_tpuefol)
 		elseif (SpellId == Const.PRIEST_PVP_TALENT_INNER_LIGHT_ID or SpellId == Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID) then
@@ -1218,9 +1228,9 @@ function Button:SetAttributes(Type, Value)
 		self.Widget:SetAttribute("type", "action");
 		self.Widget:SetAttribute("id", Value);
 		if (HasOverrideActionBar()) then
-			self.Widget:SetAttribute("action", Value + ((14 - 1) * 12));
+			self.Widget:SetAttribute("action", Value + ((Const.OverrideActionPageOffset - 1) * 12));
 		else
-			self.Widget:SetAttribute("action", Value + ((12 - 1) * 12));
+			self.Widget:SetAttribute("action", Value + ((Const.BonusActionPageOffset - 1) * 12));
 		end
 	elseif (Type == "flyout") then
 		self.Widget:SetAttribute("type", "flyout");
