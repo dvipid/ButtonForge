@@ -17,7 +17,7 @@ Const.PRIEST_PVP_TALENT_INNER_LIGHT_ID = 355897;
 Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID = 355898;
 Const.COVENANT_WARRIOR_FURY_CONDEMN_ID = 330325;
 Const.Version				= 1.1;
-Const.VersionMinor			= 0.3;
+Const.VersionMinor			= 0.4;
 Const.MAX_ACCOUNT_MACROS 	= 120;
 Const.ButtonNaming 			= "ButtonForge"
 Const.ButtonSeq 			= 1;					--This value will increment (so not technically a const...)
@@ -73,11 +73,10 @@ for lActionSlot = 1, 300 do
 		DEFAULT_CHAT_FRAME:AddMessage(lMessage);
 	end
 end
-* It looks like in Dragonflights BonusActionIds starts at 181
+* It looks like in Dragonflights BonusActionIds page starts at (180/12) + 1
 ]]--
 Const.BonusActionPageOffset = 16;
 Const.OverrideActionPageOffset = 18;
-Const.BonusActionOffset = 181;
 
 
 Const.StealthSpellIds = {};

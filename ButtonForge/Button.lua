@@ -1446,7 +1446,7 @@ function Button:DisplayActive(TexCoords)
 	end
 	Icon:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 	if (Util.LBFMasterGroup) then
-		Util.LBFMasterGroup:ReSkin(true);
+		Util.LBFMasterGroup:ReSkin(self.Widget);
 	end
 	Icon:Show();
 	
