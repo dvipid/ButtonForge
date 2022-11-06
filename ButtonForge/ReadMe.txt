@@ -26,6 +26,7 @@ History:
 November-2022		v1.1.0.3 - Fixes tradeskill buttons
 							 - Fixes keybinding abbreviations
 							 - Fixes bonus bar
+							 - Fixes Masque reskin after a UI reload
 
 28-October-2022		v1.1.0.2 - Temporary fix to try matching the behaviour of Blizzard UI in regard to ActionButtonUseKeyDown
 
