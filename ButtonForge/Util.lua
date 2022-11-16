@@ -2187,8 +2187,8 @@ function Util.CacheBagItems()
 	local ItemId;
 	local ItemName;
 	for b = NUM_BAG_SLOTS, 0, -1 do
-		for s = GetContainerNumSlots(b), 1, -1 do
-			ItemId = GetContainerItemID(b, s);
+		for s = C_Container.GetContainerNumSlots(b), 1, -1 do
+			ItemId = C_Container.GetContainerItemID(b, s);
 			ItemName = GetItemInfo(ItemId or "");
 			if (ItemName ~= nil and ItemName ~= "") then
 				BagItemNameIndexes[ItemName] = {b, s};
@@ -2274,8 +2274,8 @@ function Util.LookupItemInvSlot(ItemId)
 	local Id;
 	local Name = "";
 	for b = 0, NUM_BAG_SLOTS do
-		for s = 1, GetContainerNumSlots(b) do
-			Id = GetContainerItemID(b, s);
+		for s = 1, C_Container.GetContainerNumSlots(b) do
+			Id = C_Container.GetContainerItemID(b, s);
 			if (Id) then
 				Name = GetItemInfo(Id);
 				if (ItemId == Id) then

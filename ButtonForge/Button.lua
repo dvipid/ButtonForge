@@ -1846,7 +1846,7 @@ end
 function Button:UpdateTooltipEquipmentSet()
 	self = self.ParentButton or self;	--This is a sneaky cheat incase the widget was used to get here...
 
-	GameTooltip:SetEquipmentSet(self.EquipmentSetName);
+	GameTooltip:SetEquipmentSet(self.EquipmentSetId);
 end
 function Button:UpdateTooltipBonusAction()
 	self = self.ParentButton or self;	--This is a sneaky cheat incase the widget was used to get here...

@@ -23,7 +23,9 @@ Restrictions:
 
 
 History:
-November-2022		v1.1.0.4 - Some optimisation with Masque button reskin
+16-November-2022	v1.1.0.5 - Updated for Wow v10.0.2
+
+7-November-2022		v1.1.0.4 - Some optimisation with Masque button reskin
 
 5-November-2022		v1.1.0.3 - Fixes tradeskill buttons
 							 - Fixes keybinding abbreviations
