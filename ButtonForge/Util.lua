@@ -2186,8 +2186,8 @@ function Util.CacheBagItems()
 	local BagItemNameId = {};
 	local ItemId;
 	local ItemName;
-	for b = NUM_BAG_SLOTS, 0, -1 do
-		for s = C_Container.GetContainerNumSlots(b), 1, -1 do
+	for b = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+		for s = 1, C_Container.GetContainerNumSlots(b) do
 			ItemId = C_Container.GetContainerItemID(b, s);
 			ItemName = GetItemInfo(ItemId or "");
 			if (ItemName ~= nil and ItemName ~= "") then
@@ -2273,7 +2273,7 @@ function Util.LookupItemInvSlot(ItemId)
 
 	local Id;
 	local Name = "";
-	for b = 0, NUM_BAG_SLOTS do
+	for b = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		for s = 1, C_Container.GetContainerNumSlots(b) do
 			Id = C_Container.GetContainerItemID(b, s);
 			if (Id) then
@@ -2820,5 +2820,11 @@ function Util.GetBindingText(Key)
 			table.insert(s, GetBindingText(v, 1));
 		end
 	end
+
+	local lastChar = string.sub(Key, -1);
+	if (lastChar == "-") then
+		table.insert(s, GetBindingText(lastChar, 1));
+	end
+
 	return table.concat(s, "-");
 end

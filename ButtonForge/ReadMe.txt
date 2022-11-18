@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.1.0.5
+Version: 1.1.0.6
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,9 @@ Restrictions:
 
 
 History:
+17-November-2022	v1.1.0.6 - Fixes "-" (dash) keybind text
+							 - Fixes scanning bag slots
+
 16-November-2022	v1.1.0.5 - Updated for Wow v10.0.2
 
 7-November-2022		v1.1.0.4 - Some optimisation with Masque button reskin
