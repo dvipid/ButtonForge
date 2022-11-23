@@ -134,6 +134,7 @@ function Button:SetupActionButtonClick()
 	local Widget = self.Widget;
 	
 	-- This particular setting will only gets set at login (if the player changes it they must log out and back in)
+	-- NOTE 2022-11-23 : REVIEW CANDIDATE - since WoW v10 ActionButtonUseKeyDown now directly impacts SABT and overrides ButtonForge behaviour
 	if (Util.ForceOffCastOnKeyDown) then
 		Widget:RegisterForClicks("AnyUp");
 		return;
@@ -146,31 +147,24 @@ function Button:SetupActionButtonClick()
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		Widget:RegisterForClicks("AnyUp", "AnyDown");
 		local SecurePreClickSnippet =
-			[[if (down and button ~= "KeyBind") then
-				-- workaround so we can move spells around without casting them on keydown
-				if (IsShiftKeyDown() == true) then
-					return false;
-				end
-			end]];
---		local SecurePreClickSnippet =
---			[[if (down and button == "KeyBind") then
---				return "LeftButton";
---			end
---			if ((not down) and button ~= "KeyBind") then
---				return;
---			end
---			return false;]];
+			[[if (down and button == "KeyBind") then
+				return "LeftButton";
+			end
+			if ((not down) and button ~= "KeyBind") then
+				return;
+			end
+			return false;]];
 		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 		
 	-- /console ActionButtonUseKeyDown 0
 	-- activate when releasing
 	else
 		Widget:RegisterForClicks("AnyUp");
---		local SecurePreClickSnippet = 
---			[[if (button == "KeyBind") then
---				return "LeftButton";
---			end]];
---		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
+		local SecurePreClickSnippet = 
+			[[if (button == "KeyBind") then
+				return "LeftButton";
+			end]];
+		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 	end
 	
 end
@@ -423,7 +417,20 @@ end
 --------------------------------------------------------------------------------------------]]
 
 --[[ Script Handlers --]]
+local ResetActionButtonUseKeyDown = false;
 function Button.PreClickBasic(Widget, Button, Down)
+	
+	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
+	if ((not Down) and Button ~= "KeyBind" and GetCVarBool("ActionButtonUseKeyDown")) then
+		-- The Use Key Down mode is set, but we are on the up phase and a mouse click, so temporarily disable ActionButtonUseKeyDown so mouse click will work
+        ResetActionButtonUseKeyDown = true;
+        SetCVar("ActionButtonUseKeyDown", 0);
+    else
+		-- Technically a redundant statement, but here to make clear in any other case the flag is unset
+        ResetActionButtonUseKeyDown = false;
+    end
+	-------------------------------------
+
 	if (InCombatLockdown()) then
 		return;
 	end
@@ -439,6 +446,18 @@ function Button.PreClickBasic(Widget, Button, Down)
 	end
 end
 function Button.PreClick(Widget, Button, Down)
+
+	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
+	if ((not Down) and Button ~= "KeyBind" and GetCVarBool("ActionButtonUseKeyDown")) then
+		-- The Use Key Down mode is set, but we are on the up phase and a mouse click, so temporarily disable ActionButtonUseKeyDown so mouse click will work
+        ResetActionButtonUseKeyDown = true;
+        SetCVar("ActionButtonUseKeyDown", 0);
+    else
+		-- Technically a redundant statement, but here to make clear in any other case the flag is unset
+        ResetActionButtonUseKeyDown = false;
+    end
+	-------------------------------------
+
 	if (InCombatLockdown() or Button == "KeyBind" or Down) then
 		return;
 	end
@@ -455,6 +474,15 @@ function Button.PreClick(Widget, Button, Down)
 end
 
 function Button.PostClickBasic(Widget, Button, Down)
+	
+	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
+	if (ResetActionButtonUseKeyDown) then
+		-- Make sure to set the ActionButtonUseKeyDown back to on, since we temporarily unset it for a mouse click
+        SetCVar("ActionButtonUseKeyDown", 1);
+        ResetActionButtonUseKeyDown = false;
+    end
+	-------------------------------------
+
 	local self = Widget.ParentButton;
 	self:UpdateChecked();
 	if (InCombatLockdown()) then
@@ -480,6 +508,15 @@ function Button.PostClickBasic(Widget, Button, Down)
 	--self:UpdateChecked();
 end
 function Button.PostClick(Widget, Button, Down)
+	
+	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
+	if (ResetActionButtonUseKeyDown) then
+		-- Make sure to set the ActionButtonUseKeyDown back to on, since we temporarily unset it for a mouse click
+        SetCVar("ActionButtonUseKeyDown", 1);
+        ResetActionButtonUseKeyDown = false;
+    end
+	-------------------------------------
+
 	local self = Widget.ParentButton;
 	self:UpdateChecked();
 	if (InCombatLockdown() or Button == "KeyBind" or Down) then

@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.1.0.6
+Version: 1.1.0.7
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+23-November-2022	v1.1.0.7 - Workaround to allow mouse clicks to function on the up phase, this is a temporary solution until a better option becomes available
+
 17-November-2022	v1.1.0.6 - Fixes "-" (dash) keybind text
 							 - Fixes scanning bag slots
 
