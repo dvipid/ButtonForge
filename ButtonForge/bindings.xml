@@ -1,3 +1,4 @@
 <Bindings>
-	<Binding name="CLICK BFToolbarToggle:LeftButton" header="ButtonForge" />
+	<Binding category="ADDONS" name="CLICK BFToolbarToggle:LeftButton" header="ButtonForge">
+	</Binding>
 </Bindings>

@@ -142,7 +142,8 @@ function Button:SetupActionButtonClick()
 	
 	SecureClickWrapperFrame:UnwrapScript(Widget, "OnClick");
 	
-	-- /console ActionButtonUseKeyDown 1
+	-- /console ActionButtonUseKeyDown 1 (requires to do a /console reloadui)
+	-- /run SetCVar("ActionButtonUseKeyDown", 1)
 	-- activate when pressing
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		Widget:RegisterForClicks("AnyUp", "AnyDown");
@@ -156,7 +157,8 @@ function Button:SetupActionButtonClick()
 			return false;]];
 		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 		
-	-- /console ActionButtonUseKeyDown 0
+	-- /console ActionButtonUseKeyDown 0 (requires to do a /console reloadui)
+	-- /run SetCVar("ActionButtonUseKeyDown", 0)
 	-- activate when releasing
 	else
 		Widget:RegisterForClicks("AnyUp");
