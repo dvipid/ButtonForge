@@ -82,14 +82,14 @@ function UILib.ToggleAdvancedTools()
 		BFAdvancedToolsLayer:Hide();
 		BFToolbarAdvanced:SetChecked(false);
 		ButtonForgeSave.AdvancedMode = false;
-		BFToolbar:SetSize(216, 88);
+		BFToolbar:SetSize(225, 97);
 		BFToolbarCreateBonusBar:Hide();
 		BFToolbarRightClickSelfCast:Hide();
 	else
 		BFAdvancedToolsLayer:Show();
 		BFToolbarAdvanced:SetChecked(true);
 		ButtonForgeSave.AdvancedMode = true;
-		BFToolbar:SetSize(216, 116);
+		BFToolbar:SetSize(225, 129);
 		BFToolbarCreateBonusBar:Show();
 		BFToolbarRightClickSelfCast:Show();
 	end

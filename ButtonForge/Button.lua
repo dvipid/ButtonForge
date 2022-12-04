@@ -69,7 +69,6 @@ function Button.New(Parent, ButtonSave, ButtonLocked, TooltipEnabled, MacroText,
 	NewButton.WName 			= _G[Name.."Name"];
 	NewButton.Widget.ParentButton = NewButton;
 	
-	NewButton.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);	
 	NewButton.WCooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
 	NewButton.WCooldown:SetSwipeColor(0, 0, 0);
 	NewButton.WCooldown:SetHideCountdownNumbers(false);
@@ -100,26 +99,6 @@ function Button.CreateButtonWidget(Parent)
 		Widget:SetScript("PostClick", Button.PostClick);
 		Widget:SetScript("PreClick", Button.PreClick);
 	end
-	
-	--The ActionButtonTemplate does not include the following (which will be created here)
-	--FloatingBG	(e.g. MultiBarButtonTemplate)
-	local FloatingBG = Widget:CreateTexture(Name.."FloatingBG", "BACKGROUND", nil, -1);
-	FloatingBG:SetTexture("Interface\\Buttons\\UI-Quickslot");
-	FloatingBG:SetAlpha(0.4);
-	FloatingBG:SetPoint("TOPLEFT", -15, 15);
-	FloatingBG:SetPoint("BOTTOMRIGHT", 15, -15);
-
-	--AutoCastable	(e.g. PetActionButtonTemplate)
-	local AutoCastable = Widget:CreateTexture(Name.."AutoCastable", "OVERLAY");
-	AutoCastable:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay");
-	AutoCastable:SetSize(70, 70);
-	AutoCastable:SetPoint("CENTER", 0, 0);
-	AutoCastable:Hide();
-	
-	--AutoCast
-	local Shine = CreateFrame("FRAME", Name.."Shine", Widget, "AutoCastShineTemplate");
-	Shine:SetSize(34, 34);
-	Shine:SetPoint("CENTER", 0, 0);
 	
 	--_G[Widget:GetName().."HotKey"]:ClearAllPoints();
 	--_G[Widget:GetName().."HotKey"]:SetPoint("TOPLEFT", Widget, "TOPLEFT", 1, -2);

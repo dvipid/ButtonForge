@@ -93,7 +93,7 @@ Locale["SlashHelpFormatted"]	=
 	"|c"..Const.LightBlue.."-rows <number>|r\n"..
 	"|c"..Const.LightBlue.."-cols <number>|r\n"..
 	"|c"..Const.LightBlue.."-scale <size>|r (1 is normal scale)\n"..
-	"|c"..Const.LightBlue.."-gap <size>|r (6 is normal gap)\n"..
+	"|c"..Const.LightBlue.."-gap <size>|r (2 is normal gap)\n"..
 	"|c"..Const.LightBlue.."-coords <left> <top>|r\n"..
 	"|c"..Const.LightBlue.."-tooltips <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-emptybuttons <on/off/toggle>|r\n"..

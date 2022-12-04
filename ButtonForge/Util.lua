@@ -653,20 +653,20 @@ function Util.CreateBlizzardBarWrappers()
 	end
 
 	Util.BlizBarWrappers[1] = CreateFrame("FRAME", nil, UIParent);
-	Util.BlizBarWrappers[1]:SetPoint("TOPLEFT", MultiBarBottomLeftButton1, "TOPLEFT", -Const.I, Const.I + 1);
-	Util.BlizBarWrappers[1]:SetPoint("BOTTOMRIGHT", MultiBarBottomLeftButton12, "BOTTOMRIGHT", Const.I, -Const.I + 1);
+	Util.BlizBarWrappers[1]:SetPoint("TOPLEFT", MultiBarBottomLeftButton1, "TOPLEFT", -Const.I, Const.I);
+	Util.BlizBarWrappers[1]:SetPoint("BOTTOMRIGHT", MultiBarBottomLeftButton12, "BOTTOMRIGHT", Const.I, -Const.I);
 
 	Util.BlizBarWrappers[2] = CreateFrame("FRAME", nil, UIParent);
-	Util.BlizBarWrappers[2]:SetPoint("TOPLEFT", MultiBarBottomRightButton1, "TOPLEFT", -Const.I, Const.I + 1);
-	Util.BlizBarWrappers[2]:SetPoint("BOTTOMRIGHT", MultiBarBottomRightButton12, "BOTTOMRIGHT", Const.I, -Const.I + 1);
+	Util.BlizBarWrappers[2]:SetPoint("TOPLEFT", MultiBarBottomRightButton1, "TOPLEFT", -Const.I, Const.I);
+	Util.BlizBarWrappers[2]:SetPoint("BOTTOMRIGHT", MultiBarBottomRightButton12, "BOTTOMRIGHT", Const.I, -Const.I);
 
 	Util.BlizBarWrappers[3] = CreateFrame("FRAME", nil, UIParent);
-	Util.BlizBarWrappers[3]:SetPoint("TOPLEFT", MultiBarRightButton1, "TOPLEFT", -Const.I, Const.I + 1);
-	Util.BlizBarWrappers[3]:SetPoint("BOTTOMRIGHT", MultiBarRightButton12, "BOTTOMRIGHT", Const.I, -Const.I + 1);
+	Util.BlizBarWrappers[3]:SetPoint("TOPLEFT", MultiBarRightButton1, "TOPLEFT", -Const.I, Const.I);
+	Util.BlizBarWrappers[3]:SetPoint("BOTTOMRIGHT", MultiBarRightButton12, "BOTTOMRIGHT", Const.I, -Const.I);
 	
 	Util.BlizBarWrappers[4] = CreateFrame("FRAME", nil, UIParent);
-	Util.BlizBarWrappers[4]:SetPoint("TOPLEFT", MultiBarLeftButton1, "TOPLEFT", -Const.I, Const.I + 1);
-	Util.BlizBarWrappers[4]:SetPoint("BOTTOMRIGHT", MultiBarLeftButton12, "BOTTOMRIGHT", Const.I, -Const.I + 1);
+	Util.BlizBarWrappers[4]:SetPoint("TOPLEFT", MultiBarLeftButton1, "TOPLEFT", -Const.I, Const.I);
+	Util.BlizBarWrappers[4]:SetPoint("BOTTOMRIGHT", MultiBarLeftButton12, "BOTTOMRIGHT", Const.I, -Const.I);
 
 
 end
@@ -744,7 +744,7 @@ function Util.NewBarSave()
 	Save["TooltipsOn"] = true;
 	Save["MacroText"] = true;
 	Save["KeyBindText"] = true;
-	Save["ButtonGap"] = 6;
+	Save["ButtonGap"] = 2;
 	Save["Enabled"] = true;
 	Save["BonusBar"] = false;
 	Save["GUI"] = true;

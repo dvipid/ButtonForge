@@ -172,7 +172,7 @@ function Bar.New(BarSave)
 			
 		--[[Tile Texture, used to indicate where new buttons will be created when the cols and rows buttons are used]]--
 			local TileTexture = Background:CreateTexture();
-			TileTexture:SetTexture(Const.ImagesDir.."BarBackdrop.tga", true);
+			TileTexture:SetTexture(Const.ImagesDir.."BarBackdrop.tga", "REPEAT", "REPEAT");
 			TileTexture:SetAlpha(.3);
 			TileTexture:SetPoint("TOPLEFT", Background, "TOPLEFT", Const.I, -Const.I);
 			TileTexture:Hide();
@@ -795,7 +795,7 @@ function Bar:UpdateTileSize(Cols, Rows)
 	local Tile = self.TileTexture;
 	local BWidth = (Cols * self.BSize - self.BG) * Scale;
 	local BHeight = (Rows * self.BSize - self.BG) * Scale;
-	
+
 	Tile:SetSize(BWidth, BHeight);
 	Tile:SetTexCoord(0, Cols - self.GFrac, 0, Rows - self.GFrac);
 end

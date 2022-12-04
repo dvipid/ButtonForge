@@ -23,6 +23,14 @@ Restrictions:
 
 
 History:
+04-December-2022	v1.1.0.8 - Update button to have new UI style
+							 - Fix to show background grid when dragging new buttons vertically
+							 - New bars will gain a button gap of 2 now as per updated UI layout (was 6)
+							 - Fixed Button Forge Bar Configuration Button to work when clicked on the toolbar
+							 - Button Forge toolbar has been updated to accomodate updated button layout
+							 - Adjust layout of toolbar title
+							 - Improved visibility on toolbar for when Right-Click-Self cast is active
+
 23-November-2022	v1.1.0.7 - Workaround to allow mouse clicks to function on the up phase, this is a temporary solution until a better option becomes available
 							 - Fixes Blizzard Keybindings option
 
