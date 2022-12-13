@@ -154,7 +154,7 @@ BarSaveValidationFunctions["ButtonGap"] 	= ValidateNumeric;
 BarSaveValidationFunctions["Enabled"] 					= ValidateBoolean;
 BarSaveValidationFunctions["BonusBar"] 					= ValidateBoolean;
 BarSaveValidationFunctions["GUI"] 						= ValidateBoolean;
-BarSaveValidationFunctions["Alpha"] 		= function(v) return ValidateNumeric(v) and v >= 0 end;
+BarSaveValidationFunctions["Alpha"] 		= function(v) return ValidateNumeric(v) and v >= 0 and v <= 1 end;
 
 
 --One quick override function
