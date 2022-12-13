@@ -70,6 +70,93 @@ Util.MacroCheckDelayComplete = false;
 Util.ForceOffCastOnKeyDown = false;
 Util.MountUselessIndexToIndex = {};
 
+
+local DefaultBarSave = {};
+DefaultBarSave["Left"]			= 0;
+DefaultBarSave["Top"]			= 0;
+DefaultBarSave["Scale"]			= 1;
+DefaultBarSave["Order"]			= 0;
+DefaultBarSave["Label"]			= nil;
+DefaultBarSave["Rows"]			= Const.DefaultRows;
+DefaultBarSave["Cols"]			= Const.DefaultCols;
+DefaultBarSave["VDriver"]		= nil;
+DefaultBarSave["HVehicle"]		= true;
+DefaultBarSave["HSpec1"]		= false;
+DefaultBarSave["HSpec2"]		= false;
+DefaultBarSave["HSpec3"]		= false;
+DefaultBarSave["HSpec4"]		= false;
+DefaultBarSave["HBonusBar"] 	= true;
+DefaultBarSave["HPetBattle"] 	= true;
+DefaultBarSave["GridAlwaysOn"] 	= true;
+DefaultBarSave["ButtonsLocked"] = false;
+DefaultBarSave["TooltipsOn"] 	= true;
+DefaultBarSave["MacroText"] 	= true;
+DefaultBarSave["KeyBindText"] 	= true;
+DefaultBarSave["ButtonGap"] 	= 2;
+DefaultBarSave["Enabled"] 		= true;
+DefaultBarSave["BonusBar"] 		= false;
+DefaultBarSave["GUI"] 			= true;
+DefaultBarSave["Alpha"] 		= 1;
+
+local DefaultBonusBarSave = {};
+DefaultBonusBarSave["Left"]				= 0;
+DefaultBonusBarSave["Top"]				= 0;
+DefaultBonusBarSave["Scale"]			= 1;
+DefaultBonusBarSave["Order"]			= 0;
+DefaultBonusBarSave["Label"]			= nil;
+DefaultBonusBarSave["Rows"]						= 1;
+DefaultBonusBarSave["Cols"]						= 13;
+DefaultBonusBarSave["VDriver"]					= "[overridebar][vehicleui] show; hide";
+DefaultBonusBarSave["HVehicle"]					= false;
+DefaultBonusBarSave["HSpec1"]			= false;
+DefaultBonusBarSave["HSpec2"]			= false;
+DefaultBonusBarSave["HSpec3"]			= false;
+DefaultBonusBarSave["HSpec4"]			= false;
+DefaultBonusBarSave["HBonusBar"]				= false;
+DefaultBonusBarSave["HPetBattle"] 		= true;
+DefaultBonusBarSave["GridAlwaysOn"] 			= false;
+DefaultBonusBarSave["ButtonsLocked"] 			= true;
+DefaultBonusBarSave["TooltipsOn"] 		= true;
+DefaultBonusBarSave["MacroText"] 		= true;
+DefaultBonusBarSave["KeyBindText"] 		= true;
+DefaultBonusBarSave["ButtonGap"] 		= 2;
+DefaultBonusBarSave["Enabled"] 			= true;
+DefaultBonusBarSave["BonusBar"] 				= true;
+DefaultBonusBarSave["GUI"] 				= true;
+DefaultBonusBarSave["Alpha"] 			= 1;
+
+local ValidateNumeric = function(v) return type(v) == "number" end;
+local ValidateBoolean = function(v) return type(v) == "boolean" end;
+
+local BarSaveValidationFunctions = {};
+
+BarSaveValidationFunctions["Left"]			= ValidateNumeric;
+BarSaveValidationFunctions["Top"]			= ValidateNumeric;
+BarSaveValidationFunctions["Scale"]			= function(v) return ValidateNumeric(v) and v >= 0 end;
+BarSaveValidationFunctions["Order"]			= function(v) return ValidateNumeric(v) and v >= 0 end;
+BarSaveValidationFunctions["Label"]			= function(v) return true end;
+BarSaveValidationFunctions["Rows"]			= function(v) return ValidateNumeric(v) and v >= 1 end;
+BarSaveValidationFunctions["Cols"]			= function(v) return ValidateNumeric(v) and v >= 1 end;
+BarSaveValidationFunctions["VDriver"]					= function(v) return true end;
+BarSaveValidationFunctions["HVehicle"]					= ValidateBoolean;
+BarSaveValidationFunctions["HSpec1"]					= ValidateBoolean;
+BarSaveValidationFunctions["HSpec2"]					= ValidateBoolean;
+BarSaveValidationFunctions["HSpec3"]					= ValidateBoolean;
+BarSaveValidationFunctions["HSpec4"]					= ValidateBoolean;
+BarSaveValidationFunctions["HBonusBar"] 				= ValidateBoolean;
+BarSaveValidationFunctions["HPetBattle"] 				= ValidateBoolean;
+BarSaveValidationFunctions["GridAlwaysOn"] 				= ValidateBoolean;
+BarSaveValidationFunctions["ButtonsLocked"] 			= ValidateBoolean;
+BarSaveValidationFunctions["TooltipsOn"] 				= ValidateBoolean;
+BarSaveValidationFunctions["MacroText"] 				= ValidateBoolean;
+BarSaveValidationFunctions["KeyBindText"] 				= ValidateBoolean;
+BarSaveValidationFunctions["ButtonGap"] 	= ValidateNumeric;
+BarSaveValidationFunctions["Enabled"] 					= ValidateBoolean;
+BarSaveValidationFunctions["BonusBar"] 					= ValidateBoolean;
+BarSaveValidationFunctions["GUI"] 						= ValidateBoolean;
+BarSaveValidationFunctions["Alpha"] 		= function(v) return ValidateNumeric(v) and v >= 0 end;
+
+
 --One quick override function
 local G_PickupSpellBookItem = PickupSpellBookItem;
 local function PickupSpellBookItem(NameRank, Book)
@@ -724,31 +811,12 @@ end
 --]]
 function Util.NewBarSave()
 	local Save = {};
-	Save["Left"]	= 0;
-	Save["Top"]		= 0;
-	Save["Scale"]	= 1;
-	Save["Order"]	= #Util.ActiveBars;
-	Save["Label"]	= nil;
-	Save["Rows"]	= Const.DefaultRows;
-	Save["Cols"]	= Const.DefaultCols;
-	Save["VDriver"]	= nil;
-	Save["HVehicle"]	= true;
-	Save["HSpec1"]	= false;
-	Save["HSpec2"]	= false;
-	Save["HSpec3"]	= false;
-	Save["HSpec4"]	= false;
-	Save["HBonusBar"] = true;
-	Save["HPetBattle"] = true;
-	Save["GridAlwaysOn"] = true;
-	Save["ButtonsLocked"] = false;
-	Save["TooltipsOn"] = true;
-	Save["MacroText"] = true;
-	Save["KeyBindText"] = true;
-	Save["ButtonGap"] = 2;
-	Save["Enabled"] = true;
-	Save["BonusBar"] = false;
-	Save["GUI"] = true;
-	Save["Alpha"] = 1;
+	for k, v in pairs(DefaultBarSave) do
+		Save[k] = v;
+	end
+
+	-- special case for order
+	Save["Order"] = #Util.ActiveBars;
 	Save["Buttons"]	= {};
 	
 	return Save;
@@ -760,12 +828,36 @@ function Util.NewBar(Left, Top, BarSave)
 	end
 	local NewBar;
 	
-	if (not BarSave) then
+	if (type(BarSave) ~= "table") then
 		BarSave = Util.NewBarSave();
 		BarSave["Left"] = Left;
 		BarSave["Top"] = Top;
 		table.insert(ButtonForgeSave.Bars, BarSave);
 		PlaySound(177, "Master");
+	else
+		-- Make sure the BarSave has no missing or invalid settings
+		-- First choose if we use normal defaults, or those for the Bonus Bar
+		local Defaults;
+		if (BarSave["BonusBar"]) then
+			Defaults = DefaultBonusBarSave;
+		else
+			Defaults = DefaultBarSave;
+		end
+
+		-- Scan through each setting, and run the validation function, if fail then grab the default value
+		for k, v in pairs(Defaults) do
+			if (not BarSaveValidationFunctions[k](BarSave[k])) then
+				BarSave[k] = v;
+				if (k == "Order") then
+					BarSave[k] = #Util.ActiveBars;
+				end
+			end
+		end
+
+		-- Make sure the Buttons table exists (downstream code will handle setting up empty button entries)
+		if (type(BarSave["Buttons"]) ~= "table") then
+			BarSave["Buttons"] = {};
+		end
 	end
 	
 	if (#(Util.InactiveBars) > 0) then
@@ -790,17 +882,15 @@ function Util.NewBonusBar(Left, Top)
 	if (InCombatLockdown()) then
 		return;
 	end
-	local BarSave = Util.NewBarSave();
-	BarSave["BonusBar"] = true;
+	local BarSave = {};
+	for k, v in pairs(DefaultBonusBarSave) do
+		BarSave[k] = v;
+	end
 	BarSave["Left"] = Left;
 	BarSave["Top"] = Top;
-	BarSave["Rows"] = 1;
-	BarSave["Cols"] = 13;
-	BarSave["HBonusBar"] = false;
-	BarSave["HVehicle"] = false;
-	BarSave["VDriver"] = "[overridebar][vehicleui] show; hide";
-	BarSave["ButtonsLocked"] = true;
-	BarSave["GridAlwaysOn"] = false;
+	BarSave["Order"] = #Util.ActiveBars;
+	BarSave["Buttons"] = {};
+
 	table.insert(ButtonForgeSave.Bars, BarSave);
 	PlaySound(177, "Master");
 	return Util.NewBar(Left, Top, BarSave);

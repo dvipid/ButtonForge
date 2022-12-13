@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.1.0.8
+Version: 1.1.1.0
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+13-December-2022	v1.1.1.0 - Added validation for BarSave values when BarSave is loaded to a Bar, invalid values get replaced with defaults
+
 04-December-2022	v1.1.0.8 - Update button to have new UI style
 							 - Fix to show background grid when dragging new buttons vertically
 							 - New bars will gain a button gap of 2 now as per updated UI layout (was 6)
