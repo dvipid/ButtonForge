@@ -125,11 +125,39 @@ DefaultBonusBarSave["BonusBar"] 				= true;
 DefaultBonusBarSave["GUI"] 				= true;
 DefaultBonusBarSave["Alpha"] 			= 1;
 
+local CleanseEcho = function(v) return v end;
+
+local BarSaveCleanseFunctions = {};
+BarSaveCleanseFunctions["Left"]			= tonumber;
+BarSaveCleanseFunctions["Top"]			= tonumber;
+BarSaveCleanseFunctions["Scale"]			= tonumber;
+BarSaveCleanseFunctions["Order"]			= tonumber;
+BarSaveCleanseFunctions["Label"]			= CleanseEcho;
+BarSaveCleanseFunctions["Rows"]			= tonumber;
+BarSaveCleanseFunctions["Cols"]			= tonumber;
+BarSaveCleanseFunctions["VDriver"]					= CleanseEcho;
+BarSaveCleanseFunctions["HVehicle"]					= CleanseEcho;
+BarSaveCleanseFunctions["HSpec1"]					= CleanseEcho;
+BarSaveCleanseFunctions["HSpec2"]					= CleanseEcho;
+BarSaveCleanseFunctions["HSpec3"]					= CleanseEcho;
+BarSaveCleanseFunctions["HSpec4"]					= CleanseEcho;
+BarSaveCleanseFunctions["HBonusBar"] 				= CleanseEcho;
+BarSaveCleanseFunctions["HPetBattle"] 				= CleanseEcho;
+BarSaveCleanseFunctions["GridAlwaysOn"] 			= CleanseEcho;
+BarSaveCleanseFunctions["ButtonsLocked"] 			= CleanseEcho;
+BarSaveCleanseFunctions["TooltipsOn"] 				= CleanseEcho;
+BarSaveCleanseFunctions["MacroText"] 				= CleanseEcho;
+BarSaveCleanseFunctions["KeyBindText"] 				= CleanseEcho;
+BarSaveCleanseFunctions["ButtonGap"] 	= tonumber;
+BarSaveCleanseFunctions["Enabled"] 					= CleanseEcho;
+BarSaveCleanseFunctions["BonusBar"] 				= CleanseEcho;
+BarSaveCleanseFunctions["GUI"] 						= CleanseEcho;
+BarSaveCleanseFunctions["Alpha"] 		= tonumber;
+
 local ValidateNumeric = function(v) return type(v) == "number" end;
 local ValidateBoolean = function(v) return type(v) == "boolean" end;
 
 local BarSaveValidationFunctions = {};
-
 BarSaveValidationFunctions["Left"]			= ValidateNumeric;
 BarSaveValidationFunctions["Top"]			= ValidateNumeric;
 BarSaveValidationFunctions["Scale"]			= function(v) return ValidateNumeric(v) and v >= 0 end;
@@ -846,6 +874,7 @@ function Util.NewBar(Left, Top, BarSave)
 
 		-- Scan through each setting, and run the validation function, if fail then grab the default value
 		for k, v in pairs(Defaults) do
+			BarSave[k] = BarSaveCleanseFunctions[k](BarSave[k]);
 			if (not BarSaveValidationFunctions[k](BarSave[k])) then
 				BarSave[k] = v;
 				if (k == "Order") then
