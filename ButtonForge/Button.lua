@@ -31,6 +31,7 @@ Notes:
 
 --Create a mapping to the needed elements (allocate the item if necessary)
 
+local AddonName, AddonTable = ...;
 local Util = BFUtil;
 local Const = BFConst;
 local Button = BFButton;
@@ -42,10 +43,14 @@ Button.__index = Button;
 local IsUsableSpell = IsUsableSpell;
 local SecureClickWrapperFrame = CreateFrame("FRAME", nil, nil, "SecureHandlerBaseTemplate");
 
+SecureClickWrapperFrame:SetFrameRef("spellflyout", SpellFlyout);
+SecureClickWrapperFrame:Execute([[ SpellFlyout = self:GetFrameRef("spellflyout"); ]]);
+SecureClickWrapperFrame:SetFrameRef("buttonforgespellflyout", ButtonForge_SpellFlyout);
+SecureClickWrapperFrame:Execute([[ ButtonForge_SpellFlyout = self:GetFrameRef("buttonforgespellflyout"); ]]);
 
-
-
-
+local function Widget_UpdateFlyout(Widget)
+	Widget.ParentButton:UpdateFlyout();
+end
 
 --[[--------------------------------------------------------------
 		Create a New Button
@@ -106,6 +111,7 @@ function Button.CreateButtonWidget(Parent)
 	if (Util.LBFMasterGroup) then
 		Util.LBFMasterGroup:AddButton(Widget);
 	end
+	Widget.UpdateFlyout = Widget_UpdateFlyout;
 	return Widget;
 end
 
@@ -127,13 +133,19 @@ function Button:SetupActionButtonClick()
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		Widget:RegisterForClicks("AnyUp", "AnyDown");
 		local SecurePreClickSnippet =
-			[[if (down and button == "KeyBind") then
+			[[
+			SpellFlyout:Hide();
+			if (self:GetAttribute("type") ~= "attribute") then 
+				ButtonForge_SpellFlyout:Hide();
+			end
+			if (down and button == "KeyBind") then
 				return "LeftButton";
 			end
 			if ((not down) and button ~= "KeyBind") then
 				return;
 			end
 			return false;]];
+
 		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 		
 	-- /console ActionButtonUseKeyDown 0 (requires to do a /console reloadui)
@@ -142,9 +154,15 @@ function Button:SetupActionButtonClick()
 	else
 		Widget:RegisterForClicks("AnyUp");
 		local SecurePreClickSnippet = 
-			[[if (button == "KeyBind") then
+			[[
+			SpellFlyout:Hide();
+			if (self:GetAttribute("type") ~= "attribute") then
+				ButtonForge_SpellFlyout:Hide();
+			end
+			if (button == "KeyBind") then
 				return "LeftButton";
 			end]];
+
 		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 	end
 	
@@ -1003,6 +1021,10 @@ function Button:SetEnvFlyout(Id)
 	end
 	self.Target			= "target";
 	self.Tooltip		= "Placeholder";
+
+	-- This merely adds the button to a lookup cache so it will work with the custom flyout
+	AddonTable.AddButtonToSpellFlyout(self.Widget);
+
 	self:ResetAppearance();
 	self:DisplayActive();
 	self:UpdateFlyout();
@@ -1251,7 +1273,11 @@ function Button:SetAttributes(Type, Value)
 			self.Widget:SetAttribute("action", Value + ((Const.BonusActionPageOffset - 1) * 12));
 		end
 	elseif (Type == "flyout") then
-		self.Widget:SetAttribute("type", "flyout");
+		--self.Widget:SetAttribute("type", "flyout");
+		self.Widget:SetAttribute("type", "attribute");
+		self.Widget:SetAttribute("attribute-frame", ButtonForge_SpellFlyout);
+		self.Widget:SetAttribute("attribute-name", "flyoutbuttonname");
+		self.Widget:SetAttribute("attribute-value", self.Widget:GetName());
 		self.Widget:SetAttribute("spell", Value);
 	elseif (Type == "customaction") then
 		CustomAction.SetAttributes(Value, self.Widget);
@@ -2275,7 +2301,7 @@ end
 
 --Copied and adapted from Blizz's coding (too bad they Assume there is an action associated with the button!!!)
 --This is currently coded to always be up... this will probably need to be adaptable down the track
-function Button:UpdateFlyout()
+function Button:UpdateFlyout(isButtonDownOverride)
 	local Widget = self.Widget;
 
 	if (not Widget.FlyoutArrowContainer or
@@ -2291,7 +2317,8 @@ function Button:UpdateFlyout()
 
 	-- Update border
 	local isMouseOverButton =  GetMouseFocus() == Widget;
-	local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == Widget;
+	--local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == Widget;
+	local isFlyoutShown = ButtonForge_SpellFlyout and ButtonForge_SpellFlyout:IsShown() and ButtonForge_SpellFlyout:GetParent() == Widget;
 	if (isFlyoutShown or isMouseOverButton) then
 		Widget.FlyoutBorderShadow:Show();
 	else

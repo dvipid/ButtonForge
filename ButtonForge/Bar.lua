@@ -531,6 +531,7 @@ function Bar:Configure(BarSave)
 	self:SetAlpha(BarSave["Alpha"]);
 	self:SetGUI(BarSave["GUI"]);
 
+	self:SetFlyoutDirection(BarSave["FlyoutDirection"]);
 	self.ControlFrame:SetClampedToScreen(true);
 end
 
@@ -741,6 +742,7 @@ function Bar:SetNumButtons(Cols, Rows)
 --	self.ButtonFrame:Execute("Buttons = newtable(owner:GetChildren());");
 	self:SetGridAlwaysOn(self.BarSave["GridAlwaysOn"]);
 	self:SetTooltips(self.BarSave["TooltipsOn"]);
+	self:SetFlyoutDirection(self.BarSave["FlyoutDirection"]);
 	self:UpdateSize();
 
 end

@@ -15,6 +15,8 @@ Locale-ruRU.lua
 Locale-zhCN.lua
 Locale-zhTW.lua
 Locale-deDE.lua
+Flyout_Custom.xml
+Flyout_Custom.lua
 EventManager.lua
 UILibLayers.xml
 UILibConfigPage.xml
