@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.1.1.0
+Version: 1.1.2.0
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+27-January-2023	v1.1.2.0 - Added custom implementation of spell flyouts to allow them to work again
+					- Eventually this will hopefully start working again from the SecureActionButtonTemplate
 13-December-2022	v1.1.1.0 - Added validation for BarSave values when BarSave is loaded to a Bar, invalid values get replaced with defaults
 
 04-December-2022	v1.1.0.8 - Update button to have new UI style
