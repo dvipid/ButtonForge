@@ -3,7 +3,7 @@
 	Copyright: 2023
 
 	Currently flytouts do not work from the secureactionbuttontemplate.
-	The problem seems to be an assumption that the flyout is triggered from a button attached to a standard actionbar
+	The problem seems to be a call to a GetSpellFlyoutDirection() function that necessarily is owned by the addon code
 	The issue is the template invokes flyout as follows (taken from SecureTemplates.lua)
 
 	SECURE_ACTIONS.flyout =
@@ -13,19 +13,17 @@
 				SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
 		end;
 
-	The last parameter (true) specifies that the flyout is attaching to an actionBar.
-	which ultimately causes the secure code to attempt to call a function on the parent of the secureactionbutton as follows (taken from SpellFlyout.lua)
+	which from SpellFlyout:Toggle calls a function on the parent of the secureactionbutton as follows (taken from SpellFlyout.lua)
 
 	if (isActionBar) then
 		direction = actionBar:GetSpellFlyoutDirection();
 	end
 
-	As close as I can tell the GetSpellFlyoutDirection call will either fall because it was not on the parent of the SABT, or if present result in taint ... There may be other problems in the code path, but hopefully this gets resolved.
-	Even if the secure action button were attached to a built in bar, the GetSpellFlyoutDirection would still call back to the button causing taint anyway
+	As close as I can tell the GetSpellFlyoutDirection call will either fall because it was not on the parent of the SABT, or if present result in taint
 
 
 	IN THE MEANTIME
-	Their might be other more creative ways to resolve this issue, but at a certain level a thoughtful implementation closely based on the original is the approach taken.
+	The work around taken is a custom implementation of the spellflyout
 
 	The three key elements are:
 	1. How do we securely trigger the custom flyout
@@ -34,47 +32,30 @@
 
 	Answers:
 	1. Use an SABT attribute button
-		this will change an attribute to reflect the Flyout we are triggering, with an attached secure handler to catch the attribute change
-		There is still the issue of knowing where to attach the flyout... the solution is that the flyout has all our buttons loaded into it... so it can simply lookup the correct button
+		this will singal to a handler that a ButtonForge SABT button has been clicked, the attribute change will be caught by code that runs in the restricted environment
+		The buttonname clicked will be passed in the attribute, and the handler will have a mapping for that name back to the actual button
 
-	2. With great care
+	2. All known Flyouts and the associated slots will need to be cached into the restricted environment, from here the flyout can be created following a similar method to the standard flyout
+		SABT buttons will need to be used for the flyout slot buttons, so that the actions can be triggered
+		But at least most of the display refresh of these buttons can be handled by existing interface code
 
-	3. Using events and such, the spell info for flyouts will be loaded in the restricted environment for the custom flyout
+	3. Using events , the spell info for flyouts will be loaded in the restricted environment for the custom flyout
 
 
+	On the ButtonForge button that triggers the Flyout prior to v10 wow it would be
+	Button:SetAttribute("type", "flyout");
+	Button:SetAttribute("spell", FlyoutID);
 
+	now it will be
+		Button:SetAttribute("type", "attribute");
+		Button:SetAttribute("attribute-frame", ButtonForge_SpellFlyout);
+		Button:SetAttribute("attribute-name", "flyoutbuttonname");
+		Button:SetAttribute("attribute-value", Button:GetName());
+		Button:SetAttribute("spell", FlyoutID);
 
-	(use an SABT attribute action, coupled with)
-
-	The code contained herein provides a custom implementation of the flyout behaviour. This boils down to creating and setting up a flyout with in the restricted environment.
-	The main hurdle is making sure that the flyout info needed to construct the flyout is available in the RENV... To do this the information is loaded in while out of combat...
-
-	In order for a button to trigger this, a button will mimick the flyout by setting it's secure action as follows
-
-	type = "attribute"
-	attribute-frame = CustomFlyout
-	attribute-name = flyoutid
-	attribute-value = The flyoutid
-
-	Which triggers the secure action as follows (SecureTemplates.lua)
-	
-	SECURE_ACTIONS.attribute =
-		function (self, unit, button)
-			local frame =
-				SecureButton_GetModifiedAttribute(self, "attribute-frame", button);
-			if ( not frame ) then
-				frame = self;
-			end
-			local name =
-				SecureButton_GetModifiedAttribute(self, "attribute-name", button);
-			local value =
-				SecureButton_GetModifiedAttribute(self, "attribute-value", button);
-			if ( name ) then
-				frame:SetAttribute(name, value);
-			end
-		end;
-
-	From there CustomFlyout has a secure attribute changed handler that will toggle the customflyout to where it needs to be setup appropriately
+	The "spell" attribute is still used to communicate what the FlyoutID will be, the other attributes will signal in a secure way that the ButtonForge button has been clicked
+	Coupled with the button registering
+	AddonTable.AddButtonToSpellFlyout(Button);
 
 ]]
 
@@ -384,7 +365,7 @@ end
 local function ButtonForge_SpellFlyoutButton_SetTooltip(self)
 	if ( GetCVar("UberTooltips") == "1" or self.showFullTooltip ) then
 
-			GameTooltip_SetDefaultAnchor(GameTooltip, self);
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 
 		if ( GameTooltip:SetSpellByID(self.spellID) ) then
 			self.UpdateTooltip = ButtonForge_SpellFlyoutButton_SetTooltip;
