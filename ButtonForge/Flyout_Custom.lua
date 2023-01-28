@@ -480,13 +480,17 @@ local function LoadFlyoutInfo(FlyoutID)
 end
 
 
---[[
-	When an event below triggers refresh the flyout info in the restricted environment
-]]
-local function Refresh_FlyoutSpells(self, Event, ...)
+
+
+local FlyoutChecker = CreateFrame("FRAME");
+
+local function Refresh_FlyoutSpells_OnUpdate()
+
+	FlyoutChecker:SetScript("OnUpdate", nil);
 	if (InCombatLockdown()) then
 		return;
 	end
+
 	local TabThreeStart, TabThreeCount = select(3, GetSpellTabInfo(3));
 	for i = 1, TabThreeStart + TabThreeCount do
 		local Type, SpellID = GetSpellBookItemInfo(i, BOOKTYPE_SPELL);
@@ -494,13 +498,24 @@ local function Refresh_FlyoutSpells(self, Event, ...)
 			LoadFlyoutInfo(SpellID);
 		end
 	end
+
 end
 
-local FlyoutChecker = CreateFrame("FRAME");
+--[[
+	When an event below triggers refresh the flyout info in the restricted environment
+]]
+local function Refresh_FlyoutSpells_OnEvent(self, Event, ...)
+
+	if (InCombatLockdown()) then
+		return;
+	end
+	FlyoutChecker:SetScript("OnUpdate", Refresh_FlyoutSpells_OnUpdate);
+
+end
 
 FlyoutChecker:RegisterEvent("PLAYER_TALENT_UPDATE");
 FlyoutChecker:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 FlyoutChecker:RegisterEvent("LEARNED_SPELL_IN_TAB");
 FlyoutChecker:RegisterEvent("PET_STABLE_UPDATE");
 FlyoutChecker:RegisterEvent("PLAYER_REGEN_ENABLED");
-FlyoutChecker:SetScript("OnEvent", Refresh_FlyoutSpells);
+FlyoutChecker:SetScript("OnEvent", Refresh_FlyoutSpells_OnEvent);
