@@ -48,9 +48,30 @@ SecureClickWrapperFrame:Execute([[ SpellFlyout = self:GetFrameRef("spellflyout")
 SecureClickWrapperFrame:SetFrameRef("buttonforgespellflyout", ButtonForge_SpellFlyout);
 SecureClickWrapperFrame:Execute([[ ButtonForge_SpellFlyout = self:GetFrameRef("buttonforgespellflyout"); ]]);
 
+
+-- The code structure is broken a little here, ordinarily a Util function would be in the Util.lua file
+function Util.SecureClickWrapperFrame_UpdateCVarInfo()
+
+	if (InCombatLockdown() or not Util.Loaded) then
+		Util.DelayedSecureClickWrapperFrame_UpdateCVarInfo = true;
+		return;
+	end
+
+    SecureClickWrapperFrame:SetAttribute("CVar_empowerTapControls", GetCVarBool("empowerTapControls"));
+    SecureClickWrapperFrame:SetAttribute("CVar_ActionButtonUseKeyDown", GetCVarBool("ActionButtonUseKeyDown"));
+    SecureClickWrapperFrame:Execute(
+        [[
+            empowerTapControls = owner:GetAttribute("CVar_empowerTapControls");
+            ActionButtonUseKeyDown = owner:GetAttribute("CVar_ActionButtonUseKeyDown");
+        ]]);
+end
+Util.SecureClickWrapperFrame_UpdateCVarInfo();
+
+
 local function Widget_UpdateFlyout(Widget)
 	Widget.ParentButton:UpdateFlyout();
 end
+
 
 --[[--------------------------------------------------------------
 		Create a New Button
@@ -92,18 +113,15 @@ function Button.CreateButtonWidget(Parent)
 	Const.ButtonSeq = Const.ButtonSeq + 1;
 	Widget:SetAttribute("checkselfcast", true);
 	Widget:SetAttribute("checkfocuscast", true);
+	Widget:SetAttribute("checkmouseovercast", true);
 	Widget:RegisterForDrag("LeftButton", "RightButton");
-	--Widget:RegisterForClicks("AnyUp");
+
 	Widget:SetScript("OnReceiveDrag", Button.OnReceiveDrag);
 	Widget:SetScript("OnDragStart", Button.OnDragStart);
 	
-	if (Util.ForceOffCastOnKeyDown) then
-		Widget:SetScript("PostClick", Button.PostClickBasic);
-		Widget:SetScript("PreClick", Button.PreClickBasic);
-	else
-		Widget:SetScript("PostClick", Button.PostClick);
-		Widget:SetScript("PreClick", Button.PreClick);
-	end
+	Widget:SetScript("PostClick", Button.PostClick);
+	Widget:SetScript("PreClick", Button.PreClick);
+
 	
 	--_G[Widget:GetName().."HotKey"]:ClearAllPoints();
 	--_G[Widget:GetName().."HotKey"]:SetPoint("TOPLEFT", Widget, "TOPLEFT", 1, -2);
@@ -117,54 +135,48 @@ end
 
 function Button:SetupActionButtonClick()
 	local Widget = self.Widget;
-	
-	-- This particular setting will only gets set at login (if the player changes it they must log out and back in)
-	-- NOTE 2022-11-23 : REVIEW CANDIDATE - since WoW v10 ActionButtonUseKeyDown now directly impacts SABT and overrides ButtonForge behaviour
-	if (Util.ForceOffCastOnKeyDown) then
-		Widget:RegisterForClicks("AnyUp");
-		return;
-	end
-	
+		
 	SecureClickWrapperFrame:UnwrapScript(Widget, "OnClick");
 	
-	-- /console ActionButtonUseKeyDown 1 (requires to do a /console reloadui)
-	-- /run SetCVar("ActionButtonUseKeyDown", 1)
-	-- activate when pressing
-	if (GetCVarBool("ActionButtonUseKeyDown")) then
-		Widget:RegisterForClicks("AnyUp", "AnyDown");
-		local SecurePreClickSnippet =
-			[[
+	-- WoW v10 (probably earlier) ActionButtonUseKeyDown does not seem to be a setting in the panel anymore - the player could still toggle it though using the below (defaults to 1 or true)
+		-- empowerTapControls is new and is exposed in the settings panel, this setting changes empower spells, between using the default hold and release (setting is false), to a double tap scheme.
+		-- /run SetCVar("ActionButtonUseKeyDown", 1)
+		-- /run SetCVar("empowerTapControls", 0)
+
+	Widget:SetAttribute("pressAndHoldAction", true);
+	Widget:RegisterForClicks("AnyUp", "AnyDown");
+	local SecurePreClickSnippet =
+		[[
 			SpellFlyout:Hide();
 			if (self:GetAttribute("type") ~= "attribute") then 
 				ButtonForge_SpellFlyout:Hide();
 			end
-			if (down and button == "KeyBind") then
-				return "LeftButton";
-			end
-			if ((not down) and button ~= "KeyBind") then
-				return;
-			end
-			return false;]];
 
-		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
-		
-	-- /console ActionButtonUseKeyDown 0 (requires to do a /console reloadui)
-	-- /run SetCVar("ActionButtonUseKeyDown", 0)
-	-- activate when releasing
-	else
-		Widget:RegisterForClicks("AnyUp");
-		local SecurePreClickSnippet = 
-			[[
-			SpellFlyout:Hide();
-			if (self:GetAttribute("type") ~= "attribute") then
-				ButtonForge_SpellFlyout:Hide();
-			end
 			if (button == "KeyBind") then
-				return "LeftButton";
-			end]];
 
-		SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
-	end
+				local IsEmpowerSpell = self:GetAttribute("IsEmpowerSpell");
+				if (down) then
+					if (ActionButtonUseKeyDown or IsEmpowerSpell) then
+						return "LeftButton";
+					else
+						return false;
+					end
+				else
+					if ((not ActionButtonUseKeyDown and not IsEmpowerSpell) or (IsEmpowerSpell and not empowerTapControls)) then
+						return "LeftButton";
+					else
+						return false;
+					end
+				end
+
+			elseif (down) then
+
+				return false;
+
+			end
+		]];
+
+	SecureClickWrapperFrame:WrapScript(Widget, "OnClick", SecurePreClickSnippet);
 	
 end
 
@@ -288,11 +300,7 @@ function Button:SetKeyBind(Key)
 	ClearOverrideBindings(self.Widget);
 	if (Key ~= "" and Key ~= nil) then
 		self.ButtonSave["KeyBinding"] = Key;
-		if (Util.ForceOffCastOnKeyDown) then
-			SetOverrideBindingClick(self.Widget, false, Key, self.Widget:GetName());
-		else
-			SetOverrideBindingClick(self.Widget, false, Key, self.Widget:GetName(), "KeyBind");
-		end
+		SetOverrideBindingClick(self.Widget, false, Key, self.Widget:GetName(), "KeyBind");
 		self.Widget:SetAttribute("KeyBindValue", Key);
 	else
 		--clear the binding
@@ -416,47 +424,8 @@ end
 --------------------------------------------------------------------------------------------]]
 
 --[[ Script Handlers --]]
-local ResetActionButtonUseKeyDown = false;
-function Button.PreClickBasic(Widget, Button, Down)
-	
-	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
-	if ((not Down) and Button ~= "KeyBind" and GetCVarBool("ActionButtonUseKeyDown")) then
-		-- The Use Key Down mode is set, but we are on the up phase and a mouse click, so temporarily disable ActionButtonUseKeyDown so mouse click will work
-        ResetActionButtonUseKeyDown = true;
-        SetCVar("ActionButtonUseKeyDown", 0);
-    else
-		-- Technically a redundant statement, but here to make clear in any other case the flag is unset
-        ResetActionButtonUseKeyDown = false;
-    end
-	-------------------------------------
-
-	if (InCombatLockdown()) then
-		return;
-	end
-	
-	local Command, Data, Subvalue, Subsubvalue = GetCursorInfo();
-	if (not Command) then
-		Command, Data, Subvalue, Subsubvalue = UILib.GetDragInfo();
-	end
-	Util.StoreCursor(Command, Data, Subvalue, Subsubvalue);			--Always store this, so that if it is nil PostClick wont try to use it
-	if (Command) then
-		Widget.BackupType = Widget:GetAttribute("type");
-		Widget:SetAttribute("type", "");	--Temp unset the type to prevent any action happening
-	end
-end
 function Button.PreClick(Widget, Button, Down)
 
-	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
-	if ((not Down) and Button ~= "KeyBind" and GetCVarBool("ActionButtonUseKeyDown")) then
-		-- The Use Key Down mode is set, but we are on the up phase and a mouse click, so temporarily disable ActionButtonUseKeyDown so mouse click will work
-        ResetActionButtonUseKeyDown = true;
-        SetCVar("ActionButtonUseKeyDown", 0);
-    else
-		-- Technically a redundant statement, but here to make clear in any other case the flag is unset
-        ResetActionButtonUseKeyDown = false;
-    end
-	-------------------------------------
-
 	if (InCombatLockdown() or Button == "KeyBind" or Down) then
 		return;
 	end
@@ -469,53 +438,12 @@ function Button.PreClick(Widget, Button, Down)
 	if (Command) then
 		Widget.BackupType = Widget:GetAttribute("type");
 		Widget:SetAttribute("type", "");	--Temp unset the type to prevent any action happening
+		Widget:SetAttribute("typerelease", "");	--Temp unset the type to prevent any action happening
 	end
 end
 
-function Button.PostClickBasic(Widget, Button, Down)
-	
-	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
-	if (ResetActionButtonUseKeyDown) then
-		-- Make sure to set the ActionButtonUseKeyDown back to on, since we temporarily unset it for a mouse click
-        SetCVar("ActionButtonUseKeyDown", 1);
-        ResetActionButtonUseKeyDown = false;
-    end
-	-------------------------------------
-
-	local self = Widget.ParentButton;
-	self:UpdateChecked();
-	if (InCombatLockdown()) then
-		return;
-	end
-
-	if (self.Mode == "flyout") then
-		BFEventFrames["Full"].RefreshButtons = true;
-		BFEventFrames["Full"].RefFlyouts = true;
-	end
-	if (not InCombatLockdown()) then
-		local Command, Data, Subvalue, Subsubvalue = Util.GetStoredCursor();
-		if (Command) then
-			Util.StoreCursor(self:GetCursor());		--Store the info from the button for later setting the cursor
-			if (self:SetCommandFromTriplet(Command, Data, Subvalue, Subsubvalue)) then	--Set the button to the cursor
-				Util.SetCursor(Util.GetStoredCursor());					--On success set the cursor to the stored button info
-			else
-				Util.SetCursor(Command, Data, Subvalue, Subsubvalue);				--On fail set the cursor to what ever it was
-				self.Widget:SetAttribute("type", Widget.BackupType);			--and restore the button mode
-			end
-		end
-	end
-	--self:UpdateChecked();
-end
 function Button.PostClick(Widget, Button, Down)
 	
-	-- NOTE 2022-11-23: Temporary workaround to prevent Mouse click being handled the same as Keyboard click with Down/Up
-	if (ResetActionButtonUseKeyDown) then
-		-- Make sure to set the ActionButtonUseKeyDown back to on, since we temporarily unset it for a mouse click
-        SetCVar("ActionButtonUseKeyDown", 1);
-        ResetActionButtonUseKeyDown = false;
-    end
-	-------------------------------------
-
 	local self = Widget.ParentButton;
 	self:UpdateChecked();
 	if (InCombatLockdown() or Button == "KeyBind" or Down) then
@@ -535,6 +463,7 @@ function Button.PostClick(Widget, Button, Down)
 			else
 				Util.SetCursor(Command, Data, Subvalue, Subsubvalue);				--On fail set the cursor to what ever it was
 				self.Widget:SetAttribute("type", Widget.BackupType);			--and restore the button mode
+				self.Widget:SetAttribute("typerelease", Widget.BackupType);			--and restore the button mode
 			end
 		end
 	end
@@ -625,8 +554,8 @@ end
 
 --[[ Set the individual types of actions including obtained any extra data they may need --]]
 function Button:SetCommandSpell(Id)
-	local Name, Rank = GetSpellInfo(Id);
-	local NameRank = Util.GetFullSpellName(Name, Rank);
+	local Name, Subtext = GetSpellInfo(Id), GetSpellSubtext(Id);
+	local NameRank = Util.GetFullSpellName(Name, Subtext);
 	self:SetCommandExplicitSpell(Id, NameRank, Name, Book);
 end
 function Button:SetCommandItem(Id, Link)
@@ -828,7 +757,6 @@ function Button:SetEnvMacro(Index, Name, Body)
 	
 	self:ResetAppearance();
 	self:DisplayActive();
-
 	Util.AddMacro(self);
 end
 function Button:SetEnvCompanion(MountID)
@@ -863,6 +791,7 @@ function Button:SetEnvCompanion(MountID)
 		--return;
 	--end	
 	self.Widget:SetAttribute("type", nil);
+	self.Widget:SetAttribute("typerelease", nil);
 	self.Widget:SetAttribute("spell", nil);
 	self.Widget:SetAttribute("item", nil);
 	self.Widget:SetAttribute("macro", nil);
@@ -884,10 +813,12 @@ function Button:SetEnvCompanion(MountID)
 		end
 		if (ButtonForgeGlobalSettings["UseCollectionsFavoriteMountButton"] and MountJournalSummonRandomFavoriteButton) then
 			self.Widget:SetAttribute("type", "click");
+			self.Widget:SetAttribute("typerelease", "click");
 			self.Widget:SetAttribute("clickbutton", MountJournalSummonRandomFavoriteButton);
 		else
 			-- this will cause a script warning when clicked if the player does not allow dangerous scripts but also chooses false for the global setting
 			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("typerelease", "macro");
 			self.Widget:SetAttribute("macrotext", "/run C_MountJournal.SummonByID("..self.MountID..")");
 		end
 
@@ -896,6 +827,7 @@ function Button:SetEnvCompanion(MountID)
 		self.MountSpellID	= select(2, C_MountJournal.GetMountInfoByID(MountID));
 		self.MountSpellName	= GetSpellInfo(self.MountSpellID);
 		self.Widget:SetAttribute("type", "macro");
+		self.Widget:SetAttribute("typerelease", "macro");
 		self.Widget:SetAttribute("macrotext", "/cast "..self.MountSpellName);
 	end
 
@@ -1204,6 +1136,7 @@ end
 function Button:SetAttributes(Type, Value)
 	--Firstly clear all relevant fields
 	self.Widget:SetAttribute("type", nil);
+	self.Widget:SetAttribute("typerelease", nil);
 	self.Widget:SetAttribute("spell", nil);
 	self.Widget:SetAttribute("item", nil);
 	self.Widget:SetAttribute("macro", nil);
@@ -1211,6 +1144,7 @@ function Button:SetAttributes(Type, Value)
 	self.Widget:SetAttribute("action", nil);
 	self.Widget:SetAttribute("clickbutton", nil);
 	self.Widget:SetAttribute("id", nil);
+	self.Widget:SetAttribute("IsEmpowerSpell", nil);
 	
 	--Now if a valid type is passed in set it
 	if (Type == "spell") then
@@ -1228,14 +1162,17 @@ function Button:SetAttributes(Type, Value)
 		-- Patch to fix tradeskills
 		if ( prof1 and SpellName == prof1_name ) then
 			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("typerelease", "macro");
 			self.Widget:SetAttribute("macrotext", "/run RunScript('local professionInfo = C_TradeSkillUI.GetBaseProfessionInfo(); if (professionInfo.professionID == prof1_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof1_skillLine..") end')");
 		elseif ( prof2 and SpellName == prof2_name ) then
 			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("typerelease", "macro");
 			self.Widget:SetAttribute("macrotext", "/run RunScript('local professionInfo = C_TradeSkillUI.GetBaseProfessionInfo(); if (professionInfo.professionID == prof2_skillLine) then C_TradeSkillUI.CloseTradeSkill() else C_TradeSkillUI.OpenTradeSkill("..prof2_skillLine..") end')");
 
 		-- Patch for Priest PVP Talent "Inner Light and Shadow" (Thanks to techno_tpuefol)
 		elseif (SpellId == Const.PRIEST_PVP_TALENT_INNER_LIGHT_ID or SpellId == Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID) then
 			self.Widget:SetAttribute("type", "macro");
+			self.Widget:SetAttribute("typerelease", "macro");
 			self.Widget:SetAttribute("macrotext", "/cast !Inner Light");
 
 		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
@@ -1245,27 +1182,34 @@ function Button:SetAttributes(Type, Value)
 				SpellName = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
 			end
 			self.Widget:SetAttribute("type", Type);
+			self.Widget:SetAttribute("typerelease", Type);
 			self.Widget:SetAttribute(Type, SpellName);
+			self.Widget:SetAttribute("IsEmpowerSpell", IsPressHoldReleaseSpell(SpellId));
 
 		-- fallback to the old method if the name cannot be resolved
 		else
 			self.Widget:SetAttribute("type", Type);
+			self.Widget:SetAttribute("typerelease", Type);
 			self.Widget:SetAttribute(Type, Value);
 		end
 		
 	elseif (Type == "item" or Type == "macro") then
 		self.Widget:SetAttribute("type", Type);
+		self.Widget:SetAttribute("typerelease", Type);
 		self.Widget:SetAttribute(Type, Value);
 		
 	elseif (Type == "companion") then
 		self.Widget:SetAttribute("type", "spell");
+		self.Widget:SetAttribute("typerelease", "spell");
 		self.Widget:SetAttribute("spell", Value);
 		
 	elseif (Type == "equipmentset") then
 		self.Widget:SetAttribute("type", "macro");
+		self.Widget:SetAttribute("typerelease", "macro");
 		self.Widget:SetAttribute("macrotext", "/equipset "..Value);
 	elseif (Type == "bonusaction") then
 		self.Widget:SetAttribute("type", "action");
+		self.Widget:SetAttribute("typerelease", "action");
 		self.Widget:SetAttribute("id", Value);
 		if (HasOverrideActionBar()) then
 			self.Widget:SetAttribute("action", Value + ((Const.OverrideActionPageOffset - 1) * 12));
@@ -1275,6 +1219,7 @@ function Button:SetAttributes(Type, Value)
 	elseif (Type == "flyout") then
 		--self.Widget:SetAttribute("type", "flyout");
 		self.Widget:SetAttribute("type", "attribute");
+		self.Widget:SetAttribute("typerelease", "attribute");
 		self.Widget:SetAttribute("attribute-frame", ButtonForge_SpellFlyout);
 		self.Widget:SetAttribute("attribute-name", "flyoutbuttonname");
 		self.Widget:SetAttribute("attribute-value", self.Widget:GetName());
@@ -1283,6 +1228,7 @@ function Button:SetAttributes(Type, Value)
 		CustomAction.SetAttributes(Value, self.Widget);
 	elseif (Type == "battlepet") then
 		self.Widget:SetAttribute("type", "macro");
+		self.Widget:SetAttribute("typerelease", "macro");
 		self.Widget:SetAttribute("macrotext", "/summonpet "..Value);
 	end
 end
@@ -1370,15 +1316,11 @@ function Button:TranslateMacro()
 		self.MacroAction = Action;
 		self.MacroTargetName = TargetName;
 		self.MacroTargetDead = TargetDead;
-		local SpellName, SpellRank, SpellId = GetMacroSpell(self.MacroIndex);
-		if (SpellName) then
-			local CompanionType, CompanionID = Util.LookupCompanion(SpellName);
-			if (CompanionType) then
-				self.CompanionType = CompanionType;
-				self.CompanionIndex = CompanionID;
-			end
-			self.SpellName = SpellName;
-			self.SpellNameRank = GetSpellInfo(SpellName); --BFA fix: Cache is indexed by name and the old function returned the ID
+		local SpellId = GetMacroSpell(self.MacroIndex);
+		if (SpellId) then
+			local Name, Subtext = GetSpellInfo(SpellId), GetSpellSubtext(SpellId);
+			self.SpellName = Name;
+			self.SpellNameRank = Util.GetFullSpellName(Name, Subtext);
 			self.SpellId = SpellId;
 			self.MacroMode = "spell";
 		else
@@ -1539,9 +1481,7 @@ function Button:UpdateCheckedMacro()
 	if (self.MacroMode == "spell") then
 		self:UpdateCheckedSpell();	
 	elseif (self.MacroMode == "item") then
-		self:UpdateCheckedItem();	
-	elseif (self.MacroMode == "companion") then
-		self:UpdateCheckedCompanion();	
+		self:UpdateCheckedItem();
 	else
 		self.Widget:SetChecked(false);
 	end
@@ -1617,6 +1557,7 @@ function Button:UpdateCooldownSpell()
 	else
 		Start, Duration, Enable = GetSpellCooldown(self.SpellNameRank);
 	end
+
 	local Charges, MaxCharges, ChargeStart, ChargeDuration = GetSpellCharges(self.SpellNameRank);
 
 	if (Start ~= nil) then
@@ -1639,9 +1580,7 @@ function Button:UpdateCooldownMacro()
 	if (self.MacroMode == "spell") then
 		self:UpdateCooldownSpell();	
 	elseif (self.MacroMode == "item") then
-		self:UpdateCooldownItem();	
-	elseif (self.MacroMode == "companion") then
-		self:UpdateCooldownCompanion();	
+		self:UpdateCooldownItem();
 	else
 		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
 		self.WCooldown:Hide();
@@ -1703,9 +1642,7 @@ function Button:UpdateUsableMacro()
 	if (self.MacroMode == "spell") then
 		self:UpdateUsableSpell();
 	elseif (self.MacroMode == "item") then
-		self:UpdateUsableItem();	
-	elseif (self.MacroMode == "companion") then
-		self:UpdateUsableCompanion();
+		self:UpdateUsableItem();
 	else
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -1826,12 +1763,10 @@ function Button:UpdateTooltipFunc()
 end
 
 function Button:UpdateTooltipSpell()
-	self = self.ParentButton or self;	--This is a sneaky cheat incase the widget was used to get here...
-	--local Index, BookType = Util.LookupSpellIndex(self.SpellNameRank);
-	GameTooltip:SetSpellByID(self.SpellId);
-	--if (Index) then
-	--	GameTooltip:SetSpellBookItem(Index, BookType);
-	--end
+	self = self.ParentButton or self;
+	-- the bools are to make sure subtext is shown on the tooltip
+    -- based on this function signature C_TooltipInfo.GetSpellByID(spellID [, isPet, showSubtext, dontOverride, difficultyID, isLink])
+	GameTooltip:SetSpellByID(self.SpellId, false, true);
 end
 function Button:UpdateTooltipItem()
 	self = self.ParentButton or self;	--This is a sneaky cheat incase the widget was used to get here...
@@ -1856,13 +1791,8 @@ function Button:UpdateTooltipMacro()
 		GameTooltip:SetText(self.MacroName, 1, 1, 1, 1);
 
 	elseif (self.MacroMode == "spell") then
-		local Index, BookType = Util.LookupSpellIndex(self.SpellNameRank);
-		if (Index) then
-			GameTooltip:SetSpellBookItem(Index, BookType);
-		elseif (self.CompanionType == "MOUNT") then
-			GameTooltip_SetDefaultAnchor(GameTooltip, self.Widget);		--It appears that the sethyperlink (specifically this one) requires that the anchor be constantly refreshed!?
-			GameTooltip:SetHyperlink("spell:"..self.SpellName);
-		end
+		GameTooltip:SetSpellByID(self.SpellId, false, true);
+
 	elseif (self.MacroMode == "item") then
 		local EquippedSlot = Util.LookupItemNameEquippedSlot(self.ItemId);
 		if (EquippedSlot ~= nil) then
@@ -1876,9 +1806,6 @@ function Button:UpdateTooltipMacro()
 				GameTooltip:SetHyperlink(self.ItemLink);
 			end
 		end
-	elseif (self.MacroMode == "companion") then
-		local Id, Name, SpellId = GetCompanionInfo(self.CompanionType, self.CompanionIndex);
-		GameTooltip:SetHyperlink("spell:"..SpellId);
 	end
 end
 function Button:UpdateTooltipCompanion()

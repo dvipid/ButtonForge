@@ -45,27 +45,35 @@ end
 function CustomAction.SetAttributes(Action, Widget)
 	if (Action == "configuremode") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/click BFToolbarToggle");
 	elseif (Action == "createbarmode") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/click BFToolbarCreateBar");
 	elseif (Action == "createbonusbarmode") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/click BFToolbarCreateBonusBar");
 	elseif (Action == "destroybarmode") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/click BFToolbarDestroyBar");
 	elseif (Action == "advancedtoolsmode") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/click BFToolbarAdvanced");
 	elseif (Action == "rightclickselfcast") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/click BFToolbarRightClickSelfCast");
 	elseif (Action == "vehicleexit") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/leavevehicle");
 	elseif (Action == "possesscancel") then
 		Widget:SetAttribute("type", "macro");
+		Widget:SetAttribute("typerelease", "macro");
 		Widget:SetAttribute("macrotext", "/run CancelUnitBuff(\"player\", select(2, GetPossessInfo(2)) or \"\")");
 	--[[
 	elseif (Action == "vehicleaimup") then

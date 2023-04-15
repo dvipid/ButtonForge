@@ -124,7 +124,7 @@ Locale["SlashHelpFormatted"]	=
 	"|c"..Const.LightBlue.."-listprofiles|r\n"..	
 	"|c"..Const.LightBlue.."-macrocheckdelay <number>|r (5 seconds is default) \n"..
 	"|c"..Const.LightBlue.."-removemissingmacros <on/off/toggle>|r\n"..
-	"|c"..Const.LightBlue.."-forceoffcastonkeydown <on/off/toggle>|r (will apply at next login)\n"..
+	"|c"..Const.LightBlue.."-forceoffcastonkeydown <on/off/toggle>|r (will apply at next login, Deprecated)\n"..
 	"|c"..Const.LightBlue.."-usecollectionsfavoritemountbutton <on/off/toggle>|r\n"..
 	"|c"..Const.LightBlue.."-where|r\n"..
 	"|c"..Const.LightBlue.."-quests|r\n"..

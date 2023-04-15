@@ -542,10 +542,6 @@ function Util.Load()
 	CharRealm = CharRealm.."-"..GetRealmName();
 	ButtonForgeGlobalBackup[CharRealm] = ButtonForgeSave;
 
-	Util.ForceOffCastOnKeyDown = ButtonForgeGlobalSettings["ForceOffCastOnKeyDown"];
-	if (not Util.ForceOffCastOnKeyDown) then
-		hooksecurefunc("SetCVar", MiscFrame.SetCVarCalled);
-	end
 	if (ButtonForgeSave.ConfigureMode) then
 		ConfigureLayer:Show();
 	end
@@ -1863,9 +1859,9 @@ function Util.PostCombatStateUpdate()
 		Util.RefreshMacros();
 		Util.DelayedRefreshMacros = nil;
 	end
-	if (Util.DelayedUpdateButtonClickHandling) then
-		Util.UpdateButtonClickHandling();
-		Util.DelayedUpdateButtonClickHandling = nil;
+	if (Util.DelayedSecureClickWrapperFrame_UpdateCVarInfo) then
+		Util.SecureClickWrapperFrame_UpdateCVarInfo();
+		Util.DelayedSecureClickWrapperFrame_UpdateCVarInfo = nil;
 	end
 	if (Util.DelayedPromoteSpells) then
 		Util.PromoteSpells();
@@ -1924,22 +1920,17 @@ function Util.RightClickSelfCast(Value)
 end
 
 
-
-
-
 --[[---------------------------------------
 	Spell Functions
 -------------------------------------------]]
-function Util.GetFullSpellName(Name, Rank)
---BFA fix: GetSpellInfo now returns a nil for the rank.  That's passed in here
---So we check to make sure rank exists or only pass back the name itself.
-	if (Rank) then
-		Rank = "("..Rank..")";
+function Util.GetFullSpellName(Name, Subtext)
+	if (Subtext) then
+		Subtext = "("..Subtext..")";
 	else
-		Rank = "";
+		Subtext = "";
 	end
 	if (Name) then
-		return Name..Rank;
+		return Name..Subtext;
 	end
 end
 
@@ -1990,7 +1981,8 @@ function Util.CacheSpellIndexes()
 		ItemType, Id = GetSpellBookItemInfo(i, BOOKTYPE_SPELL);
 		--local Name, Rank, Icon, PowerCost, IsFunnel, PowerType = GetSpellInfo(i, BOOKTYPE_SPELL);
 		local Name, Rank, Icon, PowerCost, IsFunnel, PowerType = GetSpellInfo(Id);
-		local NameRank = Util.GetFullSpellName(Name, Rank);
+		local Subtext = GetSpellSubtext(Id);
+		local NameRank = Util.GetFullSpellName(Name, Subtext);
 		if (ItemType == "SPELL") then
 			NewSI[NameRank] = i;
 			
@@ -2454,21 +2446,6 @@ function Util.RemoveBonusAction(Value)
 	local Index = Util.FindInTable(Util.ActiveBonusActions, Value);
 	if (Index) then
 		table.remove(Util.ActiveBonusActions, Index);
-	end
-end
-
-
-function Util.UpdateButtonClickHandling()
-	if (InCombatLockdown() or not Util.Loaded) then
-		Util.DelayedUpdateButtonClickHandling = true;
-		return;
-	end
-	
-	for i = 1, #Util.ActiveButtons do
-		Util.ActiveButtons[i]:SetupActionButtonClick();
-	end
-	for i = 1, #Util.InactiveButtons do
-		Util.InactiveButtons[i]:SetupActionButtonClick();
 	end
 end
 

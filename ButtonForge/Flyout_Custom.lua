@@ -214,6 +214,8 @@ local ButtonForge_SpellFlyout_OnAttributeChanged = [[
 
 		FlyoutButton:Show();
 		FlyoutButton:SetAttribute("type", "spell");
+		FlyoutButton:SetAttribute("typerelease", "spell");
+		FlyoutButton:SetAttribute("pressAndHoldAction", true);
 		FlyoutButton:SetAttribute("spell", SlotInfo.SpellName);
 		self:CallMethod( "UpdateFlyoutButtonDisplay" , FlyoutButton:GetName() , SlotInfo.SpellID , SlotInfo.SpellName );
 

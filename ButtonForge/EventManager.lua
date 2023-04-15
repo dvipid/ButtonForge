@@ -62,19 +62,6 @@ Misc.RefreshSpells = false;
 
 
 --[[------------------------------------------------------------------------
-	Secure Hooks
---------------------------------------------------------------------------]]
-function Misc.SetCVarCalled(cvar, ...)
-	if (cvar == "ActionButtonUseKeyDown") then
-		Util.UpdateButtonClickHandling();
-	end
-end
---This secure hook is only applied if during the Util.Load function it is determined to be needed
---hooksecurefunc("SetCVar", SetCVarCalled);
-
-
-
---[[------------------------------------------------------------------------
 	Misc Resync type events
 --------------------------------------------------------------------------]]
 Misc:RegisterEvent("COMPANION_LEARNED");			--resync companions
@@ -105,6 +92,7 @@ Misc:RegisterEvent("QUEST_REMOVED");
 Misc:RegisterEvent("SUPER_TRACKING_CHANGED");
 
 Misc:RegisterEvent("UNIT_AURA");
+Misc:RegisterEvent("CVAR_UPDATE");
 
 --[[------------------------------------------------------------------------
 	Checked Events
@@ -505,6 +493,13 @@ function Misc:OnEvent(Event, ...)
 	elseif (Event == "UNIT_AURA") then
 		Util.TriggerAuraChanged();
 
+	elseif (Event == "CVAR_UPDATE") then
+		local Name = ...;
+		if (Name == "ActionButtonUseKeyDown" or Name == "empowerTapControls") then
+			self.UpdateSecureWrapperCVars = true;
+			self:SetScript("OnUpdate", self.OnUpdate);
+		end
+
 	end
 end
 function Misc:OnUpdate(Elapsed)
@@ -527,6 +522,10 @@ function Misc:OnUpdate(Elapsed)
 	if (self.EditBox) then
 		self.EditBox:SetText(self.EditBoxMessage or "");
 		self.EditBox:SetFocus();
+	end
+	if (self.UpdateSecureWrapperCVars) then
+		self.UpdateSecureWrapperCVars = false;
+		Util.SecureClickWrapperFrame_UpdateCVarInfo();
 	end
 	
 	self.PromoteSpells = false;

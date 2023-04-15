@@ -29,27 +29,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<PreClick>
-				-- NOTE 2023-01-26: Temporary workaround to allow mouse clicks to work properly on the toggle config mode button
-				if ((not down) and GetCVarBool("ActionButtonUseKeyDown")) then
-				-- The Use Key Down mode is set, but we are on the up phase, so temporarily disable ActionButtonUseKeyDown so mouse click will work
-				self.ResetActionButtonUseKeyDown = true;
-				SetCVar("ActionButtonUseKeyDown", 0);
-				else
-				-- Technically a redundant statement, but here to make clear in any other case the flag is unset
-				self.ResetActionButtonUseKeyDown = false;
-				end
-			</PreClick>
-			<PostClick>
-				-- NOTE 2023-01-26: Temporary workaround to allow mouse clicks to work properly on the toggle config mode button
-				if (self.ResetActionButtonUseKeyDown) then
-				-- Make sure to set the ActionButtonUseKeyDown back to on, since we temporarily unset it for a mouse click
-				SetCVar("ActionButtonUseKeyDown", 1);
-				self.ResetActionButtonUseKeyDown = false;
-				end
-			</PostClick>
-		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">
 				<Alpha childKey="GlyphActivate" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>

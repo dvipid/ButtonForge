@@ -226,27 +226,11 @@
 						self:RegisterForDrag("LeftButton", "RightButton");
 						self:SetChecked(true);
 						self:SetAttribute("type", "macro");
+						self:SetAttribute("typerelease", "macro");
+						self:SetAttribute("pressAndHoldAction", true);
 						self:SetAttribute("macrotext", "/click BFToolbarToggle");
 					</OnLoad>
-					<PreClick>
-							-- NOTE 2022-12-01: Temporary workaround to allow mouse clicks to work properly on the toggle config mode button
-							if ((not down) and GetCVarBool("ActionButtonUseKeyDown")) then
-								-- The Use Key Down mode is set, but we are on the up phase, so temporarily disable ActionButtonUseKeyDown so mouse click will work
-								self.ResetActionButtonUseKeyDown = true;
-								SetCVar("ActionButtonUseKeyDown", 0);
-							else
-								-- Technically a redundant statement, but here to make clear in any other case the flag is unset
-								self.ResetActionButtonUseKeyDown = false;
-							end
-					</PreClick>
 					<PostClick>
-						-- NOTE 2022-12-01: Temporary workaround to allow mouse clicks to work properly on the toggle config mode button
-						if (self.ResetActionButtonUseKeyDown) then
-							-- Make sure to set the ActionButtonUseKeyDown back to on, since we temporarily unset it for a mouse click
-							SetCVar("ActionButtonUseKeyDown", 1);
-							self.ResetActionButtonUseKeyDown = false;
-						end
-
 						self:SetChecked(true);
 					</PostClick>
 					<OnDragStart>
