@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+05-May-2023			v1.2.1.0 - Updated to WoW Interface 100100
+
 15-April-2023		v1.2.0.0 - Updated to WoW Interface 100007
 							 - Button click mechanism updated
 							 - No longer toggles CVar "ActionButtonUseKeyDown"
