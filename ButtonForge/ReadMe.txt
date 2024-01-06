@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.2.0.0
+Version: 1.2.2.0
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,10 @@ Restrictions:
 
 
 History:
+07-Jan-2023		v1.2.2.0 - Introduced fix so that Dragon Riding abilities work for Evokers (whom also share Dragon Riding spell names such as Surge Forward)
+				   This change should also allow different Hex variants to do their specific cast
+				And updated to WoW Interface 100200
+
 05-May-2023			v1.2.1.0 - Updated to WoW Interface 100100
 
 15-April-2023		v1.2.0.0 - Updated to WoW Interface 100007

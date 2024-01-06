@@ -685,7 +685,8 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	local BaseSpellID = FindBaseSpellByID(Id);
     if (BaseSpellID ~= Id and BaseSpellID ~= nil) then
     	local name = GetSpellInfo(BaseSpellID);
-    	self.Widget:SetAttribute("spell", name);
+		local subtext = GetSpellSubtext(BaseSpellID) or "";
+    	self.Widget:SetAttribute("spell", name .. "(" .. subtext .. ")");
     end
 
 	self.Mode 			= "spell";
@@ -1180,6 +1181,9 @@ function Button:SetAttributes(Type, Value)
 			-- PVP talent with a Passive base spell has a weird behavior. There might be other spells with the same issue. Temporary fix until we find something more generic
 			if (SpellId == Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_ID) then
 				SpellName = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
+			else
+				local subtext = GetSpellSubtext(Value) or "";
+				SpellName = SpellName .. "(" .. subtext .. ")";
 			end
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute("typerelease", Type);
