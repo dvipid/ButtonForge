@@ -1762,6 +1762,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 	if (Command == "spell") then
 		-- pet spell or not
 		local name = GetSpellInfo(Subsubvalue);
+		local subtext = GetSpellSubtext(Subsubvalue) or "";
 		if ( Util.PetSpellIndex[name] ) then
 			PickupSpellBookItem(Util.PetSpellIndex[name], BOOKTYPE_PET);
 		else
@@ -1769,7 +1770,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 			-- attempt to detect them because PickupSpell won't work with those
 			contextualID = nil;
 			if name ~= nil then
-				skillType, contextualID = GetSpellBookItemInfo(name);
+				skillType, contextualID = GetSpellBookItemInfo(name .. "(" .. subtext .. ")");
 			end
 			if contextualID ~= nil then
 				PickupSpell(contextualID);
