@@ -399,7 +399,7 @@ Conditional:SetScript("OnEvent", Conditional.OnEvent);
 --[[--------------------------------------------------------------------------------------------------------------------------]]
 
 
-function Misc:OnEvent(Event, ...)	
+function Misc:OnEvent(Event, unit, ...)	
 	if (Event == "CURSOR_CHANGED") then
 		local Command = GetCursorInfo();
 		if (Command == "item") then
@@ -491,7 +491,9 @@ function Misc:OnEvent(Event, ...)
 		Util.TriggerQuestsChanged();
 
 	elseif (Event == "UNIT_AURA") then
-		Util.TriggerAuraChanged();
+		if (unit == "player") then
+			Util.TriggerAuraChanged();
+		end
 
 	elseif (Event == "CVAR_UPDATE") then
 		local Name = ...;

@@ -23,7 +23,10 @@ Restrictions:
 
 
 History:
+20-Feb-2024		v1.2.2.2 - Small optimization of the UNIT_AURA custom macro
+
 08-Jan-2023		v1.2.2.1 - Removed Item Range checking the function IsItemInRange() is now restricted during combat
+
 07-Jan-2023		v1.2.2.0 - Introduced fix so that Dragon Riding abilities work for Evokers (whom also share Dragon Riding spell names such as Surge Forward)
 				   This change should also allow different Hex variants to do their specific cast
 				And updated to WoW Interface 100200
