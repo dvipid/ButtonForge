@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.2.2.1
+Version: 1.2.2.3
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+09-Mar-2024		v1.2.2.3 - Updated Interface version to 100205 to match retail
+
 20-Feb-2024		v1.2.2.2 - Small optimization of the UNIT_AURA custom macro
 
 08-Jan-2024		v1.2.2.1 - Removed Item Range checking the function IsItemInRange() is now restricted during combat
