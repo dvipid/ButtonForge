@@ -24,7 +24,18 @@ if (GetLocale() ~= "enUS") then
 	setmetatable(Locale, BFLocales["enUS"]);
 end
 
+--[[
+	Added this as a stop gap for when Blizz disable UnitAura... hopefully BF v2 is out by then, but if not.
+		The function below is copied from Deprecated_10_2_5.lua
+]]
+local UnitAura = function(unitToken, index, filter)
+	local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter);
+	if not auraData then
+		return nil;
+	end
 
+	return AuraUtil.UnpackAuraData(auraData);
+end
 
 Util.ActiveButtons = {};
 Util.InactiveButtons = {};
@@ -759,7 +770,7 @@ end
 	hard disabled by a const param, it will also disable in the presence of Bartender which I know it doesn't function properly with
 --]]
 function Util.CreateBlizzardBarWrappers()
-	if (IsAddOnLoaded("Bartender4") or Const.DisableAutoAlignAgainstDefaultBars) then
+	if (C_AddOns.IsAddOnLoaded("Bartender4") or Const.DisableAutoAlignAgainstDefaultBars) then
 		return;
 	end
 
@@ -1799,7 +1810,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 			end
 		end;
 	elseif (Command == "item") then
-		PickupItem(Data);
+		C_Item.PickupItem(Data);
 	elseif (Command == "macro") then
 		PickupMacro(Data);
 	elseif (Command == "mount") then
@@ -2301,7 +2312,7 @@ function Util.CacheBagItems()
 	for b = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		for s = 1, C_Container.GetContainerNumSlots(b) do
 			ItemId = C_Container.GetContainerItemID(b, s);
-			ItemName = GetItemInfo(ItemId or "");
+			ItemName = C_Item.GetItemInfo(ItemId or "");
 			if (ItemName ~= nil and ItemName ~= "") then
 				BagItemNameIndexes[ItemName] = {b, s};
 				BagItemIdIndexes[ItemId] = {b, s};
@@ -2323,7 +2334,7 @@ function Util.CacheInvItems()
 	local ItemName;
 	for s = 32, 0, -1 do
 		ItemId = GetInventoryItemID("player", s);
-		ItemName = GetItemInfo(ItemId or "");
+		ItemName = C_Item.GetItemInfo(ItemId or "");
 		if (ItemName ~= nil and ItemName ~= "") then
 			InvItemNameIndexes[ItemName] = s;
 			InvItemIdIndexes[ItemId] = s;
@@ -2389,7 +2400,7 @@ function Util.LookupItemInvSlot(ItemId)
 		for s = 1, C_Container.GetContainerNumSlots(b) do
 			Id = C_Container.GetContainerItemID(b, s);
 			if (Id) then
-				Name = GetItemInfo(Id);
+				Name = C_Item.GetItemInfo(Id);
 				if (ItemId == Id) then
 					return b, s;
 				end

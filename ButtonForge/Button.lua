@@ -49,6 +49,19 @@ SecureClickWrapperFrame:SetFrameRef("buttonforgespellflyout", ButtonForge_SpellF
 SecureClickWrapperFrame:Execute([[ ButtonForge_SpellFlyout = self:GetFrameRef("buttonforgespellflyout"); ]]);
 
 
+--[[
+	Added this as a stop gap for when Blizz disable UnitAura... hopefully BF v2 is out by then, but if not.
+		The function below is copied from Deprecated_10_2_5.lua
+]]
+local UnitBuff = function(unitToken, index, filter)
+	local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter);
+	if not auraData then
+		return nil;
+	end
+
+	return AuraUtil.UnpackAuraData(auraData);
+end
+
 -- The code structure is broken a little here, ordinarily a Util function would be in the Util.lua file
 function Util.SecureClickWrapperFrame_UpdateCVarInfo()
 
@@ -560,7 +573,7 @@ function Button:SetCommandSpell(Id)
 end
 function Button:SetCommandItem(Id, Link)
 	local Name;
-	Name, Link = GetItemInfo(Id);	--Note this will get a clean link, as the one passed in may have enchants etc encoded in it
+	Name, Link = C_Item.GetItemInfo(Id);	--Note this will get a clean link, as the one passed in may have enchants etc encoded in it
 	self:SetCommandExplicitItem(Id, Name, Link);
 end
 function Button:SetCommandMacro(Index)
@@ -724,7 +737,7 @@ function Button:SetEnvItem(Id, Name, Link)
 	self.ItemId 		= Id;
 	self.ItemName 		= Name;
 	self.ItemLink 		= Link;
-	self.Texture		= GetItemIcon(Id) or "Interface/Icons/INV_Misc_QuestionMark";				--safe no matter what
+	self.Texture		= C_Item.GetItemIconByID(Id) or "Interface/Icons/INV_Misc_QuestionMark";				--safe no matter what
 	self.Target			= "target";
 	
 	self:ResetAppearance();
@@ -809,8 +822,8 @@ function Button:SetEnvCompanion(MountID)
 	
 
 		
-		if (ButtonForgeGlobalSettings["UseCollectionsFavoriteMountButton"] and not IsAddOnLoaded("Blizzard_Collections")) then
-			LoadAddOn("Blizzard_Collections");
+		if (ButtonForgeGlobalSettings["UseCollectionsFavoriteMountButton"] and not C_AddOns.IsAddOnLoaded("Blizzard_Collections")) then
+			C_AddOns.LoadAddOn("Blizzard_Collections");
 		end
 		if (ButtonForgeGlobalSettings["UseCollectionsFavoriteMountButton"] and MountJournalSummonRandomFavoriteButton) then
 			self.Widget:SetAttribute("type", "click");
@@ -1330,7 +1343,7 @@ function Button:TranslateMacro()
 		else
 			local ItemName, ItemLink = GetMacroItem(self.MacroIndex);
 			if (ItemName) then
-				self.ItemId = Util.GetItemId(ItemName) or GetItemInfoInstant(ItemName) or 0; --basically we can't easily get the id, but for the item function calls below, itemid in the context of a macro should be fine
+				self.ItemId = Util.GetItemId(ItemName) or C_Item.GetItemInfoInstant(ItemName) or 0; --basically we can't easily get the id, but for the item function calls below, itemid in the context of a macro should be fine
 				self.ItemName = ItemName;
 				self.ItemLink = ItemLink;
 				self.MacroMode = "item";
@@ -1475,7 +1488,7 @@ function Button:UpdateCheckedSpell()
 	end
 end
 function Button:UpdateCheckedItem()
-    if (IsCurrentItem(self.ItemId)) then
+    if (C_Item.IsCurrentItem(self.ItemId)) then
         self.Widget:SetChecked(true);
     else
 		self.Widget:SetChecked(false);
@@ -1527,7 +1540,7 @@ function Button:UpdateEquipped()
 end
 
 function Button:UpdateEquippedItem()
-	if (IsEquippedItem(self.ItemId)) then
+	if (C_Item.IsEquippedItem(self.ItemId)) then
 		self.WBorder:SetVertexColor(0, 1.0, 0, 0.35);
 		self.WBorder:Show();
 	else
@@ -1578,7 +1591,7 @@ function Button:UpdateCooldownSpell()
 	end
 end
 function Button:UpdateCooldownItem()
-	Util.CooldownFrame_SetTimer(self.WCooldown, GetItemCooldown(self.ItemId));
+	Util.CooldownFrame_SetTimer(self.WCooldown, C_Item.GetItemCooldown(self.ItemId));
 end
 function Button:UpdateCooldownMacro()
 	if (self.MacroMode == "spell") then
@@ -1629,7 +1642,7 @@ function Button:UpdateUsableSpell()
 	end
 end
 function Button:UpdateUsableItem()
-	local IsUsable, NotEnoughMana = IsUsableItem(self.ItemId);
+	local IsUsable, NotEnoughMana = C_Item.IsUsableItem(self.ItemId);
 	IsUsable = IsUsable or PlayerHasToy(self.ItemId);
 	if (IsUsable) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
@@ -1691,7 +1704,7 @@ function Button:UpdateUsableCustomAction()
 	end
 end
 function Button:UpdateUsableBattlePet()
-	--local IsUsable, NotEnoughMana = IsUsableItem(self.ItemName);
+	--local IsUsable, NotEnoughMana = C_Item.IsUsableItem(self.ItemName);
 	--if (self.CompanionType == "MOUNT" and IsIndoors()) then
 	--	self.WIcon:SetVertexColor(0.4, 0.4, 0.4);
 	--	self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -1722,8 +1735,8 @@ function Button:UpdateTextCountSpell()
 	self.WCount:SetText("");
 end
 function Button:UpdateTextCountItem()
-	local ItemCount = GetItemCount(self.ItemId, nil, true);
-	if (IsConsumableItem(self.ItemId) or ItemCount > 1) then
+	local ItemCount = C_Item.GetItemCount(self.ItemId, nil, true);
+	if (C_Item.IsConsumableItem(self.ItemId) or ItemCount > 1) then
 		self.WCount:SetText(ItemCount);
 	else
 		self.WCount:SetText("");
@@ -1971,7 +1984,7 @@ function Button:UpdateRangeTimerSpell()
 	end
 end
 function Button:UpdateRangeTimerItem()
-	--if (IsItemInRange(self.ItemId, self.Target)) then
+	--if (C_Item.IsItemInRange(self.ItemId, self.Target)) then
 	--	if (not self.RangeTimerOn) then
 	--		self:AddToRangeTimer();
 	--	end
@@ -2025,7 +2038,7 @@ function Button:CheckRangeTimerSpell()
 	end
 end
 function Button:CheckRangeTimerItem()
-	--if (IsItemInRange(self.ItemId, self.Target) == 1) then
+	--if (C_Item.IsItemInRange(self.ItemId, self.Target) == 1) then
 	--	self.WHotKey:SetVertexColor(0.6, 0.6, 0.6);
 	--else
 	--	self.WHotKey:SetVertexColor(1.0, 0.1, 0.1);

@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.2.2.4
+Version: 1.2.2.5
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,8 @@ Restrictions:
 
 
 History:
+10-May-2024		v1.2.2.5 - Updated Interface version to 100207
+						   Replaced several instances of deprecated api calls in anticipation of TWW (affecting Auras and Items mostly)
 23-Mar-2024		v1.2.2.4 - Updated Interface version to 100206
 09-Mar-2024		v1.2.2.3 - Updated Interface version to 100205 to match retail
 
