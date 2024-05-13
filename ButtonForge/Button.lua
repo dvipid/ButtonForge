@@ -631,7 +631,7 @@ function Button:SetCommandExplicitSpell(Id, NameRank, Name, Book)
 end
 function Button:SetCommandExplicitItem(Id, Name, Link)
 	self:SetEnvItem(Id, Name, Link);
-	self:SetAttributes("item", Name);
+	self:SetAttributes("item", Link);
 	self:SaveItem(Id, Name, Link);
 end
 function Button:SetCommandExplicitMacro(Index, Name, Body)
@@ -715,6 +715,13 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	self:DisplayActive();
 	Util.AddSpell(self);
 end
+
+local function ClearProfessionQuality(button)
+	if button.Widget.ProfessionQualityOverlayFrame then
+		button.Widget.ProfessionQualityOverlayFrame:Hide();
+	end
+end
+
 function Button:SetEnvItem(Id, Name, Link)
 	self.UpdateTexture 		= Button.Empty;
 	self.UpdateChecked 	= Button.UpdateCheckedItem;
@@ -742,6 +749,22 @@ function Button:SetEnvItem(Id, Name, Link)
 	
 	self:ResetAppearance();
 	self:DisplayActive();
+
+	-- code lifted / adapted from retail ActionButton.lua
+	local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(self.ItemLink)
+	if quality then
+		local widget = self.Widget
+		if not widget.ProfessionQualityOverlayFrame then
+			widget.ProfessionQualityOverlayFrame = CreateFrame("Frame", nil, widget, "ActionButtonProfessionOverlayTemplate");
+			widget.ProfessionQualityOverlayFrame:SetPoint("TOPLEFT", 14, -14);
+		end
+
+		local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
+		widget.ProfessionQualityOverlayFrame:Show();
+		widget.ProfessionQualityOverlayFrame.Texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+		--return;
+	end
+
 	Util.AddItem(self);
 end
 function Button:SetEnvMacro(Index, Name, Body)
@@ -1258,6 +1281,8 @@ end
 	Tidy up the display state for a button (does not include the icon itself)
 ----------------------------------------------------------------------------]]
 function Button:ResetAppearance()
+	
+	ClearProfessionQuality(self)
 	self.Widget:SetChecked(false);
 	
 	self.WBorder:Hide();
