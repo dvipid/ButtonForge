@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 	<Script file="UILibConfigPage.lua"/>
 	
-	<Frame name="BFConfigPage" parent="UIParent">
+	<Frame>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Button Forge">
@@ -13,7 +13,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentVersion" inherits="GameFontDisableSmall" text="Button Forge">
+				<FontString parentKey="Version" inherits="GameFontDisableSmall" text="Button Forge">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">
 							<Offset>
@@ -26,9 +26,9 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self.name = "Button Forge";
-				InterfaceOptions_AddCategory(self);
-				BFConfigPageVersion:SetText("Version "..BFConst.Version.."."..BFConst.VersionMinor);
+				local category, layout = Settings.RegisterCanvasLayoutCategory(self, "ButtonForge")
+				Settings.RegisterAddOnCategory(category);
+				self.Version:SetText("Version " .. BFConst.Version .. "." .. BFConst.VersionMinor);
 			</OnLoad>
 		</Scripts>
 		<Frames>
