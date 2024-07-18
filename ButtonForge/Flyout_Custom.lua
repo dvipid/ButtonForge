@@ -255,7 +255,7 @@ function ButtonForge_SpellFlyout:UpdateFlyoutButtonDisplay(ButtonName, SpellID, 
 	local Button = _G[ButtonName];
 	Button.spellID = SpellID;
 	Button.spellName = SpellName;
-	_G[Button:GetName().."Icon"]:SetTexture(GetSpellTexture(SpellName));
+	_G[Button:GetName().."Icon"]:SetTexture(C_Spell.GetSpellTexture(SpellName));
 	SpellFlyoutButton_UpdateCooldown(Button);
 	SpellFlyoutButton_UpdateState(Button);
 	SpellFlyoutButton_UpdateUsable(Button);
@@ -358,7 +358,7 @@ local function ButtonForge_SpellFlyoutButton_OnDrag(self)
 
 	if (not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		if (self.spellID) then
-			PickupSpell(self.spellID);
+			C_Spell.PickupSpell(self.spellID);
 		end
 	end
 end
@@ -378,7 +378,7 @@ local function ButtonForge_SpellFlyoutButton_SetTooltip(self)
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-		local spellName = GetSpellInfo(self.spellID);
+		local spellName = C_Spell.GetSpellInfo(self.spellID).name;
 		GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		self.UpdateTooltip = nil;
 	end
@@ -447,7 +447,7 @@ local function LoadFlyoutInfo(FlyoutID)
 	for i = 1, numSlots do
 		local spellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(FlyoutID, i);
 		local baseSpellID = FindBaseSpellByID(spellID);
-		local Name, Rank = GetSpellInfo(baseSpellID);
+		local Name, Rank = C_Spell.GetSpellInfo(baseSpellID).name, C_Spell.GetSpellSubtext(baseSpellID);
 		Rank = Rank or "";
 		local SpellName = "";
 		if (Name and Rank) then
@@ -493,11 +493,31 @@ local function Refresh_FlyoutSpells_OnUpdate()
 		return;
 	end
 
-	local TabThreeStart, TabThreeCount = select(3, GetSpellTabInfo(3));
-	for i = 1, TabThreeStart + TabThreeCount do
-		local Type, SpellID = GetSpellBookItemInfo(i, BOOKTYPE_SPELL);
-		if (Type == "FLYOUT") then
-			LoadFlyoutInfo(SpellID);
+	-- Based on Blizzard_SpellBookCategory.lua
+	local spellGroups =
+		{
+			C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.Class),
+			C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.General)
+		}
+	local numSpecializations = GetNumSpecializations(false, false)
+	local numAvailableSkillLines = C_SpellBook.GetNumSpellBookSkillLines()
+	local firstSpecIndex = Enum.SpellBookSkillLineIndex.MainSpec
+	local maxSpecIndex = firstSpecIndex + numSpecializations
+	maxSpecIndex = math.min(numAvailableSkillLines, maxSpecIndex)
+	for skillLineIndex = firstSpecIndex, maxSpecIndex do
+		local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex)
+		if skillLineInfo then
+			tinsert(spellGroups, skillLineInfo)
+		end
+	end
+
+	for _, spellGroup in ipairs(spellGroups) do
+		for i = 1, spellGroup.numSpellBookItems do
+			local slotIndex = spellGroup.itemIndexOffset + i
+			local spellInfo = C_SpellBook.GetSpellBookItemInfo(slotIndex, Enum.SpellBookSpellBank.Player)
+			if spellInfo.itemType == Enum.SpellBookItemType.Flyout then
+				LoadFlyoutInfo(spellInfo.actionID)
+			end
 		end
 	end
 
