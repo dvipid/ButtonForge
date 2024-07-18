@@ -97,7 +97,10 @@ function UILib.ToggleAdvancedTools()
 	EventFull.RefChecked = true;
 end
 
-
+local function GetMouseFocus()
+	local t = GetMouseFoci()
+	return t[1]
+end
 
 function UILib.ToggleRightClickSelfCast(Value)
 	if (Value ~= nil) then

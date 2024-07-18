@@ -1276,6 +1276,10 @@ end
 
 
 
+local function GetMouseFocus()
+	local t = GetMouseFoci()
+	return t[1]
+end
 
 --[[--------------------------------------------------------------------------
 	Tidy up the display state for a button (does not include the icon itself)
