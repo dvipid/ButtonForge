@@ -197,7 +197,7 @@ BarSaveValidationFunctions["Alpha"] 		= function(v) return ValidateNumeric(v) an
 
 
 --One quick override function
-local G_PickupSpellBookItem = PickupSpellBookItem;
+local G_PickupSpellBookItem = C_SpellBook.PickupSpellBookItem;
 local function PickupSpellBookItem(NameRank, Book)
 	local Index, Alt_Book = Util.LookupSpellIndex(NameRank);
 	if (Index) then
@@ -1771,44 +1771,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 	UILib.StopDraggingIcon();
 	SpellFlyout:Hide();
 	if (Command == "spell") then
-		-- pet spell or not
-		local name = GetSpellInfo(Subsubvalue);
-		local subtext = GetSpellSubtext(Subsubvalue) or "";
-		if ( Util.PetSpellIndex[name] ) then
-			PickupSpellBookItem(Util.PetSpellIndex[name], BOOKTYPE_PET);
-		else
-			-- Shadowlands Covenants spells seem to be different from standard spell
-			-- attempt to detect them because PickupSpell won't work with those
-			contextualID = nil;
-			if name ~= nil then
-				skillType, contextualID = GetSpellBookItemInfo(name .. "(" .. subtext .. ")");
-			end
-			if contextualID ~= nil then
-				PickupSpell(contextualID);
-			else
-				-- scan spellbook and pickupspell by slot id
-				function findSpell(spellName, bookType)
-				   local i, s;
-				   local found = false;
-				   for i = 1, MAX_SKILLLINE_TABS do
-				      local name, texture, offset, numSpells = GetSpellTabInfo(i);
-				      if (not name) then break; end
-				      for s = offset + 1, offset + numSpells do
-				         local    spell, rank = GetSpellBookItemName(s, bookType);
-				         if (spell == spellName) then found = true; end
-				         if (found and spell ~=spellName) then return s-1; end
-				      end
-				   end
-				   if (found) then return s; end
-				   return nil;
-				end
-				local bookType = BOOKTYPE_SPELL;
-				local id = findSpell(name, bookType);
-				if id ~= nil then
-					PickupSpellBookItem(id,bookType);
-				end
-			end
-		end;
+		C_Spell.PickupSpell(Subsubvalue);
 	elseif (Command == "item") then
 		C_Item.PickupItem(Data);
 	elseif (Command == "macro") then
@@ -1976,78 +1939,76 @@ function Util.IsSpellIdTalent(SpellId)
 	return false;
 end
 
+-- Some legacy redundant stuff is still here, cleanup not warranted given the upcoming larger rewrite
 function Util.CacheSpellIndexes()
+	
 	local i = 1;
 	local NewSI = {};
 	local NewSM = {-10000000, 10000000};
-	local ManaPoints = {};
-	local ItemType, Id;
 	Util.NewSpellIndex = {};
 
-	local total = 0;
-	for j = 1, GetNumSpellTabs() do
-		total = total + select(4, GetSpellTabInfo(j));
-	end
-	
-	for i = total, 1, -1 do
-		ItemType, Id = GetSpellBookItemInfo(i, BOOKTYPE_SPELL);
-		--local Name, Rank, Icon, PowerCost, IsFunnel, PowerType = GetSpellInfo(i, BOOKTYPE_SPELL);
-		local Name, Rank, Icon, PowerCost, IsFunnel, PowerType = GetSpellInfo(Id);
-		local Subtext = GetSpellSubtext(Id);
-		local NameRank = Util.GetFullSpellName(Name, Subtext);
-		if (ItemType == "SPELL") then
-			NewSI[NameRank] = i;
-			
-		elseif (ItemType == "FLYOUT") then
-			NewSI["FLYOUT"..Id] = i;
-
-		elseif (ItemType == nil) then
-			break;
-			
-		end
-
---		if (not Util.SpellIndex[NameRank]) then
-	--		Util.NewSpellIndex[NameRank] = i;
-		--end
-		if (PowerType == 0 and not ManaPoints[Power]) then
-			ManaPoints[PowerCost] = true;
-			table.insert(NewSM, PowerCost);
+	-- Based on Blizzard_SpellBookCategory.lua
+	local spellGroups =
+		{
+			C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.Class),
+			C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.General)
+		}
+	local numSpecializations = GetNumSpecializations(false, false)
+	local numAvailableSkillLines = C_SpellBook.GetNumSpellBookSkillLines()
+	local firstSpecIndex = Enum.SpellBookSkillLineIndex.MainSpec
+	local maxSpecIndex = firstSpecIndex + numSpecializations
+	maxSpecIndex = math.min(numAvailableSkillLines, maxSpecIndex)
+	for skillLineIndex = firstSpecIndex, maxSpecIndex do
+		local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex)
+		if skillLineInfo then
+			tinsert(spellGroups, skillLineInfo)
 		end
 	end
---	local total = 0;
-	--for j = 1, GetNumSpellTabs() do
-	--	total = total + select(4, GetSpellTabInfo(j));
-	--end
-	--print("Calc total = "..total, "actual total = "..i);
+
+	for _, spellGroup in ipairs(spellGroups) do
+		for i = 1, spellGroup.numSpellBookItems do
+			local slotIndex = spellGroup.itemIndexOffset + i
+			local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(slotIndex, Enum.SpellBookSpellBank.Player)
+			if spellBookItemInfo.itemType == Enum.SpellBookItemType.Spell then
+				local spellInfo = C_Spell.GetSpellInfo(spellBookItemInfo.spellID);
+				local Subtext = C_Spell.GetSpellSubtext(spellBookItemInfo.spellID);
+				local NameRank = Util.GetFullSpellName(spellInfo.name, Subtext);
+				NewSI[NameRank] = slotIndex
+
+			elseif spellBookItemInfo.itemType == Enum.SpellBookItemType.Flyout then
+				NewSI["FLYOUT" .. spellBookItemInfo.actionID] = NewSI["FLYOUT" .. spellBookItemInfo.actionID] or slotIndex
+
+			end
+		end
+	end
+
 	Util.SpellIndex = NewSI;
 	table.sort(NewSM);
 	Util.SpellMana = NewSM;
 end
 
-function Util.CachePetSpellIndexes()
-	local i = 1;
-	local NewPSI = {};
-	while true do
-		local spellName, spellSubName = GetSpellBookItemName(i, BOOKTYPE_PET)
-		if not spellName then
-			do break end
-		end
-		NewPSI[spellName] = i;
-		i = i + 1
-	end
 
-	Util.PetSpellIndex = NewPSI;	
+function Util.CachePetSpellIndexes()
+	local NewPSI = {}
+	local numPetSpells = C_SpellBook.HasPetSpells() or 0
+	for i = 1, numPetSpells do
+		local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(i, Enum.SpellBookSpellBank.Pet)
+		if spellBookItemInfo.name then
+			NewPSI[spellBookItemInfo.name] = i
+		end
+	end
+	Util.PetSpellIndex = NewPSI
 end
 
 function Util.LookupSpellIndex(NameRank)
 	local Index = Util.SpellIndex[NameRank];
 	
 	if (Index) then
-		return Index, BOOKTYPE_SPELL;
+		return Index, Enum.SpellBookSpellBank.Player;
 	end
 	Index = Util.PetSpellIndex[NameRank];
 	if (Index) then
-		return Index, BOOKTYPE_PET;
+		return Index, Enum.SpellBookSpellBank.Pet;
 	end
 end
 
@@ -2065,6 +2026,7 @@ end
 
 --[[ Used when the players mana crosses a threshold to find the next thresholds to test against --]]
 function Util.FindNewThresholds(Mana, Index, SearchDown)
+	--[[
 	local SpellMana = Util.SpellMana;
 	if (SearchDown) then
 		for i = Index-1, 1, -1 do
@@ -2079,6 +2041,7 @@ function Util.FindNewThresholds(Mana, Index, SearchDown)
 			end
 		end
 	end
+	]]
 end
 --[[ I will probably need to do the above for Rage/Energy and Runic Power, but for now will skip such tests --]]
 

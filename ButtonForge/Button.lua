@@ -567,9 +567,10 @@ end
 
 --[[ Set the individual types of actions including obtained any extra data they may need --]]
 function Button:SetCommandSpell(Id)
-	local Name, Subtext = GetSpellInfo(Id), GetSpellSubtext(Id);
-	local NameRank = Util.GetFullSpellName(Name, Subtext);
-	self:SetCommandExplicitSpell(Id, NameRank, Name, Book);
+	local Subtext = C_Spell.GetSpellSubtext(Id);
+	local spellInfo = C_Spell.GetSpellInfo(Id)
+	local NameRank = Util.GetFullSpellName(spellInfo.name, Subtext);
+	self:SetCommandExplicitSpell(Id, NameRank, spellInfo.name);
 end
 function Button:SetCommandItem(Id, Link)
 	local Name;
@@ -697,8 +698,8 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 
 	local BaseSpellID = FindBaseSpellByID(Id);
     if (BaseSpellID ~= Id and BaseSpellID ~= nil) then
-    	local name = GetSpellInfo(BaseSpellID);
-		local subtext = GetSpellSubtext(BaseSpellID) or "";
+    	local name = C_Spell.GetSpellInfo(BaseSpellID).name;
+		local subtext = C_Spell.GetSpellSubtext(BaseSpellID) or "";
     	self.Widget:SetAttribute("spell", name .. "(" .. subtext .. ")");
     end
 
@@ -708,7 +709,7 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	self.SpellName 		= Name;
 	self.SpellBook 		= Book;
 	self.SpellIsTalent	= IsTalent;
-	self.Texture 		= GetSpellTexture(Id) or "Interface/Icons/INV_Misc_QuestionMark";
+	self.Texture 		= C_Spell.GetSpellTexture(Id) or "Interface/Icons/INV_Misc_QuestionMark";
 	self.Target			= "target";
 	
 	self:ResetAppearance();
@@ -839,7 +840,7 @@ function Button:SetEnvCompanion(MountID)
 	self.MountID		= MountID;
 	
 	if (self.MountID == Const.SUMMON_RANDOM_FAVORITE_MOUNT_ID) then
-		self.MountName		= GetSpellInfo(Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL);
+		self.MountName		= C_Spell.GetSpellInfo(Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL).name;
 		self.MountSpellID	= Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
 		self.MountSpellName = self.MountName;
 	
@@ -862,14 +863,14 @@ function Button:SetEnvCompanion(MountID)
 	else
 		self.MountName		= C_MountJournal.GetMountInfoByID(MountID);
 		self.MountSpellID	= select(2, C_MountJournal.GetMountInfoByID(MountID));
-		self.MountSpellName	= GetSpellInfo(self.MountSpellID);
+		self.MountSpellName	= C_Spell.GetSpellInfo(self.MountSpellID).name;
 		self.Widget:SetAttribute("type", "macro");
 		self.Widget:SetAttribute("typerelease", "macro");
 		self.Widget:SetAttribute("macrotext", "/cast "..self.MountSpellName);
 	end
 
 	
-	self.Texture	= GetSpellTexture(self.MountSpellID);		--select(3, C_MountJournal.GetDisplayedMountInfo(Index));
+	self.Texture	= C_Spell.GetSpellTexture(self.MountSpellID);		--select(3, C_MountJournal.GetDisplayedMountInfo(Index));
 
 
 	self.UpdateTexture 	= Button.Empty;
@@ -982,9 +983,9 @@ function Button:SetEnvFlyout(Id)
 	
 	self.Mode 			= "flyout";
 	self.FlyoutId		= Id;
-	local ind, booktype = Util.LookupSpellIndex("FLYOUT"..Id);
+	local ind, bank = Util.LookupSpellIndex("FLYOUT"..Id);
 	if (ind) then
-		self.Texture 		= GetSpellBookItemTexture(ind, booktype) or "Interface/Icons/INV_Misc_QuestionMark";
+		self.Texture 		= C_SpellBook.GetSpellBookItemTexture(ind, bank) or "Interface/Icons/INV_Misc_QuestionMark";
 	else
 		self.Texture		= "Interface/Icons/INV_Misc_QuestionMark";
 	end
@@ -1194,7 +1195,9 @@ function Button:SetAttributes(Type, Value)
 			prof2_name, _, _, _, _, _, prof2_skillLine = GetProfessionInfo(prof2);
 		end
 
-		local SpellName, _, _, _, _, _, SpellId = GetSpellInfo(Value);
+		local spellInfo = C_Spell.GetSpellInfo(Value)
+		local SpellName = spellInfo.name
+		local SpellId = spellInfo.spellID;
 		
 		-- Patch to fix tradeskills
 		if ( prof1 and SpellName == prof1_name ) then
@@ -1218,13 +1221,13 @@ function Button:SetAttributes(Type, Value)
 			if (SpellId == Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_ID) then
 				SpellName = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
 			else
-				local subtext = GetSpellSubtext(Value) or "";
+				local subtext = C_Spell.GetSpellSubtext(Value) or "";
 				SpellName = SpellName .. "(" .. subtext .. ")";
 			end
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute("typerelease", Type);
 			self.Widget:SetAttribute(Type, SpellName);
-			self.Widget:SetAttribute("IsEmpowerSpell", IsPressHoldReleaseSpell(SpellId));
+			self.Widget:SetAttribute("IsEmpowerSpell", C_Spell.IsPressHoldReleaseSpell(SpellId));
 
 		-- fallback to the old method if the name cannot be resolved
 		else
@@ -1364,7 +1367,7 @@ function Button:TranslateMacro()
 		self.MacroTargetDead = TargetDead;
 		local SpellId = GetMacroSpell(self.MacroIndex);
 		if (SpellId) then
-			local Name, Subtext = GetSpellInfo(SpellId), GetSpellSubtext(SpellId);
+			local Name, Subtext = C_Spell.GetSpellInfo(SpellId).name, C_Spell.GetSpellSubtext(SpellId);
 			self.SpellName = Name;
 			self.SpellNameRank = Util.GetFullSpellName(Name, Subtext);
 			self.SpellId = SpellId;
@@ -1510,7 +1513,7 @@ function Button:UpdateChecked()
     self.Widget:SetChecked(false);
 end
 function Button:UpdateCheckedSpell()
-    if (IsCurrentSpell(self.SpellNameRank) or IsAutoRepeatSpell(self.SpellNameRank)) then
+    if (C_Spell.IsCurrentSpell(self.SpellNameRank) or C_Spell.IsAutoRepeatSpell(self.SpellNameRank)) then
         self.Widget:SetChecked(true);
     else
 		self.Widget:SetChecked(false);
@@ -1597,23 +1600,25 @@ function Button:UpdateCooldown()
 
 end
 function Button:UpdateCooldownSpell()
-	local Start, Duration, Enable;
+	local cooldownInfo;
 	if(self.SpellId == Const.COVENANT_WARRIOR_FURY_CONDEMN_ID) then -- it seems there is an exception with that spell and GetSpellCooldown called from the spellname return a wrong duration.
-		Start, Duration, Enable = GetSpellCooldown(self.SpellId);
+		cooldownInfo = C_Spell.GetSpellCooldown(self.SpellId);
 	else
-		Start, Duration, Enable = GetSpellCooldown(self.SpellNameRank);
+		cooldownInfo = C_Spell.GetSpellCooldown(self.SpellNameRank);
 	end
 
-	local Charges, MaxCharges, ChargeStart, ChargeDuration = GetSpellCharges(self.SpellNameRank);
-
-	if (Start ~= nil) then
-		--Charges = Charges or 0;
-		--MaxCharges = MaxCharges or 0;
-		if (Charges ~= MaxCharges) then
-			Start = ChargeStart;
-			Duration = ChargeDuration;
+	if (cooldownInfo ~= nil) then
+		local chargesInfo = C_Spell.GetSpellCharges(self.SpellNameRank);
+		local start = cooldownInfo.startTime
+		local duration = cooldownInfo.duration
+		local currentCharges, maxCharges
+		if chargesInfo and chargesInfo.currentCharges ~= chargesInfo.maxCharges then
+			start = chargesInfo.cooldownStartTime;
+			duration = chargesInfo.cooldownDuration;
+			currentCharges = chargesInfo.currentCharges;
+			maxCharges = chargesInfo.maxCharges;
 		end
-		Util.CooldownFrame_SetTimer(self.WCooldown, Start, Duration, Enable, Charges, MaxCharges);
+		Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);
 	else
 		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
 		self.WCooldown:Hide();
@@ -1658,7 +1663,7 @@ function Button:UpdateUsable()
 
 end
 function Button:UpdateUsableSpell()
-	local IsUsable, NotEnoughMana = IsUsableSpell(self.SpellNameRank);
+	local IsUsable, NotEnoughMana = C_Spell.IsSpellUsable(self.SpellNameRank);
 	if (IsUsable) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -1695,7 +1700,7 @@ function Button:UpdateUsableMacro()
 	end
 end
 function Button:UpdateUsableCompanion()
-	local IsUsable = IsUsableSpell(self.MountSpellID) and (select(5, C_MountJournal.GetMountInfoByID(self.MountID)) or self.MountID == Const.SUMMON_RANDOM_FAVORITE_MOUNT_ID);
+	local IsUsable = C_Spell.IsSpellUsable(self.MountSpellID) and (select(5, C_MountJournal.GetMountInfoByID(self.MountID)) or self.MountID == Const.SUMMON_RANDOM_FAVORITE_MOUNT_ID);
 
 	if (IsUsable) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
@@ -1751,14 +1756,14 @@ function Button:UpdateTextCount()
 
 end
 function Button:UpdateTextCountSpell()
-	local count = GetSpellCount(self.SpellNameRank);
+	local count = C_Spell.GetSpellCastCount(self.SpellNameRank);
 	if (count ~= 0 or IsConsumableSpell(self.SpellNameRank)) then
 		self.WCount:SetText(count);
 		return;
 	end
-	local charges, maxCharges = GetSpellCharges(self.SpellNameRank);
-	if (charges ~= nil and maxCharges ~= 1) then
-		self.WCount:SetText(charges);
+	local chargesInfo = C_Spell.GetSpellCharges(self.SpellNameRank);
+	if chargesInfo and chargesInfo.maxCharges ~= 1 then
+		self.WCount:SetText(chargesInfo.currentCharges);
 		return;
 	end
 	self.WCount:SetText("");
@@ -1950,7 +1955,7 @@ function Button:UpdateFlash()
 
 end
 function Button:UpdateFlashSpell()
-	if ((IsAttackSpell(self.SpellNameRank) and IsCurrentSpell(self.SpellNameRank)) or IsAutoRepeatSpell(self.SpellNameRank)) then
+	if ((C_Spell.IsAutoAttackSpell(self.SpellNameRank) and C_Spell.IsCurrentSpell(self.SpellNameRank)) or C_Spell.IsAutoRepeatSpell(self.SpellNameRank)) then
 		if (not self.FlashOn) then
 			self:AddToFlash();
 		end
@@ -2004,7 +2009,7 @@ function Button:UpdateRangeTimer()
 	
 end
 function Button:UpdateRangeTimerSpell()
-	if (IsSpellInRange(self.SpellNameRank, self.Target)) then
+	if C_Spell.IsSpellInRange(self.SpellNameRank, self.Target) ~= nil then
 		if (not self.RangeTimerOn) then
 			self:AddToRangeTimer();
 		end
@@ -2032,7 +2037,7 @@ function Button:UpdateRangeTimerMacro()
 end
 function Button:UpdateRangeTimerBonusAction()
 	local action = self.Widget:GetAttribute("action");
-	if ((HasOverrideActionBar() or HasVehicleActionBar()) and IsActionInRange(action)) then
+	if ((HasOverrideActionBar() or HasVehicleActionBar()) and IsActionInRange(action) ~= nil) then
 		if (not self.RangeTimerOn) then
 			self:AddToRangeTimer();
 		end
@@ -2060,7 +2065,7 @@ function Button:RemoveFromRangeTimer()
 end
 
 function Button:CheckRangeTimerSpell()
-	if (IsSpellInRange(self.SpellNameRank, self.Target) == 1) then
+	if C_Spell.IsSpellInRange(self.SpellNameRank, self.Target) then
 		self.WHotKey:SetVertexColor(0.6, 0.6, 0.6);
 	else
 		self.WHotKey:SetVertexColor(1.0, 0.1, 0.1);
@@ -2084,7 +2089,7 @@ function Button:CheckRangeTimerMacro()
 end
 function Button:CheckRangeTimerBonusAction()
 	local action = self.Widget:GetAttribute("action");
-	if (IsActionInRange(action) == 1) then
+	if IsActionInRange(action) then
 		self.WHotKey:SetVertexColor(0.6, 0.6, 0.6);
 	else
 		self.WHotKey:SetVertexColor(1.0, 0.1, 0.1);
@@ -2215,7 +2220,7 @@ end
 function Button:RefreshSpell()
 	--in the case of a spell refresh we just need to make sure the texture reflects its current status
 	if (self.Mode == "spell") then
-		self.Texture = GetSpellTexture(self.SpellId) or "Interface/Icons/INV_Misc_QuestionMark";
+		self.Texture = C_Spell.GetSpellTexture(self.SpellId) or "Interface/Icons/INV_Misc_QuestionMark";
 		self:DisplayActive();
 	end
 end
