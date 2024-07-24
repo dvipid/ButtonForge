@@ -1,16 +1,16 @@
-﻿Button Forge
+﻿ButtonForge
 Mod for World of Warcraft
 
 Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.0.0
+Version: 1.3.0.1
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
 Usage:
-- From the Button Forge Toolbar click the various buttons to enter into create/destroy bar mode
+- From the ButtonForge Toolbar click the various buttons to enter into create/destroy bar mode
 - Advanced options will display additional advanced options for each Bar created (such as key bindings)
 - Drag the bars where you wish them to be placed
 - When you are happy with your layout close the Button Forge Toolbar to hide the configuration gui either via the Key Binding, the Addon Configuration page, or the Red X on the Toolbar
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+24-Jul-2024		v1.3.0.1 - Updated toc to WoW v11 (110000), and renamed addon in toc to ButtonForge (removed the space from the name)
 16-Jul-2024		v1.3.0.0 - Beta version for WoW v11 The War Within
 13-May-2024		v1.2.2.6 - Better support potions of different quality tiers (use item link to trigger instead of item name, and show the quality overlay on buttons)
 10-May-2024		v1.2.2.5 - Updated Interface version to 100207
