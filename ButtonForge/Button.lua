@@ -569,8 +569,9 @@ end
 function Button:SetCommandSpell(Id)
 	local Subtext = C_Spell.GetSpellSubtext(Id);
 	local spellInfo = C_Spell.GetSpellInfo(Id)
-	local NameRank = Util.GetFullSpellName(spellInfo.name, Subtext);
-	self:SetCommandExplicitSpell(Id, NameRank, spellInfo.name);
+	local spellName = spellInfo and spellInfo.name
+	local NameRank = Util.GetFullSpellName(spellName, Subtext);
+	self:SetCommandExplicitSpell(Id, NameRank, spellName);
 end
 function Button:SetCommandItem(Id, Link)
 	local Name;
@@ -697,11 +698,12 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	end
 
 	local BaseSpellID = FindBaseSpellByID(Id);
-    if (BaseSpellID ~= Id and BaseSpellID ~= nil) then
-    	local name = C_Spell.GetSpellInfo(BaseSpellID).name;
+	if (BaseSpellID ~= Id and BaseSpellID ~= nil) then
+		local spellInfo = C_Spell.GetSpellInfo(BaseSpellID)
+		local name = spellInfo and spellInfo.name or "";
 		local subtext = C_Spell.GetSpellSubtext(BaseSpellID) or "";
-    	self.Widget:SetAttribute("spell", name .. "(" .. subtext .. ")");
-    end
+		self.Widget:SetAttribute("spell", name .. "(" .. subtext .. ")");
+	end
 
 	self.Mode 			= "spell";
 	self.SpellId 		= Id;
@@ -840,7 +842,8 @@ function Button:SetEnvCompanion(MountID)
 	self.MountID		= MountID;
 	
 	if (self.MountID == Const.SUMMON_RANDOM_FAVORITE_MOUNT_ID) then
-		self.MountName		= C_Spell.GetSpellInfo(Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL).name;
+		local spellInfo = C_Spell.GetSpellInfo(Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL)
+		self.MountName		= spellInfo and spellInfo.name or "";
 		self.MountSpellID	= Const.SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
 		self.MountSpellName = self.MountName;
 	
@@ -863,7 +866,8 @@ function Button:SetEnvCompanion(MountID)
 	else
 		self.MountName		= C_MountJournal.GetMountInfoByID(MountID);
 		self.MountSpellID	= select(2, C_MountJournal.GetMountInfoByID(MountID));
-		self.MountSpellName	= C_Spell.GetSpellInfo(self.MountSpellID).name;
+		local spellInfo = C_Spell.GetSpellInfo(self.MountSpellID)
+		self.MountSpellName	= spellInfo and spellInfo.name or "";
 		self.Widget:SetAttribute("type", "macro");
 		self.Widget:SetAttribute("typerelease", "macro");
 		self.Widget:SetAttribute("macrotext", "/cast "..self.MountSpellName);
@@ -1196,9 +1200,13 @@ function Button:SetAttributes(Type, Value)
 		end
 
 		local spellInfo = C_Spell.GetSpellInfo(Value)
-		local SpellName = spellInfo.name
-		local SpellId = spellInfo.spellID;
-		
+		local SpellName = nil
+		local SpellId = nil
+		if spellInfo then
+			SpellName = spellInfo.name
+			SpellId = spellInfo.spellID
+		end
+
 		-- Patch to fix tradeskills
 		if ( prof1 and SpellName == prof1_name ) then
 			self.Widget:SetAttribute("type", "macro");
@@ -1367,7 +1375,9 @@ function Button:TranslateMacro()
 		self.MacroTargetDead = TargetDead;
 		local SpellId = GetMacroSpell(self.MacroIndex);
 		if (SpellId) then
-			local Name, Subtext = C_Spell.GetSpellInfo(SpellId).name, C_Spell.GetSpellSubtext(SpellId);
+			local spellInfo = C_Spell.GetSpellInfo(SpellId)
+			local Name = spellInfo and spellInfo.name
+			local Subtext = C_Spell.GetSpellSubtext(SpellId);
 			self.SpellName = Name;
 			self.SpellNameRank = Util.GetFullSpellName(Name, Subtext);
 			self.SpellId = SpellId;

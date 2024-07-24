@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.0.1
+Version: 1.3.0.2
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+25-Jul-2024		v1.3.0.2 - Corrected issue where spells removed from the game (if on a bar) could cause BF to error - Thanks to Aurleis on CurseForge for catching that
 24-Jul-2024		v1.3.0.1 - Updated toc to WoW v11 (110000), and renamed addon in toc to ButtonForge (removed the space from the name)
 16-Jul-2024		v1.3.0.0 - Beta version for WoW v11 The War Within
 13-May-2024		v1.2.2.6 - Better support potions of different quality tiers (use item link to trigger instead of item name, and show the quality overlay on buttons)

@@ -377,8 +377,8 @@ local function ButtonForge_SpellFlyoutButton_SetTooltip(self)
 
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
-		local spellName = C_Spell.GetSpellInfo(self.spellID).name;
+		local spellInfo = C_Spell.GetSpellInfo(self.spellID)
+		local spellName = spellInfo and spellInfo.name or "";
 		GameTooltip:SetText(spellName, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		self.UpdateTooltip = nil;
 	end
@@ -447,9 +447,10 @@ local function LoadFlyoutInfo(FlyoutID)
 	for i = 1, numSlots do
 		local spellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(FlyoutID, i);
 		local baseSpellID = FindBaseSpellByID(spellID);
-		local Name, Rank = C_Spell.GetSpellInfo(baseSpellID).name, C_Spell.GetSpellSubtext(baseSpellID);
-		Rank = Rank or "";
-		local SpellName = "";
+		local spellInfo = C_Spell.GetSpellInfo(baseSpellID)
+		local Name = spellInfo and spellInfo.name or ""
+		local Rank = C_Spell.GetSpellSubtext(baseSpellID);
+		local SpellName = Name;
 		if (Name and Rank) then
 			SpellName = Name.."("..Rank..")";
 		end
