@@ -128,6 +128,8 @@ function Button.CreateButtonWidget(Parent)
 	Widget:SetAttribute("checkselfcast", true);
 	Widget:SetAttribute("checkfocuscast", true);
 	Widget:SetAttribute("checkmouseovercast", true);
+	-- useparent-actionpage is to support the custom override buttons, the custom action implementation will make sure the bar has the correct actionpage value set to make it all work
+	Widget:SetAttribute("useparent-actionpage", true)
 	Widget:RegisterForDrag("LeftButton", "RightButton");
 
 	Widget:SetScript("OnReceiveDrag", Button.OnReceiveDrag);
@@ -1263,11 +1265,8 @@ function Button:SetAttributes(Type, Value)
 		self.Widget:SetAttribute("type", "action");
 		self.Widget:SetAttribute("typerelease", "action");
 		self.Widget:SetAttribute("id", Value);
-		if (HasOverrideActionBar()) then
-			self.Widget:SetAttribute("action", Value + ((Const.OverrideActionPageOffset - 1) * 12));
-		else
-			self.Widget:SetAttribute("action", Value + ((Const.BonusActionPageOffset - 1) * 12));
-		end
+		self.Widget:SetID(Value)
+		self.Widget:SetAttribute("action", Value);
 	elseif (Type == "flyout") then
 		--self.Widget:SetAttribute("type", "flyout");
 		self.Widget:SetAttribute("type", "attribute");
@@ -1458,7 +1457,7 @@ function Button:UpdateTextureMacro()
 	self.WIcon:SetTexture(self.Texture);
 end
 function Button:UpdateTextureBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if (HasOverrideActionBar() or HasVehicleActionBar()) then
 		local Texture = GetActionTexture(action);
 		if (not Texture) then
@@ -1557,7 +1556,7 @@ function Button:UpdateCheckedCompanion()
 	end
 end
 function Button:UpdateCheckedBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if ((HasOverrideActionBar() or HasVehicleActionBar()) and (IsCurrentAction(action) or IsAutoRepeatAction(action))) then
 		self.Widget:SetChecked(true);
 	else
@@ -1654,7 +1653,7 @@ function Button:UpdateCooldownCompanion()
 end
 function Button:UpdateCooldownBonusAction()
 	if (HasOverrideActionBar() or HasVehicleActionBar()) then
-		local action = self.Widget:GetAttribute("action");
+		local action = self.Widget:CalculateAction()
 		Util.CooldownFrame_SetTimer(self.WCooldown, GetActionCooldown(action));
 	else
 		self.WCooldown:Hide();
@@ -1722,7 +1721,7 @@ function Button:UpdateUsableCompanion()
 	end
 end
 function Button:UpdateUsableBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	local IsUsable, NotEnoughMana = IsUsableAction(action);
 	if (IsUsable or (HasOverrideActionBar() == nil and HasVehicleActionBar() == nil)) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
@@ -1803,7 +1802,7 @@ function Button:UpdateTextCountMacro()
 	end
 end
 function Button:UpdateTextCountBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if ((HasOverrideActionBar() or HasVehicleActionBar()) and (IsConsumableAction(action) or IsStackableAction(action))) then
 		self.WCount:SetText(GetActionCount(action));
 	else
@@ -1883,7 +1882,7 @@ function Button:UpdateTooltipEquipmentSet()
 end
 function Button:UpdateTooltipBonusAction()
 	self = self.ParentButton or self;	--This is a sneaky cheat incase the widget was used to get here...
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if (HasOverrideActionBar() or HasVehicleActionBar()) then
 		GameTooltip:SetAction(action);
 	else
@@ -1982,7 +1981,7 @@ function Button:UpdateFlashMacro()
 	end
 end
 function Button:UpdateFlashBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if ((HasOverrideActionBar() or HasVehicleActionBar()) and ((IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action))) then
 		if (not self.FlashOn) then
 			self:AddToFlash();
@@ -2047,7 +2046,7 @@ function Button:UpdateRangeTimerMacro()
 	end
 end
 function Button:UpdateRangeTimerBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if ((HasOverrideActionBar() or HasVehicleActionBar()) and IsActionInRange(action) ~= nil) then
 		if (not self.RangeTimerOn) then
 			self:AddToRangeTimer();
@@ -2099,7 +2098,7 @@ function Button:CheckRangeTimerMacro()
 	end
 end
 function Button:CheckRangeTimerBonusAction()
-	local action = self.Widget:GetAttribute("action");
+	local action = self.Widget:CalculateAction()
 	if IsActionInRange(action) then
 		self.WHotKey:SetVertexColor(0.6, 0.6, 0.6);
 	else

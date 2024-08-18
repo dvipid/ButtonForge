@@ -111,13 +111,4 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	
-	<!-- Frame to handle protected processing when the override or vehicle bar becomes active -->
-	<Frame name="BFSecureSpecialBarFrame" hidden="true" inherits="SecureHandlerStateTemplate">
-		<Scripts>
-			<OnLoad>
-				RegisterStateDriver(self, "bar", "[overridebar] overridebar; [vehicleui] vehicleui; normal");
-			</OnLoad>
-		</Scripts>
-	</Frame>
 </Ui>

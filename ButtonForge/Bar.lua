@@ -7,6 +7,7 @@ Notes:	':' syntax represents a function that will be called by an actual BF Bar 
 
 ]]
 
+
 local SecureProcessing = CreateFrame("FRAME", nil, nil, "SecureHandlerStateTemplate")
 SecureProcessing:Hide()
 SecureProcessing:Execute(
@@ -25,6 +26,24 @@ SecureProcessing:SetAttribute("_onstate-combat",
 		end
 	]]
 )
+RegisterAttributeDriver(SecureProcessing, "state-actionpagechange", "[overridebar] 2; [possessbar] 3; [shapeshift] 4; [vehicleui] 5; 6")
+SecureProcessing:SetAttribute("_onstate-actionpagechange",
+[[
+	local actionPage = 0
+	if HasVehicleActionBar() then
+		actionPage = GetVehicleBarIndex()
+	elseif HasOverrideActionBar() then
+		actionPage = GetOverrideBarIndex()
+	elseif HasTempShapeshiftActionBar() then
+		actionPage = GetTempShapeshiftBarIndex()
+	end
+	for _, bar in ipairs(Bars) do
+		bar:SetAttribute("actionpage", actionPage)
+	end
+	self:SetAttribute("actionpage", actionPage)
+]])
+
+
 
 BFBar 		= BFBar or {}; 		local Bar = BFBar;
 BFUtil 		= BFUtil or {}; 	local Util = BFUtil;
@@ -115,6 +134,7 @@ function Bar.New(BarSave)
 												end]]);	--When the bar is hidden disable them
 			SecureProcessing:SetFrameRef("bar", ButtonFrame)
 			SecureProcessing:Execute([[tinsert(Bars, self:GetFrameRef("bar"))]])
+			ButtonFrame:SetAttribute("actionpage", SecureProcessing:GetAttribute("actionpage"))
 			ButtonFrame:SetAttribute("OnEnterCombat",
 												[[local B;
 													if (not GridAlwaysOn) then
@@ -136,24 +156,6 @@ function Bar.New(BarSave)
 														owner:SetFrameLevel(owner:GetAttribute("Order") * 6 + 4);
 													end
 												]])
-			ButtonFrame:WrapScript(BFSecureSpecialBarFrame, "OnAttributeChanged",
-												[[local B, id, page;
-												if (value == "overridebar") then
-													page = 18; --Const.OverrideActionPageOffset
-												elseif (value == "vehicleui") then
-													page = 16; --Const.BonusActionPageOffset
-												else
-													page = 16; --Const.BonusActionPageOffset
-												end
-												
-												for i = 1, #Buttons do
-													B = Buttons[i];
-													id = B:GetAttribute("id");
-													if (id) then
-														B:SetAttribute("action", id + ((page - 1) * 12));
-													end
-												end]]);
-			
 			ButtonFrame.ParentBar = NewBar;
 			NewBar.ButtonFrame = ButtonFrame;
 		
@@ -434,7 +436,7 @@ function Bar:PrepareButtonSecureState()
 	
 	-- 3) Prep the special action buttons if there is some kind of override bar
 	local page, barType;
-	barType = BFSecureSpecialBarFrame:GetAttribute("bar");
+	--barType = BFSecureSpecialBarFrame:GetAttribute("bar");
 	--[[if (barType == "overridebar") then
 		page = Const.OverrideActionPageOffset;
 	elseif (barType == "vehicleui") then
