@@ -1910,7 +1910,7 @@ function Util.GetFullSpellName(Name, Subtext)
 end
 
 function Util.GetSpellId(NameRank)
-	local Link = GetSpellLink(NameRank);
+	local Link = C_Spell.GetSpellLink(NameRank);
 	return select(3, strfind(Link, "spell:(%d+)|"));
 end
 
@@ -2699,6 +2699,7 @@ function Util.GetButtonActionInfo(ButtonName)
 end
 	
 --This one breaks with the philosophy of the Button implementation but for now should be sufficient to support the API function
+local emptySpellInfo = {}
 function Util.GetButtonActionInfo2(ButtonName)
 	local Button = Util.ButtonWidgetMap[_G[ButtonName]];
 	
@@ -2718,7 +2719,8 @@ function Util.GetButtonActionInfo2(ButtonName)
 	--]]
 		
 	if (Button.Mode == "spell") then
-		local Rank = select(2, GetSpellInfo(Button.SpellId));
+		local spellInfo = C_Spell.GetSpellInfo(Id) or emptySpellInfo
+		local Rank = nil
 		return "spell", Button.SpellName, Rank, Button.SpellId, Util.LookupSpellIndex(Button.SpellNameRank), Button.SpellBook;
 	elseif (Button.Mode == "item") then
 		return "item", Button.ItemId, Button.ItemName;

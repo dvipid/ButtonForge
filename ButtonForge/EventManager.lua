@@ -371,13 +371,14 @@ function Text:OnEvent(Event, UnitId)
 		Full.RefreshButtons = true;
 	end
 end
+local emptySpellInfo = {}
 function Glow:OnEvent(Event, Arg1)
-	local Name = GetSpellInfo(Arg1);
+	local spellInfo = C_Spell.GetSpellInfo(Arg1 or 0) or emptySpellInfo;
 
 	if (Event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
-		Util.GlowSpells[Name] = true;
+		Util.GlowSpells[spellInfo.name] = true;
 	else
-		Util.GlowSpells[Name] = false;
+		Util.GlowSpells[spellInfo.name] = false;
 	end
 	Full.RefGlow = true;
 	Full.RefreshButtons = true;
