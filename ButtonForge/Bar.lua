@@ -7,6 +7,25 @@ Notes:	':' syntax represents a function that will be called by an actual BF Bar 
 
 ]]
 
+local SecureProcessing = CreateFrame("FRAME", nil, nil, "SecureHandlerStateTemplate")
+SecureProcessing:Hide()
+SecureProcessing:Execute(
+	[[
+		Bars = newtable();
+	]]
+)
+
+RegisterAttributeDriver(SecureProcessing, "state-combat", "[combat] true; false")
+SecureProcessing:SetAttribute("_onstate-combat",
+	[[
+		if newstate == "true" then
+			for index, bar in ipairs(Bars) do
+				bar:RunAttribute("OnEnterCombat")
+			end
+		end
+	]]
+)
+
 BFBar 		= BFBar or {}; 		local Bar = BFBar;
 BFUtil 		= BFUtil or {}; 	local Util = BFUtil;
 BFConst 	= BFConst or {}; 	local Const = BFConst;
@@ -94,9 +113,10 @@ function Bar.New(BarSave)
 														B:ClearBindings();
 													end
 												end]]);	--When the bar is hidden disable them
-			ButtonFrame:WrapScript(BFSecureForCombatFrame, "OnAttributeChanged",
+			SecureProcessing:SetFrameRef("bar", ButtonFrame)
+			SecureProcessing:Execute([[tinsert(Bars, self:GetFrameRef("bar"))]])
+			ButtonFrame:SetAttribute("OnEnterCombat",
 												[[local B;
-												if (value == "true") then
 													if (not GridAlwaysOn) then
 														for i = 1, #Buttons do
 															B = Buttons[i];
@@ -115,7 +135,7 @@ function Bar.New(BarSave)
 														owner:SetFrameStrata("LOW");
 														owner:SetFrameLevel(owner:GetAttribute("Order") * 6 + 4);
 													end
-												end]]);	--When the bar has grid hide and the user enters combat ensure the grid is actually hidden (unfortunately there are not many other options apart from this heavy handed approach)
+												]])
 			ButtonFrame:WrapScript(BFSecureSpecialBarFrame, "OnAttributeChanged",
 												[[local B, id, page;
 												if (value == "overridebar") then

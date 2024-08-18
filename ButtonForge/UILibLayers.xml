@@ -112,15 +112,6 @@
 		</Scripts>
 	</Frame>
 	
-	<!-- Frame to handle protected processing that may be needed when entering combat -->
-	<Frame name="BFSecureForCombatFrame" hidden="true" inherits="SecureHandlerStateTemplate">
-		<Scripts>
-			<OnLoad>
-				RegisterStateDriver(self, "combat", "[combat] true; false");
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	
 	<!-- Frame to handle protected processing when the override or vehicle bar becomes active -->
 	<Frame name="BFSecureSpecialBarFrame" hidden="true" inherits="SecureHandlerStateTemplate">
 		<Scripts>
