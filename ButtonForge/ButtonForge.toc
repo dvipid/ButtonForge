@@ -1,7 +1,7 @@
-## Interface: 110002, 110000
+## Interface: 110100
 ## Title: ButtonForge
 ## Notes: Add as many or few extra Action Bars and Buttons to your user interface to complement the standard (or other) Action Bars
-## Version: 1.3.0.4
+## Version: 1.3.1.1
 ## Author: Massiner of Nathrezim
 ## SavedVariables: ButtonForgeGlobalSettings, ButtonForgeGlobalProfiles, ButtonForgeGlobalBackup
 ## SavedVariablesPerCharacter: ButtonForgeSave, BFSave
