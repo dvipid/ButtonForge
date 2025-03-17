@@ -66,6 +66,143 @@ local SPELLFLYOUT_FINAL_SPACING = 9;
 local BF_FLYOUT_SLOT_BUTTON = "BUTTONFORGE_FLYOUT_BUTTON"
 
 
+
+-- The following functions are lifted from the older Blizz code base since they have been removed in v11.1.0 of WoW
+-- A few tweaks have been made for it to work better in the BF context
+local function SpellFlyout_HideIfWorldMapMaximized(self)
+	if (WorldMapFrame:IsMaximized() and not InCombatLockdown()) then
+		self:Hide();
+	end
+end
+
+local function SpellFlyout_OnShow(self)
+	if (self.eventsRegistered == false) then
+		self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+		self:RegisterEvent("SPELL_UPDATE_USABLE");
+		self:RegisterEvent("BAG_UPDATE");
+		self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
+		self:RegisterEvent("PET_STABLE_UPDATE");
+		self:RegisterEvent("PET_STABLE_SHOW");
+		self:RegisterEvent("SPELL_FLYOUT_UPDATE");
+		EventRegistry:RegisterCallback("WorldMapMaximized", SpellFlyout_HideIfWorldMapMaximized, self);
+		EventRegistry:RegisterCallback("WorldMapOnShow", SpellFlyout_HideIfWorldMapMaximized, self);
+		self.eventsRegistered = true;
+	end
+	if (self.isActionBar) then
+		self:GetParent():UpdateFlyout();
+	end
+end
+
+local function SpellFlyout_OnHide(self)
+	if (self.eventsRegistered == true) then
+		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+		self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
+		self:UnregisterEvent("SPELL_UPDATE_USABLE");
+		self:UnregisterEvent("BAG_UPDATE");
+		self:UnregisterEvent("ACTIONBAR_PAGE_CHANGED");
+		self:UnregisterEvent("PET_STABLE_UPDATE");
+		self:UnregisterEvent("PET_STABLE_SHOW");
+		self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
+		EventRegistry:UnregisterCallback("WorldMapMaximized", self);
+		EventRegistry:UnregisterCallback("WorldMapOnShow", self);
+		self.eventsRegistered = false;
+	end
+	if (self:IsShown()) then
+		self:Hide();
+	end
+	if (self.isActionBar) then
+		self:GetParent():UpdateFlyout();
+	end
+end
+
+local function SpellFlyout_SetBorderColor(self, r, g, b)
+	self.Background.Start:SetVertexColor(r, g, b);
+	self.Background.HorizontalMiddle:SetVertexColor(r, g, b);
+	self.Background.VerticalMiddle:SetVertexColor(r, g, b);
+	self.Background.End:SetVertexColor(r, g, b);
+end
+
+local function SpellFlyout_SetBorderSize(self, size)
+	if (not self.direction or self.direction == "UP" or self.direction == "DOWN") then
+		self.Background.Start:SetWidth(size);
+		self.Background.HorizontalMiddle:SetWidth(size);
+		self.Background.VerticalMiddle:SetWidth(size);
+		self.Background.End:SetWidth(size);
+	else
+		self.Background.Start:SetHeight(size);
+		self.Background.HorizontalMiddle:SetHeight(size);
+		self.Background.VerticalMiddle:SetHeight(size);
+		self.Background.End:SetHeight(size);
+	end
+end
+
+local function SpellFlyoutButton_UpdateCooldown(self)
+	ActionButton_UpdateCooldown(self);
+end
+
+local function SpellFlyoutButton_UpdateState(self)
+	if ( C_Spell.IsCurrentSpell(self.spellID) ) then
+		self:SetChecked(true);
+	else
+		self:SetChecked(false);
+	end
+end
+
+local function SpellFlyoutButton_UpdateUsable(self)
+	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
+	local name = self:GetName();
+	local icon = _G[name.."Icon"];
+	if ( isUsable or not self:GetParent().isActionBar) then
+		icon:SetVertexColor(1.0, 1.0, 1.0);
+	elseif ( notEnoughMana ) then
+		icon:SetVertexColor(0.5, 0.5, 1.0);
+	else
+		icon:SetVertexColor(0.4, 0.4, 0.4);
+	end
+end
+
+local function SpellFlyoutButton_UpdateGlyphState(self, reason)
+	self.GlyphIcon:SetShown(HasAttachedGlyph(self.spellID));
+	if (HasPendingGlyphCast() and IsSpellValidForPendingGlyph(self.spellID)) then
+		self.AbilityHighlight:Show();
+		self.AbilityHighlightAnim:Play();
+		if (reason == SpellFlyoutOpenReason.GlyphActivated) then
+			if (IsPendingGlyphRemoval()) then
+				self.GlyphIcon:Hide();
+			else
+				self.AbilityHighlightAnim:Stop();
+				self.AbilityHighlight:Hide();
+				self.GlyphIcon:Show();
+				self.GlyphActivate:Show();
+				self.GlyphTranslation:Show();
+				self.GlyphActivateAnim:Play();
+				SpellFlyout.glyphActivating = true;
+			end
+		end
+	else
+		self.AbilityHighlightAnim:Stop();
+		self.AbilityHighlight:Hide();
+	end
+end
+
+local function SpellFlyoutButton_UpdateCount (self)
+	local text = _G[self:GetName().."Count"];
+	if ( IsConsumableSpell(self.spellID)) then
+		local count = C_Spell.GetSpellCastCount(self.spellID);
+		if ( count > (self.maxDisplayCount or 9999 ) ) then
+			text:SetText("*");
+		else
+			text:SetText(count);
+		end
+	else
+		text:SetText("");
+	end
+end
+
+
+
+
 --[[
 	Mostly copied from SpellFlyout.lua
 
@@ -262,6 +399,11 @@ function ButtonForge_SpellFlyout:UpdateFlyoutButtonDisplay(ButtonName, SpellID, 
 	SpellFlyoutButton_UpdateCount(Button);
 	SpellFlyoutButton_UpdateGlyphState(Button);
 
+end
+
+
+function ButtonForge_SpellFlyout:IsOpenAndAttached(Button)
+	return self:IsShown() and self:GetParent() == Button	
 end
 
 

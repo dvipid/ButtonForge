@@ -86,6 +86,11 @@ local function Widget_UpdateFlyout(Widget)
 end
 
 
+local function Widget_IsPopupOpen(Widget)
+	return ButtonForge_SpellFlyout:IsOpenAndAttached(Widget)
+end
+
+
 --[[--------------------------------------------------------------
 		Create a New Button
 ----------------------------------------------------------------]]
@@ -122,7 +127,7 @@ end
 
 function Button.CreateButtonWidget(Parent)
 	local Name = Const.ButtonNaming..Const.ButtonSeq;
-	local Widget = CreateFrame("CheckButton", Name, Parent, "SecureActionButtonTemplate, ActionButtonTemplate");
+	local Widget = CreateFrame("CheckButton", Name, Parent, "ActionButtonTemplate, SecureActionButtonTemplate");
 	Widget.TextOverlayContainer:SetFrameLevel(Widget:GetFrameLevel() + 1)
 	Const.ButtonSeq = Const.ButtonSeq + 1;
 	Widget:SetAttribute("checkselfcast", true);
@@ -146,6 +151,7 @@ function Button.CreateButtonWidget(Parent)
 		Util.LBFMasterGroup:AddButton(Widget);
 	end
 	Widget.UpdateFlyout = Widget_UpdateFlyout;
+	Widget.IsPopupOpen = Widget_IsPopupOpen;
 	return Widget;
 end
 
@@ -504,6 +510,9 @@ function Button.OnReceiveDrag(Widget)
 end
 
 function Button.OnDragStart(Widget)
+	-- This ButtonStateBehaviorMixin.OnMouseUp has lineage back to the FlyoutButtonMixin
+	ButtonStateBehaviorMixin.OnMouseUp(Widget);
+	ButtonForge_SpellFlyout:Hide()
 	local self = Widget.ParentButton;
 	if (not (InCombatLockdown() or (self.Locked and not IsShiftKeyDown()))) then
 		Util.StoreCursor(self:GetCursor());
@@ -2292,16 +2301,35 @@ end
 function Button:UpdateFlyout(isButtonDownOverride)
 	local Widget = self.Widget;
 
-	if (not Widget.FlyoutArrowContainer or
-		not Widget.FlyoutBorderShadow) then
+	if (self.Mode ~= "flyout") then
+		Widget.Arrow:Hide();
 		return;
+	end
+	Widget.popupDirection = Widget:GetAttribute("flyoutDirection");
+	Widget.Arrow:Show();
+	Widget:UpdateArrowRotation();
+	Widget:UpdateArrowPosition();
+	Widget:UpdateBorderShadow();
+	Widget:UpdateArrowTexture();
+
+
+	--[[
+	Widget.Arrow:ClearAllPoints();
+
+	local direction = Widget:GetPopupDirection();
+	local offset = self:IsPopupOpen() and self.openArrowOffset or self.closedArrowOffset;
+
+	if (direction == "UP") then
+		self.Arrow:SetPoint("TOP", self, "TOP", 0, offset);
+	elseif (direction == "DOWN") then
+		self.Arrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -offset);
+	elseif (direction == "LEFT") then
+		self.Arrow:SetPoint("LEFT", self, "LEFT", -offset, 0);
+	elseif (direction == "RIGHT") then
+		self.Arrow:SetPoint("RIGHT", self, "RIGHT", offset, 0);
 	end
 
-	if (self.Mode ~= "flyout") then
-		Widget.FlyoutBorderShadow:Hide();
-		Widget.FlyoutArrowContainer:Hide();
-		return;
-	end
+
 
 	-- Update border
 	local isMouseOverButton =  GetMouseFocus() == Widget;
@@ -2364,6 +2392,8 @@ function Button:UpdateFlyout(isButtonDownOverride)
 		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 180 or 0);
 		flyoutArrowTexture:SetPoint("TOP", Widget, "TOP", 0, arrowDistance);
 	end
+
+	]]
 end
 
 
