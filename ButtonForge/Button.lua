@@ -685,6 +685,12 @@ function Button:SetCommandExplicitBattlePet(Id)
 	self:SaveBattlePet(Id);
 end
 
+local function ClearSingleButtonAssistant(button)
+	if button.Widget.SingleButtonAssistantOverlayFrame then
+		button.Widget.SingleButtonAssistantOverlayFrame:Hide();
+	end
+end
+
 --[[ The following functions will configure the button to operate correctly for the specific type of action (these functions must be able to handle the player not knowing spells/macros etc) --]]
 function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	self.UpdateTexture 	= Button.UpdateTextureSpell;
@@ -698,15 +704,14 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	self.CheckRangeTimer = Button.CheckRangeTimerSpell;
 	self.UpdateFlash	= Button.UpdateFlashSpell;
 	self.UpdateFlyout	= Button.Empty;
-	
+
 	self.GetCursor 		= Button.GetCursorSpell;
 
 	self.FullRefresh 	= Button.FullRefresh;
 
-	local Matched = false;
 	if (Const.WispSpellIds[Id]) then
 		-- This spell may update its icon to the wisp state...
-		self.UpdateTexture = Button.UpdateTextureWispSpell;		
+		self.UpdateTexture = Button.UpdateTextureWispSpell;
 	end
 
 	local BaseSpellID = FindBaseSpellByID(Id);
@@ -728,6 +733,29 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 	
 	self:ResetAppearance();
 	self:DisplayActive();
+
+	if (Id == Const.SINGLE_BUTTON_ASSISTANT_ID) then
+		self.UpdateTexture 	= Button.UpdateTextureSpellSingleButtonAssistant;
+		self.UpdateCooldown	= Button.UpdateCooldownSpellSingleButtonAssistant;
+		self.UpdateUsable 	= Button.UpdateUsableSpellSingleButtonAssistant;
+		self.UpdateTooltipFunc = Button.UpdateTooltipSpellSingleButtonAssistant;
+
+		local widget = self.Widget
+		if not widget.SingleButtonAssistantOverlayFrame then
+			local overlay = CreateFrame("Frame", nil, widget)
+			overlay:SetPoint("CENTER", widget, "CENTER")
+			overlay:SetSize(widget:GetWidth() * 1.5, widget:GetHeight() * 1.5)
+			overlay:SetFrameStrata("HIGH")
+			overlay:SetFrameLevel(widget:GetFrameLevel() + 10) -- ensure it's on top
+
+			local tex = overlay:CreateTexture(nil, "OVERLAY")
+			tex:SetAtlas("UI-HUD-RotationHelper-Inactive", true)  -- Use the correct atlas from Blizzard
+			tex:SetAllPoints(overlay)
+			widget.SingleButtonAssistantOverlayFrame = overlay
+		end
+		widget.SingleButtonAssistantOverlayFrame:Show();
+	end
+
 	Util.AddSpell(self);
 end
 
@@ -1307,6 +1335,7 @@ end
 function Button:ResetAppearance()
 	
 	ClearProfessionQuality(self)
+	ClearSingleButtonAssistant(self);
 	self.Widget:SetChecked(false);
 	
 	self.WBorder:Hide();
@@ -1461,6 +1490,12 @@ function Button:UpdateTextureWispSpell()
 	else
 		self.WIcon:SetTexture(self.Texture);
 	end
+end
+function Button:UpdateTextureSpellSingleButtonAssistant()
+	-- Override Texture for Single Button Assistant
+	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	local spellInfo = C_Spell.GetSpellInfo(spellID);
+	self.WIcon:SetTexture(spellInfo.iconID);
 end
 function Button:UpdateTextureMacro()
 	self.WIcon:SetTexture(self.Texture);
@@ -1643,6 +1678,27 @@ function Button:UpdateCooldownSpell()
 		self.WCooldown:Hide();
 	end
 end
+function Button:UpdateCooldownSpellSingleButtonAssistant()
+	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
+
+	if (cooldownInfo ~= nil) then
+		local chargesInfo = C_Spell.GetSpellCharges(spellID);
+		local start = cooldownInfo.startTime
+		local duration = cooldownInfo.duration
+		local currentCharges, maxCharges
+		if chargesInfo and chargesInfo.currentCharges ~= chargesInfo.maxCharges then
+			start = chargesInfo.cooldownStartTime;
+			duration = chargesInfo.cooldownDuration;
+			currentCharges = chargesInfo.currentCharges;
+			maxCharges = chargesInfo.maxCharges;
+		end
+		Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);
+	else
+		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
+		self.WCooldown:Hide();
+	end
+end
 function Button:UpdateCooldownItem()
 	Util.CooldownFrame_SetTimer(self.WCooldown, C_Item.GetItemCooldown(self.ItemId));
 end
@@ -1683,6 +1739,20 @@ function Button:UpdateUsable()
 end
 function Button:UpdateUsableSpell()
 	local IsUsable, NotEnoughMana = C_Spell.IsSpellUsable(self.SpellNameRank);
+	if (IsUsable) then
+		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
+		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	elseif (NotEnoughMana) then
+		self.WIcon:SetVertexColor(0.5, 0.5, 1.0);
+		self.WNormalTexture:SetVertexColor(0.5, 0.5, 1.0);
+	else
+		self.WIcon:SetVertexColor(0.4, 0.4, 0.4);
+		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+end
+function Button:UpdateUsableSpellSingleButtonAssistant()
+	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	local IsUsable, NotEnoughMana = C_Spell.IsSpellUsable(spellID);
 	if (IsUsable) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -1837,6 +1907,11 @@ function Button:UpdateTooltipSpell()
 	-- the bools are to make sure subtext is shown on the tooltip
     -- based on this function signature C_TooltipInfo.GetSpellByID(spellID [, isPet, showSubtext, dontOverride, difficultyID, isLink])
 	GameTooltip:SetSpellByID(self.SpellId, false, true);
+end
+function Button:UpdateTooltipSpellSingleButtonAssistant()
+	self = self.ParentButton or self;
+	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	GameTooltip:SetSpellByID(spellID, false, true);
 end
 function Button:UpdateTooltipItem()
 	self = self.ParentButton or self;	--This is a sneaky cheat incase the widget was used to get here...
