@@ -41,6 +41,7 @@ local KeyBinder = BFKeyBinder;
 Button.__index = Button;
 
 local IsUsableSpell = IsUsableSpell;
+local checkForVisibleButton = false;	-- Used with C_AssistedCombat.GetNextCastSpell() should always be false for ButtonForge usage
 local SecureClickWrapperFrame = CreateFrame("FRAME", nil, nil, "SecureHandlerBaseTemplate");
 
 SecureClickWrapperFrame:SetFrameRef("spellflyout", SpellFlyout);
@@ -1493,7 +1494,14 @@ function Button:UpdateTextureWispSpell()
 end
 function Button:UpdateTextureSpellSingleButtonAssistant()
 	-- Override Texture for Single Button Assistant
-	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton);
+
+	if spellID == nil then
+		local texture = C_Spell.GetSpellTexture(C_AssistedCombat.GetActionSpell());
+		self.WIcon:SetTexture(texture);
+		return;
+	end
+
 	local spellInfo = C_Spell.GetSpellInfo(spellID);
 	self.WIcon:SetTexture(spellInfo.iconID);
 end
@@ -1679,25 +1687,32 @@ function Button:UpdateCooldownSpell()
 	end
 end
 function Button:UpdateCooldownSpellSingleButtonAssistant()
-	local spellID = C_AssistedCombat.GetNextCastSpell(true);
-	local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
+	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton);
 
-	if (cooldownInfo ~= nil) then
-		local chargesInfo = C_Spell.GetSpellCharges(spellID);
-		local start = cooldownInfo.startTime
-		local duration = cooldownInfo.duration
-		local currentCharges, maxCharges
-		if chargesInfo and chargesInfo.currentCharges ~= chargesInfo.maxCharges then
-			start = chargesInfo.cooldownStartTime;
-			duration = chargesInfo.cooldownDuration;
-			currentCharges = chargesInfo.currentCharges;
-			maxCharges = chargesInfo.maxCharges;
-		end
-		Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);
-	else
+	if spellID == nil then
 		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
 		self.WCooldown:Hide();
+		return;
 	end
+
+	local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
+	if cooldownInfo == nil then
+		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
+		self.WCooldown:Hide();
+		return;
+	end
+
+	local chargesInfo = C_Spell.GetSpellCharges(spellID);
+	local start = cooldownInfo.startTime
+	local duration = cooldownInfo.duration
+	local currentCharges, maxCharges
+	if chargesInfo and chargesInfo.currentCharges ~= chargesInfo.maxCharges then
+		start = chargesInfo.cooldownStartTime;
+		duration = chargesInfo.cooldownDuration;
+		currentCharges = chargesInfo.currentCharges;
+		maxCharges = chargesInfo.maxCharges;
+	end
+	Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);
 end
 function Button:UpdateCooldownItem()
 	Util.CooldownFrame_SetTimer(self.WCooldown, C_Item.GetItemCooldown(self.ItemId));
@@ -1751,7 +1766,14 @@ function Button:UpdateUsableSpell()
 	end
 end
 function Button:UpdateUsableSpellSingleButtonAssistant()
-	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton);
+
+	if spellID == nil then
+		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
+		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
+		return;
+	end
+
 	local IsUsable, NotEnoughMana = C_Spell.IsSpellUsable(spellID);
 	if (IsUsable) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
@@ -1910,7 +1932,11 @@ function Button:UpdateTooltipSpell()
 end
 function Button:UpdateTooltipSpellSingleButtonAssistant()
 	self = self.ParentButton or self;
-	local spellID = C_AssistedCombat.GetNextCastSpell(true);
+	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton);
+	if spellID == nil then
+		spellID = C_AssistedCombat.GetActionSpell();
+	end
+
 	GameTooltip:SetSpellByID(spellID, false, true);
 end
 function Button:UpdateTooltipItem()
