@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.2
+Version: 1.3.3
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+05-Aug-2025		v1.3.3	 - Updated for WoW 110200
 04-July-2025	v1.3.2   - Add support for Single-Button Assistant
 17-Mar-2025		v1.3.1.1 - Updated how the custom flyout implementation works for changes made in WoW
 26-Feb-2025		v1.3.1   - Updated to WoW v110100
