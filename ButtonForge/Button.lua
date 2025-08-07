@@ -1503,6 +1503,10 @@ function Button:UpdateTextureSpellSingleButtonAssistant()
 	end
 
 	local spellInfo = C_Spell.GetSpellInfo(spellID);
+	if spellInfo == nil then
+		-- should we have a default texture if this fails?
+		return;
+	end
 	self.WIcon:SetTexture(spellInfo.iconID);
 end
 function Button:UpdateTextureMacro()
