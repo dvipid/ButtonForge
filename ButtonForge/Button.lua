@@ -746,7 +746,7 @@ function Button:SetEnvSpell(Id, NameRank, Name, Book, IsTalent)
 			local overlay = CreateFrame("Frame", nil, widget)
 			overlay:SetPoint("CENTER", widget, "CENTER")
 			overlay:SetSize(widget:GetWidth() * 1.5, widget:GetHeight() * 1.5)
-			overlay:SetFrameStrata("HIGH")
+			overlay:SetFrameStrata(widget:GetFrameStrata())
 			overlay:SetFrameLevel(widget:GetFrameLevel() + 10) -- ensure it's on top
 
 			local tex = overlay:CreateTexture(nil, "OVERLAY")

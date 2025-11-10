@@ -1294,7 +1294,7 @@ end
 function Util.ProcessSlashCommandParams(Command, Params)
 	Params = Params or "";
 	if (Const.SlashCommands[Command].params == "bool") then
-		local Bool = Util.CastBool(Params, "^%s*(%w*)%s*$");
+		local Bool = Util.CastBool(string.match(Params, "^%s*(%w*)%s*$"));
 		if (Bool == nil) then
 			DEFAULT_CHAT_FRAME:AddMessage(Util.GetLocaleString("SlashParamsInvalid")..Command.." "..Params, .5, 1, 0, 1);
 			return;
