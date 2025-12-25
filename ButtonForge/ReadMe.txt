@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributor: xfsbill
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.3.2
+Version: 1.3.3.3
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+25-Dec-2025		v1.3.3.3 - Fixed profession items with quality (thanks to UppyDan)
 10-Nov-2025		v1.3.3.2 - Fixed an error parsing bool values in slash commands
 						 - Apply the correct strata level for the SingleButtonAssistantOverlayFrame
 07-Aug-2025		v1.3.3.1 - Prevent error if spell info is not available

@@ -799,7 +799,7 @@ function Button:SetEnvItem(Id, Name, Link)
 	if quality then
 		local widget = self.Widget
 		if not widget.ProfessionQualityOverlayFrame then
-			widget.ProfessionQualityOverlayFrame = CreateFrame("Frame", nil, widget, "ActionButtonProfessionOverlayTemplate");
+			widget.ProfessionQualityOverlayFrame = CreateFrame("Frame", nil, widget, "ActionButtonTextureOverlayTemplate");
 			widget.ProfessionQualityOverlayFrame:SetPoint("TOPLEFT", 14, -14);
 		end
 
