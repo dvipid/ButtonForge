@@ -1,4 +1,4 @@
-# ButtonForge - The War Within
+# ButtonForge - Midnight
 
 This is a branch of ButtonForge originally created by Alternator
 https://www.curseforge.com/wow/addons/button-forge
@@ -10,12 +10,12 @@ https://www.curseforge.com/wow/addons/button-forge
 2. Download the latest build on GitHub: [https://github.com/dvipid/ButtonForge/archive/master.zip](https://github.com/dvipid/ButtonForge/archive/master.zip)
 3. Unzip it somewhere
 4. Move the ButtonForge folder that was unzipped to your AddOns folder
-5. Open the TOC file and make sure Version is 1.3.2
+5. Open the TOC file and make sure Version is 1.3.4.2
 
-    \## Interface: 110100  
+    \## Interface: 120001  
 \## Title: Button Forge  
 \## Notes: Add as many or few extra Action Bars and Buttons to your user interface to complement the standard (or other) Action Bars  
-\## Version: 1.3.2
+\## Version: 1.3.4.2
 \## Author: Massiner of Nathrezim  
 \... ... some more lines there
 
