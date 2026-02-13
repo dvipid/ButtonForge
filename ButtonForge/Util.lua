@@ -1795,7 +1795,7 @@ function Util.SetCursor(Command, Data, Subvalue, Subsubvalue)
 		if (HasOverrideActionBar()) then
 			page = Const.OverrideActionPageOffset;
 		end
-		local Texture = GetActionTexture(Data + ((page - 1) * 12));
+		local Texture = C_ActionBar.GetActionTexture(Data + ((page - 1) * 12));
 		if (Texture and (HasOverrideActionBar() or HasVehicleActionBar())) then
 			UILib.StartDraggingIcon(Texture, 23, 23, "bonusaction", Data);
 		else

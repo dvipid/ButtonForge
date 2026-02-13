@@ -66,7 +66,7 @@ Misc.RefreshSpells = false;
 --------------------------------------------------------------------------]]
 Misc:RegisterEvent("COMPANION_LEARNED");			--resync companions
 Misc:RegisterEvent("PET_JOURNAL_LIST_UPDATE");		--textures etc should now be available
-Misc:RegisterEvent("LEARNED_SPELL_IN_TAB");			--refresh/promote spells
+Misc:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");	--refresh/promote spells
 Misc:RegisterEvent("SPELLS_CHANGED");				--refresh spells	depending on play style this could trigger often, we will instead rely on other events to keep spells synched
 Misc:RegisterEvent("CHARACTER_POINTS_CHANGED");		--refresh spells
 Misc:RegisterEvent("UPDATE_MACROS");				--resync macros
@@ -453,7 +453,7 @@ function Misc:OnEvent(Event, unit, ...)
 		Util.UpdateMacroEventCount = Util.UpdateMacroEventCount + 1;	--2 update macro events need to have run before we can start refreshing macros
 		Util.RefreshMacros();
 		
-	elseif (Event == "LEARNED_SPELL_IN_TAB" or Event == "SPELLS_CHANGED") then
+	elseif (Event == "LEARNED_SPELL_IN_SKILL_LINE" or Event == "SPELLS_CHANGED") then
 		--Defer processing till the onupdate since this could get slammed by a Spec Swap
 		self.PromoteSpells = true;
 		self.RefreshSpells = true;

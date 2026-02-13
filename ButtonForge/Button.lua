@@ -1407,7 +1407,7 @@ function Button:TranslateMacro()
 	self.Target = Target or "target";			--check into if this is the best thing to do or leaving it nil would be better?
 	local TargetName = UnitName(self.Target);
 	local TargetDead = UnitIsDead(self.Target);
-	if (self.Texture ~= Texture or self.MacroAction ~= Action or self.MacroTargetName ~= TargetName or self.MacroTargetDead ~= TargetDead) then
+	--if (self.Texture ~= Texture or self.MacroAction ~= Action or self.MacroTargetName ~= TargetName or self.MacroTargetDead ~= TargetDead) then
 		self.Texture = Texture;
 		self.MacroAction = Action;
 		self.MacroTargetName = TargetName;
@@ -1433,7 +1433,7 @@ function Button:TranslateMacro()
 			end
 		end
 		Button.FullRefresh(self);
-	end
+	--end
 end
 
 
@@ -1466,7 +1466,8 @@ end;
 function Button:UpdateTextureSpell()
 	local spellHasBuffActive = false;
 	for i=1,40 do
-		local spellId = select(10, UnitBuff("player", i));
+		-- for now we might not be able to do this test to get the correct stealth status icon... revisit later
+		--local spellId = select(10, UnitBuff("player", i));
 		if spellId then
 			if spellId == self.SpellId then
 				spellHasBuffActive = true;
@@ -1514,8 +1515,8 @@ function Button:UpdateTextureMacro()
 end
 function Button:UpdateTextureBonusAction()
 	local action = self.Widget:CalculateAction()
-	if (HasOverrideActionBar() or HasVehicleActionBar()) then
-		local Texture = GetActionTexture(action);
+	if (HasOverrideActionBar() or HasVehicleActionBar() and action > 0) then
+		local Texture = C_ActionBar.GetActionTexture(action);
 		if (not Texture) then
 			self.WIcon:SetTexture(Const.ImagesDir.."Bonus"..self.BonusActionId);
 			self.WIcon:SetAlpha(0.1);
@@ -1613,7 +1614,7 @@ function Button:UpdateCheckedCompanion()
 end
 function Button:UpdateCheckedBonusAction()
 	local action = self.Widget:CalculateAction()
-	if ((HasOverrideActionBar() or HasVehicleActionBar()) and (IsCurrentAction(action) or IsAutoRepeatAction(action))) then
+	if ((HasOverrideActionBar() or HasVehicleActionBar()) and action > 0 and (C_ActionBar.IsCurrentAction(action) or C_ActionBar.IsAutoRepeatAction(action))) then
 		self.Widget:SetChecked(true);
 	else
 		self.Widget:SetChecked(false);
@@ -1666,7 +1667,9 @@ function Button:UpdateCooldown()
 
 end
 function Button:UpdateCooldownSpell()
-	local cooldownInfo;
+	self.Widget.spellID = self.SpellId
+	ActionButton_UpdateCooldown(self.Widget)
+	--[[local cooldownInfo;
 	if(self.SpellId == Const.COVENANT_WARRIOR_FURY_CONDEMN_ID) then -- it seems there is an exception with that spell and GetSpellCooldown called from the spellname return a wrong duration.
 		cooldownInfo = C_Spell.GetSpellCooldown(self.SpellId);
 	else
@@ -1688,11 +1691,13 @@ function Button:UpdateCooldownSpell()
 	else
 		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
 		self.WCooldown:Hide();
-	end
+	end]]
 end
 function Button:UpdateCooldownSpellSingleButtonAssistant()
 	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton);
-
+	self.Widget.spellID = spellID
+	ActionButton_UpdateCooldown(self.Widget)
+	--[[
 	if spellID == nil then
 		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
 		self.WCooldown:Hide();
@@ -1716,7 +1721,7 @@ function Button:UpdateCooldownSpellSingleButtonAssistant()
 		currentCharges = chargesInfo.currentCharges;
 		maxCharges = chargesInfo.maxCharges;
 	end
-	Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);
+	Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);]]
 end
 function Button:UpdateCooldownItem()
 	Util.CooldownFrame_SetTimer(self.WCooldown, C_Item.GetItemCooldown(self.ItemId));
@@ -1736,9 +1741,9 @@ function Button:UpdateCooldownCompanion()
 	--as of 5.0.4 doesn't appear to exist anymore?!
 end
 function Button:UpdateCooldownBonusAction()
-	if (HasOverrideActionBar() or HasVehicleActionBar()) then
-		local action = self.Widget:CalculateAction()
-		Util.CooldownFrame_SetTimer(self.WCooldown, GetActionCooldown(action));
+	self.Widget.action = self.Widget:CalculateAction()
+	if (HasOverrideActionBar() or HasVehicleActionBar()) and self.Widget.action > 0 then
+		ActionButton_UpdateCooldown(self.Widget)
 	else
 		self.WCooldown:Hide();
 	end
@@ -1826,9 +1831,16 @@ function Button:UpdateUsableCompanion()
 	end
 end
 function Button:UpdateUsableBonusAction()
-	local action = self.Widget:CalculateAction()
-	local IsUsable, NotEnoughMana = IsUsableAction(action);
-	if (IsUsable or (HasOverrideActionBar() == nil and HasVehicleActionBar() == nil)) then
+
+	local action = self.Widget:CalculateAction();
+	if (HasOverrideActionBar() == nil and HasVehicleActionBar() == nil) or action < 1 then
+		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
+		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
+		return;
+	end
+
+	local IsUsable, NotEnoughMana = C_ActionBar.IsUsableAction(action);
+	if IsUsable then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
 	elseif (NotEnoughMana) then
@@ -1871,8 +1883,9 @@ function Button:UpdateTextCount()
 
 end
 function Button:UpdateTextCountSpell()
-	local count = C_Spell.GetSpellCastCount(self.SpellNameRank);
-	if (count ~= 0 or IsConsumableSpell(self.SpellNameRank)) then
+	--local count = C_Spell.GetSpellCastCount(self.SpellNameRank);
+	self.WCount:SetText(C_Spell.GetSpellDisplayCount(self.SpellNameRank))
+	--[[if (count ~= 0 or C_Spell.IsConsumableSpell(self.SpellNameRank)) then
 		self.WCount:SetText(count);
 		return;
 	end
@@ -1881,7 +1894,7 @@ function Button:UpdateTextCountSpell()
 		self.WCount:SetText(chargesInfo.currentCharges);
 		return;
 	end
-	self.WCount:SetText("");
+	self.WCount:SetText("");]]
 end
 function Button:UpdateTextCountItem()
 	local ItemCount = C_Item.GetItemCount(self.ItemId, nil, true);
@@ -1908,8 +1921,8 @@ function Button:UpdateTextCountMacro()
 end
 function Button:UpdateTextCountBonusAction()
 	local action = self.Widget:CalculateAction()
-	if ((HasOverrideActionBar() or HasVehicleActionBar()) and (IsConsumableAction(action) or IsStackableAction(action))) then
-		self.WCount:SetText(GetActionCount(action));
+	if (HasOverrideActionBar() or HasVehicleActionBar()) then
+		self.WCount:SetText(C_ActionBar.GetActionDisplayCount(action));
 	else
 		self.WCount:SetText("");
 	end
@@ -2096,7 +2109,7 @@ function Button:UpdateFlashMacro()
 end
 function Button:UpdateFlashBonusAction()
 	local action = self.Widget:CalculateAction()
-	if ((HasOverrideActionBar() or HasVehicleActionBar()) and ((IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action))) then
+	if ((HasOverrideActionBar() or HasVehicleActionBar()) and ((C_ActionBar.IsAttackAction(action) and C_ActionBar.IsCurrentAction(action)) or C_ActionBar.IsAutoRepeatAction(action))) then
 		if (not self.FlashOn) then
 			self:AddToFlash();
 		end
@@ -2161,7 +2174,7 @@ function Button:UpdateRangeTimerMacro()
 end
 function Button:UpdateRangeTimerBonusAction()
 	local action = self.Widget:CalculateAction()
-	if ((HasOverrideActionBar() or HasVehicleActionBar()) and IsActionInRange(action) ~= nil) then
+	if ((HasOverrideActionBar() or HasVehicleActionBar()) and C_ActionBar.IsActionInRange(action) ~= nil) then
 		if (not self.RangeTimerOn) then
 			self:AddToRangeTimer();
 		end
@@ -2213,7 +2226,7 @@ function Button:CheckRangeTimerMacro()
 end
 function Button:CheckRangeTimerBonusAction()
 	local action = self.Widget:CalculateAction()
-	if IsActionInRange(action) then
+	if C_ActionBar.IsActionInRange(action) then
 		self.WHotKey:SetVertexColor(0.6, 0.6, 0.6);
 	else
 		self.WHotKey:SetVertexColor(1.0, 0.1, 0.1);
@@ -2504,9 +2517,9 @@ end
 
 function Button:UpdateGlow()
 	if ((self.Mode == "spell" or (self.MacroMode == "spell" and self.Mode == "macro")) and Util.GlowSpells[self.SpellName]) then
-		ActionButton_ShowOverlayGlow(self.Widget);
+		ActionButtonSpellAlertManager:ShowAlert(self.Widget); -- changed for Retail 12.0.0 12/06/2025
 	else
-		ActionButton_HideOverlayGlow(self.Widget);
+		ActionButtonSpellAlertManager:HideAlert(self.Widget); -- changed for Retail 12.0.0 12/06/2025
 	end
 end
 

@@ -188,16 +188,7 @@ end
 
 local function SpellFlyoutButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
-	if ( IsConsumableSpell(self.spellID)) then
-		local count = C_Spell.GetSpellCastCount(self.spellID);
-		if ( count > (self.maxDisplayCount or 9999 ) ) then
-			text:SetText("*");
-		else
-			text:SetText(count);
-		end
-	else
-		text:SetText("");
-	end
+	text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, 9999, "*"));
 end
 
 
@@ -680,7 +671,7 @@ end
 
 FlyoutChecker:RegisterEvent("PLAYER_TALENT_UPDATE");
 FlyoutChecker:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-FlyoutChecker:RegisterEvent("LEARNED_SPELL_IN_TAB");
+FlyoutChecker:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 FlyoutChecker:RegisterEvent("PET_STABLE_UPDATE");
 FlyoutChecker:RegisterEvent("PLAYER_REGEN_ENABLED");
 FlyoutChecker:SetScript("OnEvent", Refresh_FlyoutSpells_OnEvent);
