@@ -55,7 +55,12 @@ SecureClickWrapperFrame:Execute([[ ButtonForge_SpellFlyout = self:GetFrameRef("b
 		The function below is copied from Deprecated_10_2_5.lua
 ]]
 local UnitBuff = function(unitToken, index, filter)
-	local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter);
+	-- Midnight fix: Aura lookup now restricted (https://warcraft.wiki.gg/wiki/Patch_12.0.0/Planned_API_changes)
+	local success, auraData = pcall(C_UnitAuras.GetBuffDataByIndex, unitToken, index, filter);
+	if not success then
+		-- aura is restricted: UnitTokenRestrictedForAddOns
+		return nil;
+	end
 	if not auraData then
 		return nil;
 	end
@@ -1486,8 +1491,21 @@ function Button:UpdateTextureSpell()
 	end
 end
 function Button:UpdateTextureWispSpell()
---BFA fix: UnitBuff can no longer be called with the spell name as a param
-	if (self.UnitBuffBySpell("player", self.SpellName)) then			--NOTE: This en-US, hopefully it will be fine for other locales as well??
+	--Midnight fix: we can use UnitBuff to detect is an aura is active 
+	local spellHasBuffActive = false;
+	for i=1,40 do
+		local spellId = select(10, UnitBuff("player", i));
+		if spellId then
+			if spellId == self.SpellId then
+				spellHasBuffActive = true;
+				break;
+			end
+		else
+			-- no more buffs
+			break;
+		end;
+	end;
+	if (spellHasBuffActive) then
 		self.WIcon:SetTexture("Interface/Icons/Spell_Nature_WispSplode");
 	else
 		self.WIcon:SetTexture(self.Texture);

@@ -18,7 +18,7 @@ Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID = 355898;
 Const.COVENANT_WARRIOR_FURY_CONDEMN_ID = 330325;
 Const.SINGLE_BUTTON_ASSISTANT_ID = 1229376;
 Const.Version				= 1.3;
-Const.VersionMinor			= 4.2;
+Const.VersionMinor			= 4.1;
 Const.MAX_ACCOUNT_MACROS 	= 120;
 Const.ButtonNaming 			= "ButtonForge"
 Const.ButtonSeq 			= 1;					--This value will increment (so not technically a const...)
@@ -86,7 +86,7 @@ Const.StealthSpellIds[5215] = 1;		-- Prowl
 
 
 Const.WispSpellIds = {};
-Const.WispSpellIds[19746]	= 1;		--Concentration Aura
+Const.WispSpellIds[317920]	= 1;		--Concentration Aura
 Const.WispSpellIds[32223]	= 1;		--Crusader Aura
 Const.WispSpellIds[465]		= 1;		--Devotion Aura
 Const.WispSpellIds[19891]	= 1;		--Resistance Aura

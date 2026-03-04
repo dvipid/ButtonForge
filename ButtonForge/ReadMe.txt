@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributors: xfsbill, Sunnova
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.4.1
+Version: 1.3.4.2
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,7 +23,7 @@ Restrictions:
 
 
 History:
-12-Feb-2026		v1.3.4.2 - Updated for WoW 120001
+04-Mar-2026		v1.3.4.2 - Fixed auras
 23-Jan-2026		v1.3.4.1 - Fixed issue with Single Action Button
 20-Jan-2026		v1.3.4.0 - Updated for WoW Midnight
 25-Dec-2025		v1.3.3.3 - Fixed profession items with quality (thanks to UppyDan)
