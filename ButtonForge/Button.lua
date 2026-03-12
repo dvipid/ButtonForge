@@ -57,14 +57,15 @@ SecureClickWrapperFrame:Execute([[ ButtonForge_SpellFlyout = self:GetFrameRef("b
 local UnitBuff = function(unitToken, index, filter)
 	-- Midnight fix: Aura lookup now restricted (https://warcraft.wiki.gg/wiki/Patch_12.0.0/Planned_API_changes)
 	local success, auraData = pcall(C_UnitAuras.GetBuffDataByIndex, unitToken, index, filter);
-	if not success then
-		-- aura is restricted: UnitTokenRestrictedForAddOns
-		return nil;
-	end
-	if not auraData then
-		return nil;
-	end
+    if not success or not auraData or type(auraData) ~= "table" then
+        return nil
+    end
 
+	local unpackSuccess, unpackResult = pcall(AuraUtil.UnpackAuraData, auraData);
+	if not unpackSuccess then
+		return nil
+	end
+	
 	return AuraUtil.UnpackAuraData(auraData);
 end
 

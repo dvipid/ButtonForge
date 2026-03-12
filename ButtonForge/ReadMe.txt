@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributors: xfsbill, Sunnova
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.4.2
+Version: 1.3.4.3
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+12-Mar-2026		v1.3.4.3 - Avoid an error updating the Aura texture while in combat
 04-Mar-2026		v1.3.4.2 - Fixed auras
 23-Jan-2026		v1.3.4.1 - Fixed issue with Single Action Button
 20-Jan-2026		v1.3.4.0 - Updated for WoW Midnight
