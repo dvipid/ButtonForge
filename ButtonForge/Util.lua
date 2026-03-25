@@ -2851,7 +2851,7 @@ function Util.CooldownFrame_SetTimer(self, start, duration, enable, charges, max
 	if(enable) then
 		if (enable ~= 0) then
 			local drawEdge = false;
-			if ( duration > 2 and charges and maxCharges and charges ~= 0) then
+			if ( not issecretvalue(duration) and duration > 2 and charges and maxCharges and charges ~= 0) then
 				drawEdge = true;
 			end
 			local Alpha = self:GetEffectiveAlpha();
@@ -2864,7 +2864,9 @@ function Util.CooldownFrame_SetTimer(self, start, duration, enable, charges, max
 				self:SetDrawBling(false);
 			end
 			self:SetDrawSwipe(not drawEdge);
-			self:SetCooldown(start, duration);
+			if not issecretvalue(duration) then
+				self:SetCooldown(start, duration);
+			end;
 		else
 			self:SetCooldown(0, 0);
 		end
