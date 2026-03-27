@@ -37,6 +37,9 @@ local UnitAura = function(unitToken, index, filter)
 	return AuraUtil.UnpackAuraData(auraData);
 end
 
+-- Midnight fix that goes with the Util.ActionButton_UpdateCooldown function
+local issecretvalue = _G.issecretvalue
+
 Util.ActiveButtons = {};
 Util.InactiveButtons = {};
 Util.ActiveMacros = {};
@@ -2873,6 +2876,29 @@ function Util.CooldownFrame_SetTimer(self, start, duration, enable, charges, max
 	end
 end
 
+--[[
+	Midnight fix to replace the ActionButton_UpdateCooldown functions which is broken when there are secret values
+	Thanks to UppyDan for this!
+]]
+function Util.ActionButton_UpdateCooldown(widget)
+	if InCombatLockdown() then
+		return -- Can't proceed without causing secret value problems.
+	end
+ 
+	local cooldownInfo
+	if widget.spellID then
+		cooldownInfo = C_Spell.GetSpellCooldown(widget.spellID)
+	else
+		cooldownInfo = C_ActionBar.GetActionCooldown(widget.action)
+	end
+ 
+	if cooldownInfo and cooldownInfo.startTime and issecretvalue(cooldownInfo.startTime) then
+		return -- Can't proceed without causing secret value problems.
+	end
+ 
+	-- Otherwise, it should be safe to let Blizzard process the widget.
+	ActionButton_UpdateCooldown(widget)
+end
 
 function Util.LookupEquipmentSetIndex(EquipmentSetID)
 
