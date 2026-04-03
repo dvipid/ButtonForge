@@ -2878,13 +2878,44 @@ end
 
 --[[
 	Midnight fix to replace the ActionButton_UpdateCooldown functions which is broken when there are secret values
-	Thanks to UppyDan for this!
+	Thanks to Bllodninja9 for this!
 ]]
 function Util.ActionButton_UpdateCooldown(widget)
+	if not widget or not widget.cooldown then
+		return
+	end
+
+	-- Spell cooldown
+	if widget.spellID then
+		local durObj = C_Spell.GetSpellCooldownDuration(widget.spellID)
+		if durObj then
+			widget.cooldown:SetCooldownFromDurationObject(durObj)
+		else
+			widget.cooldown:Clear()
+			widget.cooldown:Hide()
+		end
+
+	-- Action cooldown
+	elseif widget.action then
+		local durObj = C_ActionBar.GetActionCooldownDuration(widget.action)
+		if durObj then
+			widget.cooldown:SetCooldownFromDurationObject(durObj)
+		else
+			widget.cooldown:Clear()
+			widget.cooldown:Hide()
+		end
+
+	else
+		widget.cooldown:Clear()
+		widget.cooldown:Hide()
+	end
+
+	--[[
+	-- old Midnight fix to disable cooldown when values are secret
 	if InCombatLockdown() then
 		return -- Can't proceed without causing secret value problems.
 	end
- 
+
 	local cooldownInfo
 	if widget.spellID then
 		cooldownInfo = C_Spell.GetSpellCooldown(widget.spellID)
@@ -2898,6 +2929,7 @@ function Util.ActionButton_UpdateCooldown(widget)
  
 	-- Otherwise, it should be safe to let Blizzard process the widget.
 	ActionButton_UpdateCooldown(widget)
+	]]
 end
 
 function Util.LookupEquipmentSetIndex(EquipmentSetID)

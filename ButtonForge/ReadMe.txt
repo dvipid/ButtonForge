@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributors: xfsbill, Sunnova
 Past Contributors: DT85, DandierSphinx
 
-Version: 1.3.4.5
+Version: 1.3.4.6
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+03-Apr-2026		v1.3.4.6 - Fix cooldowns when in combat (thanks to Bloodninja9)
 27-Mar-2026		v1.3.4.5 - **Temporary Fix** Better fix to disable cooldowns when in combat. (thanks to UppyDan)
 25-Mar-2026		v1.3.4.4 - **Temporary Fix** Disable cooldowns when in combat
 10-Mar-2026		v1.3.4.3 - Avoid an error updating the Aura texture while in combat

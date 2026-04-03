@@ -1686,7 +1686,13 @@ function Button:UpdateCooldown()
 
 end
 function Button:UpdateCooldownSpell()
+	if not self.SpellId then
+		self.WCooldown:Hide()
+		return
+	end
+
 	self.Widget.spellID = self.SpellId
+	self.Widget.action = nil
 	Util.ActionButton_UpdateCooldown(self.Widget)
 
 	--[[local cooldownInfo;
@@ -1714,7 +1720,15 @@ function Button:UpdateCooldownSpell()
 	end]]
 end
 function Button:UpdateCooldownSpellSingleButtonAssistant()
-	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton);
+	local spellID = C_AssistedCombat.GetNextCastSpell(checkForVisibleButton)
+	if not spellID then
+		self.WCooldown:Hide()
+		return
+	end
+
+	self.Widget.spellID = spellID
+	self.Widget.action = nil
+
 	Util.ActionButton_UpdateCooldown(self.Widget)
 
 	--[[
@@ -1744,7 +1758,22 @@ function Button:UpdateCooldownSpellSingleButtonAssistant()
 	Util.CooldownFrame_SetTimer(self.WCooldown, start, duration, cooldownInfo.isEnabled, currentCharges, maxCharges);]]
 end
 function Button:UpdateCooldownItem()
-	Util.CooldownFrame_SetTimer(self.WCooldown, C_Item.GetItemCooldown(self.ItemId));
+	if not self.ItemId then
+		self.WCooldown:Hide()
+		return
+	end
+
+	local start, duration, enable = C_Item.GetItemCooldown(self.ItemId)
+	if start and duration then
+		self.WCooldown:SetCooldown(start, duration)
+	else
+		self.WCooldown:Hide()
+	end
+
+	self.Widget.spellID = nil
+	self.Widget.action = nil
+
+	--Util.CooldownFrame_SetTimer(self.WCooldown, C_Item.GetItemCooldown(self.ItemId));
 end
 function Button:UpdateCooldownMacro()
 	if (self.MacroMode == "spell") then
@@ -1752,25 +1781,27 @@ function Button:UpdateCooldownMacro()
 	elseif (self.MacroMode == "item") then
 		self:UpdateCooldownItem();
 	else
-		Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
+		--Util.CooldownFrame_SetTimer(self.WCooldown, 0, 0, 0);
 		self.WCooldown:Hide();
 	end
 end
 function Button:UpdateCooldownCompanion()
-	--CooldownFrame_SetTimer(self.WCooldown, GetCompanionCooldown(self.CompanionType, self.CompanionIndex));
-	--as of 5.0.4 doesn't appear to exist anymore?!
+	-- Fully safe: hide cooldown, do not touch secret numbers
+	self.WCooldown:Hide()
 end
 function Button:UpdateCooldownBonusAction()
+	self.Widget.spellID = nil
 	self.Widget.action = self.Widget:CalculateAction()
+
 	if (HasOverrideActionBar() or HasVehicleActionBar()) and self.Widget.action > 0 then
 		Util.ActionButton_UpdateCooldown(self.Widget)
 	else
-		self.WCooldown:Hide();
+		self.WCooldown:Hide()
 	end
 end
 function Button:UpdateCooldownBattlePet()
-	--CooldownFrame_SetTimer(self.WCooldown, GetCompanionCooldown(self.CompanionType, self.CompanionIndex));
-	--as of 5.0.4 doesn't appear to exist anymore?!
+	-- Fully safe: hide cooldown, do not touch secret numbers
+	self.WCooldown:Hide()
 end
 
 
