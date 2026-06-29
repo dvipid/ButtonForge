@@ -18,7 +18,7 @@ Const.PRIEST_PVP_TALENT_INNER_SHADOW_ID = 355898;
 Const.COVENANT_WARRIOR_FURY_CONDEMN_ID = 330325;
 Const.SINGLE_BUTTON_ASSISTANT_ID = 1229376;
 Const.Version				= 1.3;
-Const.VersionMinor			= 4.6;
+Const.VersionMinor			= 4.7;
 Const.MAX_ACCOUNT_MACROS 	= 120;
 Const.ButtonNaming 			= "ButtonForge"
 Const.ButtonSeq 			= 1;					--This value will increment (so not technically a const...)
@@ -79,6 +79,21 @@ end
 Const.BonusActionPageOffset = 16;
 Const.OverrideActionPageOffset = 18;
 
+
+-- Form / meta overrides ONLY: base spells that turn into a DIFFERENTLY-NAMED spell while in a
+-- form or state, e.g. Void Eruption -> Void Volley (Voidform), Void Metamorphosis -> Collapsing
+-- Star, Void Bolt -> Void Volley. In-form the base name stops resolving, so these must be cast by
+-- id (the engine then redirects to the active override). EVERY OTHER spell casts by name by
+-- default - including ones that refuse id casting (Purify, Prayer of Mending, Thrash, ...) and
+-- proc swaps (Mind Flay -> Mind Flay: Insanity) - so those must NOT be listed here.
+-- Key = base spell id. If a form-swap ability won't cast, add its base id here:
+--   /dump C_Spell.GetSpellInfo("Spell Name").spellID
+Const.IdCastSpellIds = {};
+Const.IdCastSpellIds[228260]  = 1;		-- Void Eruption (Shadow, -> Void Bolt / Void Volley in Voidform)
+Const.IdCastSpellIds[228266]  = 1;		-- Void Bolt (Shadow, -> Void Volley with Voidweaver)
+Const.IdCastSpellIds[1217605] = 1;		-- Void Metamorphosis (Devourer DH, -> Collapsing Star)
+Const.IdCastSpellIds[473662]  = 1;		-- Consume (Devourer DH, -> Devour in Void Metamorphosis)
+Const.IdCastSpellIds[1226019] = 1;		-- Reap (Devourer DH, -> Cull in Void Metamorphosis)
 
 Const.StealthSpellIds = {};
 Const.StealthSpellIds[1784] = 1;		-- Stealth

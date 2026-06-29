@@ -2,10 +2,10 @@
 Mod for World of Warcraft
 
 Author: Massiner of Nathrezim
-Contributors: xfsbill, Sunnova
-Past Contributors: DT85, DandierSphinx
+Contributors: xfsbill, Bloodninja9
+Past Contributors: DT85, DandierSphinx, Sunnova
 
-Version: 1.3.4.6
+Version: 1.3.4.7
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+29-Jun-2026		v1.3.4.7 - Fixed spells glow and spells that changes after being cast
 03-Apr-2026		v1.3.4.6 - Fix cooldowns when in combat (thanks to Bloodninja9)
 27-Mar-2026		v1.3.4.5 - **Temporary Fix** Better fix to disable cooldowns when in combat. (thanks to UppyDan)
 25-Mar-2026		v1.3.4.4 - **Temporary Fix** Disable cooldowns when in combat

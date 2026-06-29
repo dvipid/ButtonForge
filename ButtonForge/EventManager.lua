@@ -371,14 +371,15 @@ function Text:OnEvent(Event, UnitId)
 		Full.RefreshButtons = true;
 	end
 end
-local emptySpellInfo = {}
 function Glow:OnEvent(Event, Arg1)
-	local spellInfo = C_Spell.GetSpellInfo(Arg1 or 0) or emptySpellInfo;
-
-	if (Event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
-		Util.GlowSpells[spellInfo.name] = true;
-	else
-		Util.GlowSpells[spellInfo.name] = false;
+	-- Arg1 is the glowing spellID. Key Util.GlowSpells by id (not name) so Button:UpdateGlow
+	-- can match a button's base id OR its active override id (e.g. Mind Flay: Insanity).
+	if (Arg1) then
+		if (Event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
+			Util.GlowSpells[Arg1] = true;
+		else
+			Util.GlowSpells[Arg1] = nil;
+		end
 	end
 	Full.RefGlow = true;
 	Full.RefreshButtons = true;

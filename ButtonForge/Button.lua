@@ -586,11 +586,12 @@ end
 
 --[[ Set the individual types of actions including obtained any extra data they may need --]]
 function Button:SetCommandSpell(Id)
-	local Subtext = C_Spell.GetSpellSubtext(Id);
-	local spellInfo = C_Spell.GetSpellInfo(Id)
+	local baseID = C_Spell.GetBaseSpell(Id)
+	local Subtext = C_Spell.GetSpellSubtext(baseID);
+	local spellInfo = C_Spell.GetSpellInfo(baseID)
 	local spellName = spellInfo and spellInfo.name
 	local NameRank = Util.GetFullSpellName(spellName, Subtext);
-	self:SetCommandExplicitSpell(Id, NameRank, spellName);
+	self:SetCommandExplicitSpell(baseID, NameRank, spellName);
 end
 function Button:SetCommandItem(Id, Link)
 	local Name;
@@ -1271,24 +1272,40 @@ function Button:SetAttributes(Type, Value)
 			self.Widget:SetAttribute("macrotext", "/cast !Inner Light");
 
 		-- Patch to fix some spell that doesnt like to be cast with ID (Thrash, Stampeding Roar, ...)
-		elseif ( SpellName ) then
+		else
 			-- PVP talent with a Passive base spell has a weird behavior. There might be other spells with the same issue. Temporary fix until we find something more generic
 			if (SpellId == Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_ID) then
 				SpellName = Const.HOLY_PRIEST_PVP_TALENT_SPIRIT_OF_THE_REDEEMER_NAME;
+				self.Widget:SetAttribute(Type, SpellName);
+			elseif (SpellName) then
+				-- Casting and overrides. The default is to cast by NAME (CastSpellByName), which
+				-- resolves live and works for the broad majority of spells: ordinary spells, ones
+				-- that refuse to cast by id (Purify, Prayer of Mending, Thrash, Stampeding Roar,
+				-- ...), and transient proc overrides (Mind Flay -> Mind Flay: Insanity).
+				-- The EXCEPTION is form / meta overrides where the base spell becomes a DIFFERENTLY
+				-- NAMED spell while in a form/state (Void Eruption -> Void Volley in Voidform, Void
+				-- Metamorphosis -> Collapsing Star, ...). In-form the base name no longer resolves,
+				-- so only casting the base id lets the engine redirect to the active override.
+				-- Those base spell ids are listed in Const.IdCastSpellIds.
+				if (Const.IdCastSpellIds and Const.IdCastSpellIds[SpellId]) then
+					self.Widget:SetAttribute(Type, SpellId);
+				else
+					-- Only append a NON-EMPTY subtext, to disambiguate same-name variants (e.g.
+					-- Polymorph (Pig)); appending an empty "()" breaks name resolution.
+					local castName = SpellName;
+					local subtext = C_Spell.GetSpellSubtext(SpellId) or "";
+					if (subtext ~= "") then
+						castName = castName .. "(" .. subtext .. ")";
+					end
+					self.Widget:SetAttribute(Type, castName);
+				end
 			else
-				local subtext = C_Spell.GetSpellSubtext(Value) or "";
-				SpellName = SpellName .. "(" .. subtext .. ")";
+				self.Widget:SetAttribute(Type, SpellId);	-- fallback to id if the name can't be resolved
 			end
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute("typerelease", Type);
-			self.Widget:SetAttribute(Type, SpellName);
 			self.Widget:SetAttribute("IsEmpowerSpell", C_Spell.IsPressHoldReleaseSpell(SpellId));
 
-		-- fallback to the old method if the name cannot be resolved
-		else
-			self.Widget:SetAttribute("type", Type);
-			self.Widget:SetAttribute("typerelease", Type);
-			self.Widget:SetAttribute(Type, Value);
 		end
 		
 	elseif (Type == "item" or Type == "macro") then
@@ -1488,7 +1505,9 @@ function Button:UpdateTextureSpell()
 	if (spellHasBuffActive == true and Const.StealthSpellIds[self.SpellId] ~= nil) then
 		self.WIcon:SetTexture("Interface/Icons/Spell_Nature_Invisibilty");
 	else
-		self.WIcon:SetTexture(self.Texture);
+		local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+		local Texture = C_Spell.GetSpellTexture(overrideSpellID) or "Interface/Icons/INV_Misc_QuestionMark";
+		self.WIcon:SetTexture(Texture);
 	end
 end
 function Button:UpdateTextureWispSpell()
@@ -1599,7 +1618,8 @@ function Button:UpdateChecked()
     self.Widget:SetChecked(false);
 end
 function Button:UpdateCheckedSpell()
-    if (C_Spell.IsCurrentSpell(self.SpellNameRank) or C_Spell.IsAutoRepeatSpell(self.SpellNameRank)) then
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+    if (C_Spell.IsCurrentSpell(overrideSpellID) or C_Spell.IsAutoRepeatSpell(overrideSpellID)) then
         self.Widget:SetChecked(true);
     else
 		self.Widget:SetChecked(false);
@@ -1691,7 +1711,7 @@ function Button:UpdateCooldownSpell()
 		return
 	end
 
-	self.Widget.spellID = self.SpellId
+	self.Widget.spellID = C_Spell.GetOverrideSpell(self.SpellId)
 	self.Widget.action = nil
 	Util.ActionButton_UpdateCooldown(self.Widget)
 
@@ -1813,7 +1833,8 @@ function Button:UpdateUsable()
 
 end
 function Button:UpdateUsableSpell()
-	local IsUsable, NotEnoughMana = C_Spell.IsSpellUsable(self.SpellNameRank);
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+	local IsUsable, NotEnoughMana = C_Spell.IsSpellUsable(overrideSpellID);
 	if (IsUsable) then
 		self.WIcon:SetVertexColor(1.0, 1.0, 1.0);
 		self.WNormalTexture:SetVertexColor(1.0, 1.0, 1.0);
@@ -1935,7 +1956,8 @@ function Button:UpdateTextCount()
 end
 function Button:UpdateTextCountSpell()
 	--local count = C_Spell.GetSpellCastCount(self.SpellNameRank);
-	self.WCount:SetText(C_Spell.GetSpellDisplayCount(self.SpellNameRank))
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+	self.WCount:SetText(C_Spell.GetSpellDisplayCount(overrideSpellID))
 	--[[if (count ~= 0 or C_Spell.IsConsumableSpell(self.SpellNameRank)) then
 		self.WCount:SetText(count);
 		return;
@@ -1996,7 +2018,8 @@ function Button:UpdateTooltipSpell()
 	self = self.ParentButton or self;
 	-- the bools are to make sure subtext is shown on the tooltip
     -- based on this function signature C_TooltipInfo.GetSpellByID(spellID [, isPet, showSubtext, dontOverride, difficultyID, isLink])
-	GameTooltip:SetSpellByID(self.SpellId, false, true);
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+	GameTooltip:SetSpellByID(overrideSpellID, false, true);
 end
 function Button:UpdateTooltipSpellSingleButtonAssistant()
 	self = self.ParentButton or self;
@@ -2143,7 +2166,8 @@ function Button:UpdateFlash()
 
 end
 function Button:UpdateFlashSpell()
-	if ((C_Spell.IsAutoAttackSpell(self.SpellNameRank) and C_Spell.IsCurrentSpell(self.SpellNameRank)) or C_Spell.IsAutoRepeatSpell(self.SpellNameRank)) then
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+	if ((C_Spell.IsAutoAttackSpell(overrideSpellID) and C_Spell.IsCurrentSpell(overrideSpellID)) or C_Spell.IsAutoRepeatSpell(overrideSpellID)) then
 		if (not self.FlashOn) then
 			self:AddToFlash();
 		end
@@ -2197,7 +2221,8 @@ function Button:UpdateRangeTimer()
 	
 end
 function Button:UpdateRangeTimerSpell()
-	if C_Spell.IsSpellInRange(self.SpellNameRank, self.Target) ~= nil then
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+	if C_Spell.IsSpellInRange(overrideSpellID, self.Target) ~= nil then
 		if (not self.RangeTimerOn) then
 			self:AddToRangeTimer();
 		end
@@ -2253,7 +2278,8 @@ function Button:RemoveFromRangeTimer()
 end
 
 function Button:CheckRangeTimerSpell()
-	if C_Spell.IsSpellInRange(self.SpellNameRank, self.Target) then
+	local overrideSpellID = C_Spell.GetOverrideSpell(self.SpellId)
+	if C_Spell.IsSpellInRange(overrideSpellID, self.Target) then
 		self.WHotKey:SetVertexColor(0.6, 0.6, 0.6);
 	else
 		self.WHotKey:SetVertexColor(1.0, 0.1, 0.1);
@@ -2567,7 +2593,19 @@ end
 
 
 function Button:UpdateGlow()
-	if ((self.Mode == "spell" or (self.MacroMode == "spell" and self.Mode == "macro")) and Util.GlowSpells[self.SpellName]) then
+	-- Glow events (SPELL_ACTIVATION_OVERLAY_GLOW_SHOW/HIDE) populate Util.GlowSpells keyed by
+	-- spell id. A button tracks its base spell, so match against the base id OR the currently
+	-- active override id - this makes proc glow work for plain spells and override spells alike
+	-- (e.g. Mind Flay -> Mind Flay: Insanity).
+	local shouldGlow = false;
+	if (self.Mode == "spell" or (self.MacroMode == "spell" and self.Mode == "macro")) then
+		local base = self.SpellId;
+		local override = base and C_Spell.GetOverrideSpell(base);
+		if ((base and Util.GlowSpells[base]) or (override and Util.GlowSpells[override])) then
+			shouldGlow = true;
+		end
+	end
+	if (shouldGlow) then
 		ActionButtonSpellAlertManager:ShowAlert(self.Widget); -- changed for Retail 12.0.0 12/06/2025
 	else
 		ActionButtonSpellAlertManager:HideAlert(self.Widget); -- changed for Retail 12.0.0 12/06/2025
