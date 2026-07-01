@@ -1248,6 +1248,16 @@ function Button:SetAttributes(Type, Value)
 		end
 
 		local spellInfo = C_Spell.GetSpellInfo(Value)
+		if (not spellInfo and type(Value) == "string") then
+			-- Recover from a legacy save-data bug where spells with no subtext were saved as
+			-- "Name()" (Util.GetFullSpellName used to treat an empty-string subtext as present).
+			-- That malformed name doesn't resolve, so strip a trailing empty "()" and retry -
+			-- otherwise the button silently fails to configure
+			local strippedName = Value:match("^(.-)%(%)$");
+			if (strippedName) then
+				spellInfo = C_Spell.GetSpellInfo(strippedName)
+			end
+		end
 		local SpellName = nil
 		local SpellId = nil
 		if spellInfo then
@@ -1304,7 +1314,9 @@ function Button:SetAttributes(Type, Value)
 			end
 			self.Widget:SetAttribute("type", Type);
 			self.Widget:SetAttribute("typerelease", Type);
-			self.Widget:SetAttribute("IsEmpowerSpell", C_Spell.IsPressHoldReleaseSpell(SpellId));
+			-- Guard against SpellId being nil (e.g. Value could not be resolved to any spell at
+			-- all) so a single unresolvable button can't throw and abort the rest of the bar.
+			self.Widget:SetAttribute("IsEmpowerSpell", SpellId and C_Spell.IsPressHoldReleaseSpell(SpellId) or nil);
 
 		end
 		

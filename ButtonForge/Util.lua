@@ -1902,7 +1902,10 @@ end
 	Spell Functions
 -------------------------------------------]]
 function Util.GetFullSpellName(Name, Subtext)
-	if (Subtext) then
+	-- An empty string "", so a spell with no subtext (e.g. Ice Floes) was
+	-- previously still wrapped as "Name()" - a malformed name that C_Spell.GetSpellInfo can't
+	-- resolve, which later crashes SetAttributes when that saved name is cast.
+	if (Subtext and Subtext ~= "") then
 		Subtext = "("..Subtext..")";
 	else
 		Subtext = "";
