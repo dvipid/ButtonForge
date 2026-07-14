@@ -2079,6 +2079,7 @@ end
 
 function Util.RefreshZoneAbility()
 	local zoneAbilities = C_ZoneAbility.GetActiveAbilities();
+	local abilityCount = table.getn(zoneAbilities);
 	local found = 0;
 	for i, zoneAbility in ipairs(zoneAbilities) do
 		for j, spell in ipairs(Util.ActiveSpells) do
@@ -2088,10 +2089,12 @@ function Util.RefreshZoneAbility()
 			end
 		end
 	end
-	if (found == table.getn(zoneAbilities)) then
-		ZoneAbilityFrame:SetShown(false);
-	else
-		ZoneAbilityFrame:SetShown(true);
+	if (abilityCount > 0 and found == abilityCount) then
+		ZoneAbilityFrame:Hide();
+		Util.ZoneAbilityFrameHiddenByButtonForge = true;
+	elseif (Util.ZoneAbilityFrameHiddenByButtonForge) then
+		Util.ZoneAbilityFrameHiddenByButtonForge = nil;
+		ZoneAbilityFrame:UpdateDisplayedZoneAbilities();
 	end
 end
 

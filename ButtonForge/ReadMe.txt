@@ -5,7 +5,7 @@ Author: Massiner of Nathrezim
 Contributors: xfsbill, Bloodninja9
 Past Contributors: DT85, DandierSphinx, Sunnova
 
-Version: 1.3.4.8
+Version: 1.3.4.9
 
 Description: Graphically create as many Action Bars and Buttons in the game as you choose
 
@@ -23,6 +23,7 @@ Restrictions:
 
 
 History:
+14-Jul-2026		v1.3.4.9 - Zone Ability lifecycle fix (thanks to Odysseus68). Details: https://github.com/Odysseas68/buttonforge-zone-ability-lifecycle-fix
 07-Jul-2026		v1.3.4.8 - Fixed a bug with spells that are no longer available for the player
 29-Jun-2026		v1.3.4.7 - Fixed spells glow and spells that changes after being cast
 03-Apr-2026		v1.3.4.6 - Fix cooldowns when in combat (thanks to Bloodninja9)
