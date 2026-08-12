@@ -39,6 +39,7 @@ local UILib = BFUILib;
 local CustomAction = BFCustomAction;
 local KeyBinder = BFKeyBinder;
 Button.__index = Button;
+local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS or Constants.MacroConsts.MAX_ACCOUNT_MACROS;
 
 local IsUsableSpell = IsUsableSpell;
 local checkForVisibleButton = false;	-- Used with C_AssistedCombat.GetNextCastSpell() should always be false for ButtonForge usage
